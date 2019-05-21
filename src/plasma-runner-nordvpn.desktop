@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=NordVPN
+Comment=Krunner addon fpr NordVPN cli
+Icon=/home/alex/Downloads/ico/nordvpn_favicon57x57.png
+X-KDE-ServiceTypes=Plasma/Runner
+Type=Service
+X-KDE-Library=krunner_nordvpn
+X-KDE-PluginInfo-Author=Alex1701c
+X-KDE-PluginInfo-Email=alexkp12355@gmail.com
+X-KDE-PluginInfo-Name=nordvpn
+X-KDE-PluginInfo-Version=0.1
+X-KDE-PluginInfo-License=LGPL 2.1+
+X-KDE-PluginInfo-EnabledByDefault=true
