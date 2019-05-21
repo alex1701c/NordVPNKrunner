@@ -24,7 +24,7 @@
 #include <QtGui/QtGui>
 
 std::string vpnStatus;
-QString ICON_PATH = "/home/alex/Downloads/ico/nordvpn_favicon57x57.png";
+QString ICON_PATH = "/home/alex/Downloads/ico/nordvpn_favicon57x57.png"; //TODO put icon in resources and parameterize
 
 
 NordVPN::NordVPN(QObject *parent, const QVariantList &args)
@@ -106,7 +106,7 @@ void NordVPN::match(Plasma::RunnerContext &context) {
             statusMatch.setRelevance(0.25);
             matches.append(statusMatch);
             // TODO Connect new if disconnected
-            // TODO Reconnect if no spefific value/value == current server
+            // TODO Reconnect if no specific value/value == current server
             // TODO Reconnect to other country/server
         }
 
