@@ -18,7 +18,7 @@ public:
 
     bool connectionExists();
 
-    QString evalConnectQuery(QString &term);
+    static QString evalConnectQuery(QString &term,  QString target="");
 };
 
 

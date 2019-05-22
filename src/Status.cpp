@@ -24,8 +24,7 @@ bool Status::connectionExists() {
     return status.startsWith("Status: Connect") || status == "Status: Reconnecting";
 }
 
-QString Status::evalConnectQuery(QString &term) {
-    QString target = "US";
+QString Status::evalConnectQuery(QString &term, QString target) {
     if (!term.contains("reconnect")) {// No reconnect in term
         QRegExp regex("vpn ([a-zA-Z _]+[\\da-zA-Z_]*)$");// vpn us42; vpn us 42; vpn united_states
         regex.indexIn(term);
