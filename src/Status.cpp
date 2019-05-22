@@ -22,3 +22,7 @@ bool Status::connectionExists() {
     // Valid statuses: Connected, Connecting, Reconnecting
     return status.startsWith("Status: Connect") || status == "Status: Reconnecting";
 }
+
+QString Status::evalConnectQuery(QString &query) {
+    return QString();
+}

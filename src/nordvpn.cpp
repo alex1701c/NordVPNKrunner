@@ -98,11 +98,19 @@ void NordVPN::match(Plasma::RunnerContext &context) {
     } else {                                        // Connect
         Plasma::QueryMatch connectMatch(this);
         QString target = "US";
-        QRegExp regex("vpn ([a-zA-Z]+\\d*)");
+        QRegExp regex("vpn ([a-zA-Z _]+[\\da-zA-Z_]*)$");// vpn us42; vpn us 42; vpn united_states
         regex.indexIn(term);
         QStringList res = regex.capturedTexts();
         if (res.size() == 2 && !res.at(1).contains("reconnect") && !res.at(1).isEmpty()) {
             target = res.at(1).toUpper();
+        } else if (res.size() == 2 && res.at(1).contains("reconnect")) {// Connect if reconnect is in options
+            QRegExp regexReconnect("vpn reconnect ([a-zA-Z _]+[\\da-zA-Z_]*)$");
+            regexReconnect.indexIn(term);
+            QStringList res2 = regexReconnect.capturedTexts();
+            if (res2.size() == 2 && !res2.at(1).isEmpty()) {
+                target = res2.at(1).toUpper();
+                std::cout << "RECONNECT TARGET= " << target.toStdString() << std::endl;
+            }
         }
         connectMatch.setIconName(ICON_PATH);
         connectMatch.setText(QString::fromStdString("Connect To ") + target);
@@ -112,17 +120,9 @@ void NordVPN::match(Plasma::RunnerContext &context) {
     }
 
     if (term.startsWith("vpn reconnect") || term.startsWith("nordvpn reconnect")) {
-        Plasma::QueryMatch reconnectMatch(this);
-        reconnectMatch.
-                setIconName(ICON_PATH);
-        reconnectMatch.setText("Reconnect Test😊");
-        reconnectMatch.setData("status");
-        statusMatch.setRelevance(0.75);
-        matches.
-                append(reconnectMatch);
-// TODO Connect new if disconnected
-// TODO Reconnect if no specific value/value == current server
-// TODO Reconnect to other country/server
+        // TODO Connect new if disconnected
+        // TODO Reconnect if no specific value/value == current server
+        // TODO Reconnect to other country/server
     }
 
     context.

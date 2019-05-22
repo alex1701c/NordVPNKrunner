@@ -17,6 +17,8 @@ public:
     void extractConectionInformation();
 
     bool connectionExists();
+
+    QString evalConnectQuery(QString &query);
 };
 
 
