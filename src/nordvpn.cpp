@@ -96,33 +96,37 @@ void NordVPN::match(Plasma::RunnerContext &context) {
         disconnectMatch.setRelevance(0);// TODO increase relevance if term is e.g. vpn d or vpn disconnect
         matches.append(disconnectMatch);
     } else {                                        // Connect
-        std::string target = "us";
-        auto split = term.split(' ');
-        if (split.size() > 1) {
-            target = split[1].toStdString();
-        }
-        const std::string msg = "Connect to " + target;
         Plasma::QueryMatch connectMatch(this);
+        QString target = "US";
+        QRegExp regex("vpn ([a-zA-Z]+\\d*)");
+        regex.indexIn(term);
+        QStringList res = regex.capturedTexts();
+        if (res.size() == 2 && !res.at(1).contains("reconnect") && !res.at(1).isEmpty()) {
+            target = res.at(1).toUpper();
+        }
         connectMatch.setIconName(ICON_PATH);
-        connectMatch.setText(QString::fromStdString("Connect To ") + QString::fromStdString(target).toUpper());
-        connectMatch.setData(QString::fromStdString("nordvpn connect " + target));
+        connectMatch.setText(QString::fromStdString("Connect To ") + target);
+        connectMatch.setData(QString::fromStdString("nordvpn connect " + target.toStdString()));
         connectMatch.setRelevance(1);
         matches.append(connectMatch);
     }
 
     if (term.startsWith("vpn reconnect") || term.startsWith("nordvpn reconnect")) {
         Plasma::QueryMatch reconnectMatch(this);
-        reconnectMatch.setIconName(ICON_PATH);
+        reconnectMatch.
+                setIconName(ICON_PATH);
         reconnectMatch.setText("Reconnect Test😊");
         reconnectMatch.setData("status");
         statusMatch.setRelevance(0.75);
-        matches.append(reconnectMatch);
-        // TODO Connect new if disconnected
-        // TODO Reconnect if no specific value/value == current server
-        // TODO Reconnect to other country/server
+        matches.
+                append(reconnectMatch);
+// TODO Connect new if disconnected
+// TODO Reconnect if no specific value/value == current server
+// TODO Reconnect to other country/server
     }
 
-    context.addMatches(matches);
+    context.
+            addMatches(matches);
 }
 
 void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) {

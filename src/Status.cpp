@@ -1,8 +1,6 @@
 //
 // Created by alex on 22.05.19.
 //
-#include <iostream>
-#include <string>
 #include <QtCore/QRegExp>
 #include <QtCore/QStringList>
 #include "Status.h"
