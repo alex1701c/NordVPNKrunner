@@ -16,6 +16,7 @@
 */
 
 #include "nordvpn.h"
+#include "Status.h"
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -23,7 +24,7 @@
 #include <KLocalizedString>
 #include <QtGui/QtGui>
 
-std::string vpnStatus;
+Status vpnStatus;
 QString ICON_PATH = "/home/alex/Downloads/ico/nordvpn_favicon57x57.png"; //TODO put icon in resources and parameterize
 
 
@@ -43,16 +44,31 @@ NordVPN::~NordVPN() {
 
 
 void NordVPN::prepareForMatchSession() {
+    // TODO Some sort of caching if the nordvpn cli is very slow
     QProcess process;
     process.start("nordvpn status");
     process.waitForFinished(-1);
     QByteArray out = process.readAllStandardOutput();
-    vpnStatus = out.toStdString();
+
+    for (const auto &line:out.split('\n')) {
+        if (line.startsWith("Status:")) {
+            vpnStatus.status = line;
+        } else if (line.startsWith("Current server: ")) {
+            vpnStatus.current_server = line;
+            break;
+        }
+    }
+    vpnStatus.extractConectionInformation();
+    std::cout << "INFORMATION" << std::endl;
+    std::cout << vpnStatus.status.toStdString() << std::endl;
+    std::cout << vpnStatus.current_server.toStdString() << std::endl;
+    std::cout << vpnStatus.country.toStdString() << std::endl;
+    std::cout << vpnStatus.server.toStdString() << std::endl;
+    std::cout << "END" << std::endl;
 }
 
 
 void NordVPN::init() {
-    reloadConfiguration();
     connect(this, SIGNAL(prepare()), this, SLOT(prepareForMatchSession()));
 }
 
@@ -62,55 +78,50 @@ void NordVPN::match(Plasma::RunnerContext &context) {
         return;
     }
     QList<Plasma::QueryMatch> matches;
-    if (vpnStatus == "Error") {
+    if (vpnStatus.status == "Error") {
         return;
     }
-    std::string statusLine;
-    std::stringstream statusStream(vpnStatus);
-    while (std::getline(statusStream, statusLine, '\n')) {
-        QString l = QString::fromStdString(statusLine);
-        if (l.startsWith("Status: Connect") || l == "Status: Reconnecting") {//Disconnect
-            Plasma::QueryMatch disconnectMatch(this);
-            disconnectMatch.setIconName(ICON_PATH);
-            disconnectMatch.setText(i18n("Disconnect"));
-            disconnectMatch.setData("disconnect");
-            disconnectMatch.setRelevance(0);// TODO increase relevance if term is e.g. vpn d or vpn disconnect
-            matches.append(disconnectMatch);
-        } else if (l == "Status: Disconnected" && !term.contains("reconnect")) {// Connect
-            std::string target = "us";
-            auto split = term.split(' ');
-            if (split.size() > 1) {
-                target = split[1].toStdString();
-            }
-            const std::string msg = "Connect to " + target;
-            Plasma::QueryMatch connectMatch(this);
-            connectMatch.setIconName(ICON_PATH);
-            connectMatch.setText(QString::fromStdString("Connect To ") + QString::fromStdString(target).toUpper());
-            connectMatch.setData(QString::fromStdString("nordvpn connect " + target));
-            connectMatch.setRelevance(1);
-            matches.append(connectMatch);
-        }
-        if (l.startsWith("Status:")) {// Status
-            Plasma::QueryMatch statusMatch(this);
-            statusMatch.setIconName(ICON_PATH);
-            statusMatch.setText(l);
-            statusMatch.setData("status");
-            statusMatch.setRelevance(0.5);
-            matches.append(statusMatch);
-        }
-        if (term.startsWith("vpn reconnect") || term.startsWith("nordvpn reconnect")) {
-            Plasma::QueryMatch statusMatch(this);
-            statusMatch.setIconName(ICON_PATH);
-            statusMatch.setText("Reconnect Test😊");
-            statusMatch.setData("status");
-            statusMatch.setRelevance(0.25);
-            matches.append(statusMatch);
-            // TODO Connect new if disconnected
-            // TODO Reconnect if no specific value/value == current server
-            // TODO Reconnect to other country/server
-        }
+    Plasma::QueryMatch statusMatch(this);           // Status
+    statusMatch.setIconName(ICON_PATH);
+    statusMatch.setText(vpnStatus.status);
+    statusMatch.setData("status");
+    statusMatch.setRelevance(0.5);
+    matches.append(statusMatch);
 
+    if (vpnStatus.connectionExists()) {             //Disconnect
+        Plasma::QueryMatch disconnectMatch(this);
+        disconnectMatch.setIconName(ICON_PATH);
+        disconnectMatch.setText(i18n("Disconnect"));
+        disconnectMatch.setData("disconnect");
+        disconnectMatch.setRelevance(0);// TODO increase relevance if term is e.g. vpn d or vpn disconnect
+        matches.append(disconnectMatch);
+    } else {                                        // Connect
+        std::string target = "us";
+        auto split = term.split(' ');
+        if (split.size() > 1) {
+            target = split[1].toStdString();
+        }
+        const std::string msg = "Connect to " + target;
+        Plasma::QueryMatch connectMatch(this);
+        connectMatch.setIconName(ICON_PATH);
+        connectMatch.setText(QString::fromStdString("Connect To ") + QString::fromStdString(target).toUpper());
+        connectMatch.setData(QString::fromStdString("nordvpn connect " + target));
+        connectMatch.setRelevance(1);
+        matches.append(connectMatch);
     }
+
+    if (term.startsWith("vpn reconnect") || term.startsWith("nordvpn reconnect")) {
+        Plasma::QueryMatch reconnectMatch(this);
+        reconnectMatch.setIconName(ICON_PATH);
+        reconnectMatch.setText("Reconnect Test😊");
+        reconnectMatch.setData("status");
+        statusMatch.setRelevance(0.75);
+        matches.append(reconnectMatch);
+        // TODO Connect new if disconnected
+        // TODO Reconnect if no specific value/value == current server
+        // TODO Reconnect to other country/server
+    }
+
     context.addMatches(matches);
 }
 
@@ -119,8 +130,8 @@ void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch
     if (match.data().toString() == "disconnect") {
         system(R"(nordvpn d | tr -d '/\-|\\' | xargs -d '\n' notify-send --icon /home/alex/Downloads/ico/nordvpn_favicon57x57.png 2>&1 &)");
     } else if (match.data().toString() == "status") {
-        system("status=$(nordvpn status 2>&1 | grep -E 'Status|Current server|Transfer|Your new IP');"
-               "notify-send  \"$status\"  --icon /home/alex/Downloads/ico/nordvpn_favicon57x57.png  2>&1 &");
+        system("$(vpnStatus=$(nordvpn status 2>&1 | grep -E 'Status|Current server|Transfer|Your new IP');"
+               "notify-send  \"$vpnStatus\"  --icon /home/alex/Downloads/ico/nordvpn_favicon57x57.png;)  2>&1 &");
     } else if (match.data().toString().startsWith("nordvpn connect")) {
         QString cmd = match.data().toString();
         cmd += QString(
