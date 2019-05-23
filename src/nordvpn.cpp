@@ -17,6 +17,7 @@
 
 #include "nordvpn.h"
 #include "Status.h"
+#include "Config.h"
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -48,9 +49,7 @@ NordVPN::~NordVPN() {
 // TODO Implement dialog to change the config, how?
 void NordVPN::reloadConfiguration() {
     std::cout << "Initializing" << std::endl;
-    KSharedConfig::Ptr config = KSharedConfig::openConfig("krunnerrc");
-    KConfigGroup vpnConfigGroup = config->group("Runners");
-    vpnConfigGroup = KConfigGroup(&vpnConfigGroup, "NordVPN");
+    KConfigGroup vpnConfigGroup = Config::getConfigGroup();
 
     statusSource = vpnConfigGroup.readEntry("source", "nordvpn status");
     ICON_PATH = vpnConfigGroup.readEntry("icon", "/home/alex/Downloads/ico/nordvpn_favicon57x57.png");
@@ -121,6 +120,7 @@ void NordVPN::init() {
 
 void NordVPN::match(Plasma::RunnerContext &context) {
     QString term = context.query();
+    if (!context.isValid()) return;
     if (term.length() < 3 || (!term.startsWith("vpn") && !term.startsWith("nordvpn"))) {
         return;
     }
@@ -131,6 +131,8 @@ void NordVPN::match(Plasma::RunnerContext &context) {
     createMatch(matches, vpnStatus.status, QString("status"), 0.5);     // Status
     QString target = Status::evalConnectQuery(term, defaultTarget);
     if (target == "CONFIG") {
+        Config::generateOptions(this, matches, term);
+        createMatch(matches, QString("Config Stuff"), QString("status"), 1);
         // TODO CREATE OPTION AND HANDLE IT
     }
     if (vpnStatus.connectionExists()) {             //Disconnect

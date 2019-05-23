@@ -29,8 +29,8 @@ public:
 
     ~NordVPN() override;
 
-    void
-    createMatch(QList<Plasma::QueryMatch> &matches, const QString &text, const QString &data, double relevance = 0);
+    void createMatch(QList<Plasma::QueryMatch> &matches,
+                     const QString &text, const QString &data, double relevance = 0);
 
     void createRunOptions(QWidget *widget) override;
 

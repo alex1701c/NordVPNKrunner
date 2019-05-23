@@ -53,16 +53,3 @@ QString Status::evalConnectQuery(QString &term, QString target) {
 
     return target;
 }
-
-void Status::evalSettings(QString &term) {
-    KSharedConfig::Ptr config = KSharedConfig::openConfig("krunnerrc");
-    KConfigGroup vpnConfigGroup = config->group("Runners");
-    vpnConfigGroup = KConfigGroup(&vpnConfigGroup, "NordVPN");
-
-    if (term.contains(QRegExp("^(nord)?vpn set defaults ?$"))) {
-        for (const auto &key : vpnConfigGroup.keyList()) {
-            std::cout << key.toStdString() << std::endl;
-        }
-    }
-    return;
-}

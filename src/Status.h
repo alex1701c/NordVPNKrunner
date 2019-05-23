@@ -20,9 +20,6 @@ public:
 
     static QString evalConnectQuery(QString &term, QString target = "");
 
-    static void evalSettings(QString &term);
-
-
 };
 
 
