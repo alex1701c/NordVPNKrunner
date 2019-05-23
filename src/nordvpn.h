@@ -19,6 +19,7 @@
 #define NORDVPN_H
 
 #include <KRunner/AbstractRunner>
+#include "Status.h"
 
 class NordVPN : public Plasma::AbstractRunner {
 Q_OBJECT
@@ -28,11 +29,17 @@ public:
 
     ~NordVPN() override;
 
+    void createMatch(QList<Plasma::QueryMatch> &matches, const QString& text, const QString& data, double relevance = 0);
+
+    Status vpnStatus;
+
+
 protected Q_SLOTS:
 
     void init() override;
 
     void prepareForMatchSession();
+
 
 public: // Plasma::AbstractRunner API
     void match(Plasma::RunnerContext &context) override;
