@@ -39,9 +39,15 @@ NordVPN::NordVPN(QObject *parent, const QVariantList &args)
 NordVPN::~NordVPN() {
 }
 
+// TODO Read default target (currently US) from config
+// TODO Add option to set the config values from Krunner
+// TODO Add reset to default option
+// TODO Add filters for history (to remove disconnect entries from autocompletion)
+// TODO Script that runs after the command gets executed ?
+// TODO Implement dialog to change the config, how?
 void NordVPN::reloadConfiguration() {
-
     KSharedConfig::Ptr config = KSharedConfig::openConfig("krunnerrc");
+    //std::cout << config->group("General").readEntry("history").toStdString() << std::endl;
     KConfigGroup vpnConfigGroup = config->group("Runners");
     vpnConfigGroup = KConfigGroup(&vpnConfigGroup, "NordVPN");
     statusSource = vpnConfigGroup.readEntry("source", "nordvpn status");
