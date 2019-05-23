@@ -29,9 +29,18 @@ public:
 
     ~NordVPN() override;
 
-    void createMatch(QList<Plasma::QueryMatch> &matches, const QString& text, const QString& data, double relevance = 0);
+    void
+    createMatch(QList<Plasma::QueryMatch> &matches, const QString &text, const QString &data, double relevance = 0);
+
+    void createRunOptions(QWidget *widget) override;
+
+    void reloadConfiguration() override;
+
+    QString ICON_PATH; //TODO put icon in resources
 
     Status vpnStatus;
+
+    QString statusSource;
 
 
 protected Q_SLOTS:
@@ -39,6 +48,8 @@ protected Q_SLOTS:
     void init() override;
 
     void prepareForMatchSession();
+
+    void matchSessionFinished();
 
 
 public: // Plasma::AbstractRunner API

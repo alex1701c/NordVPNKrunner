@@ -23,9 +23,8 @@
 // KF
 #include <KLocalizedString>
 #include <QtGui/QtGui>
+#include <KSharedConfig>
 
-QString ICON_PATH = "/home/alex/Downloads/ico/nordvpn_favicon57x57.png"; //TODO put icon in resources
-// TODO
 NordVPN::NordVPN(QObject *parent, const QVariantList &args)
         : Plasma::AbstractRunner(parent, args) {
     setObjectName("NordVPN");
@@ -40,11 +39,42 @@ NordVPN::NordVPN(QObject *parent, const QVariantList &args)
 NordVPN::~NordVPN() {
 }
 
+void NordVPN::reloadConfiguration() {
+
+    KSharedConfig::Ptr config = KSharedConfig::openConfig("krunnerrc");
+    KConfigGroup vpnConfigGroup = config->group("Runners");
+    vpnConfigGroup = KConfigGroup(&vpnConfigGroup, "NordVPN");
+    statusSource = vpnConfigGroup.readEntry("source", "nordvpn status");
+    ICON_PATH = vpnConfigGroup.readEntry("icon", "/home/alex/Downloads/ico/nordvpn_favicon57x57.png");
+    /*vpnConfigGroup.writeEntry("msg", "Test 🙂🙃");
+    vpnConfigGroup.sync();*/
+
+    QList<Plasma::RunnerSyntax> syntaxes;
+    syntaxes.append(Plasma::RunnerSyntax("vpn us", "Connect options to United States, server is chosen by NordVPN"));
+    syntaxes.append(Plasma::RunnerSyntax("vpn us 3335", "Connect options to United States with server number 3335"));
+    syntaxes.append(
+            Plasma::RunnerSyntax("vpn germany berlin", "Can connect to country by name and city, case insensitive"));
+    syntaxes.append(Plasma::RunnerSyntax("vpn d", "Shows Disconnect option on top (just relevance changed)"));
+    syntaxes.append(Plasma::RunnerSyntax("vpn reconnect", "Reconnect to the current country and server. "
+                                                          "Sometimes you have to do this if you change from a wireless to a wired connection"));
+    syntaxes.append(
+            Plasma::RunnerSyntax(
+                    "vpn reconnect de",
+                    "Reconnect to specific country/server. "
+                    "This only supports formats like us3335 or us 3335 and not the names"
+                    "Additionally the plugin checks if the target matches the current connection and displays the \"Reconnect To Current option\","
+                    " otherwise it displays e.g.\"Reconnect To US 3335 option\""
+            ));
+
+    setSyntaxes(syntaxes);
+}
 
 void NordVPN::prepareForMatchSession() {
-    // TODO Some sort of caching if the nordvpn cli is very slow
     QProcess process;
-    process.start("nordvpn status");
+    process.start(statusSource);
+    std::cout << statusSource.toStdString() << std::endl;
+    //process.start("cat /tmp/ramdisktemp/status");
+    // I have the issue that it es sometimes very slow, file gets updated by command output widget
     process.waitForFinished(-1);
     QByteArray out = process.readAllStandardOutput();
 
@@ -65,9 +95,14 @@ void NordVPN::prepareForMatchSession() {
     std::cout << "END" << std::endl;*/
 }
 
+void NordVPN::matchSessionFinished() {
+
+}
 
 void NordVPN::init() {
+    reloadConfiguration();
     connect(this, SIGNAL(prepare()), this, SLOT(prepareForMatchSession()));
+    connect(this, SIGNAL(teardown()), this, SLOT(matchSessionFinished()));
 }
 
 void NordVPN::match(Plasma::RunnerContext &context) {
@@ -137,14 +172,18 @@ void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch
     system(qPrintable(cmd.replace("<ICON>", ICON_PATH) + " 2>&1 &"));
 }
 
-void
-NordVPN::createMatch(QList<Plasma::QueryMatch> &matches, const QString &text, const QString &data, double relevance) {
+void NordVPN::createMatch(QList<Plasma::QueryMatch> &matches,
+                          const QString &text, const QString &data, double relevance) {
     Plasma::QueryMatch match(this);
     match.setIconName(ICON_PATH);
     match.setText(text);
     match.setData(data);
     match.setRelevance(relevance);
     matches.append(match);
+}
+
+void NordVPN::createRunOptions(QWidget *widget) {
+    AbstractRunner::createRunOptions(widget);
 }
 
 K_EXPORT_PLASMA_RUNNER(nordvpn, NordVPN)
