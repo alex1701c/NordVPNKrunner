@@ -4,6 +4,8 @@
 #include <QtCore/QRegExp>
 #include <QtCore/QStringList>
 #include <iostream>
+#include <KConfigCore/KSharedConfig>
+#include <KConfigCore/KConfigGroup>
 #include "Status.h"
 
 void Status::extractConectionInformation() {
@@ -25,6 +27,10 @@ bool Status::connectionExists() {
 }
 
 QString Status::evalConnectQuery(QString &term, QString target) {
+    // Returns extracted target from normal + reconnect queries, in case of vpn d.. it returns the default
+    if (term.contains("vpn set")) {
+        return "CONFIG";
+    }
     if (!term.contains("reconnect")) {// No reconnect in term
         if (term.contains(QRegExp("vpn d[ ]*$")) || term.contains("vpn di")) {
             // Rejects for example vpn d, vpn disconnect, vpn dis
@@ -46,4 +52,17 @@ QString Status::evalConnectQuery(QString &term, QString target) {
     }
 
     return target;
+}
+
+void Status::evalSettings(QString &term) {
+    KSharedConfig::Ptr config = KSharedConfig::openConfig("krunnerrc");
+    KConfigGroup vpnConfigGroup = config->group("Runners");
+    vpnConfigGroup = KConfigGroup(&vpnConfigGroup, "NordVPN");
+
+    if (term.contains(QRegExp("^(nord)?vpn set defaults ?$"))) {
+        for (const auto &key : vpnConfigGroup.keyList()) {
+            std::cout << key.toStdString() << std::endl;
+        }
+    }
+    return;
 }

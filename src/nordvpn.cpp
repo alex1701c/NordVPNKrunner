@@ -25,6 +25,7 @@
 #include <QtGui/QtGui>
 #include <KSharedConfig>
 
+
 NordVPN::NordVPN(QObject *parent, const QVariantList &args)
         : Plasma::AbstractRunner(parent, args) {
     setObjectName("NordVPN");
@@ -39,22 +40,26 @@ NordVPN::NordVPN(QObject *parent, const QVariantList &args)
 NordVPN::~NordVPN() {
 }
 
-// TODO Read default target (currently US) from config
+// TODO Read default target (currently US) from config ✔
 // TODO Add option to set the config values from Krunner
 // TODO Add reset to default option
 // TODO Add filters for history (to remove disconnect entries from autocompletion)
-// TODO Script that runs after the command gets executed ?
+// TODO Script that runs after the command gets executed  ✔
 // TODO Implement dialog to change the config, how?
 void NordVPN::reloadConfiguration() {
+    std::cout << "Initializing" << std::endl;
     KSharedConfig::Ptr config = KSharedConfig::openConfig("krunnerrc");
-    //std::cout << config->group("General").readEntry("history").toStdString() << std::endl;
     KConfigGroup vpnConfigGroup = config->group("Runners");
     vpnConfigGroup = KConfigGroup(&vpnConfigGroup, "NordVPN");
+
     statusSource = vpnConfigGroup.readEntry("source", "nordvpn status");
     ICON_PATH = vpnConfigGroup.readEntry("icon", "/home/alex/Downloads/ico/nordvpn_favicon57x57.png");
+    changeScript = vpnConfigGroup.readEntry("script", "");
+    defaultTarget = vpnConfigGroup.readEntry("default", "US");
+    //std::cout << config->group("General").readEntry("history").toStdString() << std::endl;
     /*vpnConfigGroup.writeEntry("msg", "Test 🙂🙃");
     vpnConfigGroup.sync();*/
-
+    //region syntax
     QList<Plasma::RunnerSyntax> syntaxes;
     syntaxes.append(Plasma::RunnerSyntax("vpn us", "Connect options to United States, server is chosen by NordVPN"));
     syntaxes.append(Plasma::RunnerSyntax("vpn us 3335", "Connect options to United States with server number 3335"));
@@ -73,6 +78,7 @@ void NordVPN::reloadConfiguration() {
             ));
 
     setSyntaxes(syntaxes);
+    //endregion
 }
 
 void NordVPN::prepareForMatchSession() {
@@ -93,12 +99,14 @@ void NordVPN::prepareForMatchSession() {
         }
     }
     vpnStatus.extractConectionInformation();
+    //region debug_information
     /*std::cout << "INFORMATION" << std::endl;
     std::cout << vpnStatus.status.toStdString() << std::endl;
     std::cout << vpnStatus.current_server.toStdString() << std::endl;
     std::cout << vpnStatus.country.toStdString() << std::endl;
     std::cout << vpnStatus.server.toStdString() << std::endl;
     std::cout << "END" << std::endl;*/
+    //endregion
 }
 
 void NordVPN::matchSessionFinished() {
@@ -120,10 +128,11 @@ void NordVPN::match(Plasma::RunnerContext &context) {
         return;
     }
     QList<Plasma::QueryMatch> matches;
-
     createMatch(matches, vpnStatus.status, QString("status"), 0.5);     // Status
-
-
+    QString target = Status::evalConnectQuery(term, defaultTarget);
+    if (target == "CONFIG") {
+        // TODO CREATE OPTION AND HANDLE IT
+    }
     if (vpnStatus.connectionExists()) {             //Disconnect
         int relevanceDisconnect = 0;
         if (term.contains(QRegExp("vpn d(isconnect)?[ ]*$"))) {
@@ -131,13 +140,13 @@ void NordVPN::match(Plasma::RunnerContext &context) {
         }
         createMatch(matches, QString("Disconnect"), QString("disconnect"), relevanceDisconnect);
     } else {                                        // Connect
-        QString target = Status::evalConnectQuery(term, "US");
         createMatch(matches, QString("Connect To " + target),
                     QString("nordvpn connect " + target), 1);
     }
 
     if (vpnStatus.connectionExists() && (term.startsWith("vpn reconnect") || term.startsWith("nordvpn reconnect"))) {
-        QString target = Status::evalConnectQuery(term);
+        target = Status::evalConnectQuery(term, "");
+
         bool textOnly = target.contains(QRegExp("[a-zA-z ]{2,50}$"));
         if ((QString((vpnStatus.country + vpnStatus.server)).replace(" ", "").toUpper()
                      .startsWith(target.replace(" ", "").toUpper()) &&
@@ -150,6 +159,7 @@ void NordVPN::match(Plasma::RunnerContext &context) {
             } else if (textOnly) {
                 target += vpnStatus.server;
             }
+            //std::cout << target.toStdString() << std::endl;
             createMatch(matches, QString("Reconnect To Current "),
                         QString("nordvpn d > /dev/null 2>&1 ;nordvpn c  " + target), 1);
         } else {
@@ -161,21 +171,24 @@ void NordVPN::match(Plasma::RunnerContext &context) {
     context.addMatches(matches);
 }
 
+// empty should get current
 void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) {
     Q_UNUSED(context)
     QString cmd = "";
     QString startFilter(R"( | tr -d '/\-|\\' | tail -2 | cut -d '(' -f 1  |xargs -d '\n' notify-send --icon <ICON> )");
     if (match.data().toString() == "disconnect") {
-        cmd = R"(nordvpn d | tr -d '/\-|\\' | xargs -d '\n' notify-send --icon <ICON> )";
+        cmd = R"($( nordvpn d | tr -d '/\-|\\' | xargs -d '\n' notify-send --icon <ICON>; <SCRIPT>) )";
     } else if (match.data().toString() == "status") {
         cmd = "$(vpnStatus=$(nordvpn status 2>&1 | grep -E 'Status|Current server|Transfer|Your new IP');"
               "notify-send  \"$vpnStatus\"  --icon <ICON> )  ";
     } else if (match.data().toString().startsWith("nordvpn connect")) {
-        cmd = match.data().toString() + startFilter;
+        cmd = "$( " + match.data().toString() + startFilter + " ; <SCRIPT>  )";
     } else if (match.data().toString().startsWith("nordvpn d")) {
-        cmd = "$( " + match.data().toString() + startFilter + " )";
+        cmd = "$( " + match.data().toString() + startFilter + "; <SCRIPT>  )";
     }
-    system(qPrintable(cmd.replace("<ICON>", ICON_PATH) + " 2>&1 &"));
+    cmd = cmd.replace("<ICON>", ICON_PATH).replace("<SCRIPT>", changeScript);
+    //std::cout << cmd.toStdString() << std::endl;
+    system(qPrintable(cmd + " 2>&1 &"));
 }
 
 void NordVPN::createMatch(QList<Plasma::QueryMatch> &matches,
@@ -189,7 +202,13 @@ void NordVPN::createMatch(QList<Plasma::QueryMatch> &matches,
 }
 
 void NordVPN::createRunOptions(QWidget *widget) {
-    AbstractRunner::createRunOptions(widget);
+    Q_UNUSED(widget);
+    /*std::cout << "CONFIGURE" << std::endl;
+    QVBoxLayout *layout = new QVBoxLayout(widget);
+    QCheckBox *cb = new QCheckBox(widget);
+    cb->setText(i18n("This is just for show"));
+    layout->addWidget(cb);
+    widget->showNormal();*/
 }
 
 K_EXPORT_PLASMA_RUNNER(nordvpn, NordVPN)

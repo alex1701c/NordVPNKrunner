@@ -41,6 +41,8 @@ public:
     Status vpnStatus;
 
     QString statusSource;
+    QString changeScript;
+    QString defaultTarget;
 
 
 protected Q_SLOTS:
