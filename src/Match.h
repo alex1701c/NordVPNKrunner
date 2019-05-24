@@ -17,8 +17,9 @@ public:
     generateOptions(Plasma::AbstractRunner *runner, QList<Plasma::QueryMatch> &matches, KConfigGroup &configGroup,
                     Status &vpnStatus, QString &term);
 
-    static void generateConnectionOptions(Plasma::AbstractRunner *runner, QList<Plasma::QueryMatch> &matches,
-                                          const QString &term, const QString &data, double relevance);
+    static void
+    generateConnectionOptions(Plasma::AbstractRunner *runner, QList<Plasma::QueryMatch> &matches,
+                              KConfigGroup &configGroup, Status &vpnStatus, QString &term);
 
     static Plasma::QueryMatch
     createMatch(Plasma::AbstractRunner *runner, KConfigGroup &configGroup, const QString &text, const QString &data,

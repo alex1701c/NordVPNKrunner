@@ -31,7 +31,7 @@
 NordVPN::NordVPN(QObject *parent, const QVariantList &args)
         : Plasma::AbstractRunner(parent, args) {
     setObjectName("NordVPN");
-    setSpeed(SlowSpeed);
+    setSpeed(NormalSpeed);
     setPriority(HighestPriority);
     setHasRunOptions(true);
     setIgnoredTypes(Plasma::RunnerContext::Directory |
@@ -61,7 +61,7 @@ void NordVPN::reloadConfiguration() {
     vpnConfigGroup.sync();*/
     //region syntax
     QList<Plasma::RunnerSyntax> syntaxes;
-    syntaxes.append(Plasma::RunnerSyntax("vpn us", "Connect options to United States, server is chosen by NordVPN"));
+    syntaxes.append(Plasma::RunnerSyntax("vpn us", "Connect option to United States, server is chosen by NordVPN"));
     syntaxes.append(Plasma::RunnerSyntax("vpn us 3335", "Connect options to United States with server number 3335"));
     syntaxes.append(
             Plasma::RunnerSyntax("vpn germany berlin", "Can connect to country by name and city, case insensitive"));
@@ -84,7 +84,7 @@ void NordVPN::reloadConfiguration() {
 void NordVPN::prepareForMatchSession() {
     QProcess process;
     process.start(statusSource);
-    std::cout << statusSource.toStdString() << std::endl;
+    //std::cout << statusSource.toStdString() << std::endl;
     //process.start("cat /tmp/ramdisktemp/status");
     // I have the issue that it es sometimes very slow, file gets updated by command output widget
     process.waitForFinished(-1);
@@ -113,55 +113,16 @@ void NordVPN::init() {
 
 void NordVPN::match(Plasma::RunnerContext &context) {
     QString term = context.query();
+
     if (!context.isValid()) return;
-    if (term.length() < 3 || (!term.startsWith("vpn") && !term.startsWith("nordvpn"))) {
-        return;
-    }
-    if (vpnStatus.status == "Error") {
-        return;
-    }
+    if (term.length() < 3 || (!term.startsWith("vpn") && !term.startsWith("nordvpn"))) return;
+    if (vpnStatus.status == "Error") return;
+
     QList<Plasma::QueryMatch> matches;
-    QString target = Status::evalConnectQuery(term, defaultTarget);
     Match::generateOptions(this, matches, vpnConfigGroup, vpnStatus, term);
-    if (vpnStatus.connectionExists()) {             //Disconnect
-        int relevanceDisconnect = 0;
-        if (term.contains(QRegExp("vpn d(isconnect)?[ ]*$"))) {
-            relevanceDisconnect = 1;
-        }
-        createMatch(matches, QString("Disconnect"), QString("disconnect"), relevanceDisconnect);
-    } else {                                        // Connect
-        createMatch(matches, QString("Connect To " + target),
-                    QString("nordvpn connect " + target), 1);
-    }
-
-    if (vpnStatus.connectionExists() && (term.startsWith("vpn reconnect") || term.startsWith("nordvpn reconnect"))) {
-        target = Status::evalConnectQuery(term, "");
-
-        bool textOnly = target.contains(QRegExp("[a-zA-z ]{2,50}$"));
-        if ((QString((vpnStatus.country + vpnStatus.server)).replace(" ", "").toUpper()
-                     .startsWith(target.replace(" ", "").toUpper()) &&
-             (textOnly || target.endsWith(vpnStatus.server))) ||
-            target.replace(" ", "").isEmpty()) {
-            // [The address from the status startswith the one of the query &&
-            // (the server addresses match exactly || no server address specified)] || no targeted address
-            if (target.isEmpty()) {
-                target = vpnStatus.country + vpnStatus.server;
-            } else if (textOnly) {
-                target += vpnStatus.server;
-            }
-            //std::cout << target.toStdString() << std::endl;
-            createMatch(matches, QString("Reconnect To Current "),
-                        QString("nordvpn d > /dev/null 2>&1 ;nordvpn c  " + target), 1);
-        } else {
-            createMatch(matches, QString("Reconnect To " + target),
-                        QString("nordvpn d > /dev/null 2>&1 ;nordvpn c  " + target), 1);
-        }
-    }
-
     context.addMatches(matches);
 }
 
-// empty should get current
 void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) {
     Q_UNUSED(context)
     QString cmd = "";
@@ -179,16 +140,6 @@ void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch
     cmd = cmd.replace("<ICON>", ICON_PATH).replace("<SCRIPT>", changeScript);
     //std::cout << cmd.toStdString() << std::endl;
     system(qPrintable(cmd + " 2>&1 &"));
-}
-
-void NordVPN::createMatch(QList<Plasma::QueryMatch> &matches,
-                          const QString &text, const QString &data, double relevance) {
-    Plasma::QueryMatch match(this);
-    match.setIconName(ICON_PATH);
-    match.setText(text);
-    match.setData(data);
-    match.setRelevance(relevance);
-    matches.append(match);
 }
 
 void NordVPN::createRunOptions(QWidget *widget) {
