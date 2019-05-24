@@ -50,7 +50,7 @@ NordVPN::~NordVPN() {
 // TODO Implement dialog to change the config, how?
 void NordVPN::reloadConfiguration() {
     std::cout << "Initializing" << std::endl;
-    KConfigGroup vpnConfigGroup = Config::getConfigGroup();
+    vpnConfigGroup = Config::getConfigGroup();
 
     statusSource = vpnConfigGroup.readEntry("source", "nordvpn status");
     ICON_PATH = vpnConfigGroup.readEntry("icon", "/home/alex/Downloads/ico/nordvpn_favicon57x57.png");
@@ -99,14 +99,6 @@ void NordVPN::prepareForMatchSession() {
         }
     }
     vpnStatus.extractConectionInformation();
-    //region debug_information
-    /*std::cout << "INFORMATION" << std::endl;
-    std::cout << vpnStatus.status.toStdString() << std::endl;
-    std::cout << vpnStatus.current_server.toStdString() << std::endl;
-    std::cout << vpnStatus.country.toStdString() << std::endl;
-    std::cout << vpnStatus.server.toStdString() << std::endl;
-    std::cout << "END" << std::endl;*/
-    //endregion
 }
 
 void NordVPN::matchSessionFinished() {
@@ -129,14 +121,8 @@ void NordVPN::match(Plasma::RunnerContext &context) {
         return;
     }
     QList<Plasma::QueryMatch> matches;
-    Match::generateOptions(this, matches, "Hello Options", "status", 0);
-    createMatch(matches, vpnStatus.status, QString("status"), 0.5);     // Status
     QString target = Status::evalConnectQuery(term, defaultTarget);
-    if (target == "CONFIG") {
-        Config::generateOptions(this, matches, term);
-        createMatch(matches, QString("Config Stuff"), QString("status"), 1);
-        // TODO CREATE OPTION AND HANDLE IT
-    }
+    Match::generateOptions(this, matches, vpnConfigGroup, vpnStatus, term);
     if (vpnStatus.connectionExists()) {             //Disconnect
         int relevanceDisconnect = 0;
         if (term.contains(QRegExp("vpn d(isconnect)?[ ]*$"))) {

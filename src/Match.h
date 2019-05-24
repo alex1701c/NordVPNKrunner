@@ -7,21 +7,22 @@
 
 
 #include <krunner/runnercontext.h>
+#include "Status.h"
 
 class Match {
 public:
     static void runMatch(Plasma::RunnerContext &context, Plasma::QueryMatch &match);
 
-    static void generateOptions(Plasma::AbstractRunner *runner, QList<Plasma::QueryMatch> &matches,
-                                const QString &term, const QString &data, double relevance = 0);
-
-    static void generateConfigOptions(Plasma::AbstractRunner *runner, QList<Plasma::QueryMatch> &matches,
-                                      const QString &term, const QString &data, double relevance);
+    static void
+    generateOptions(Plasma::AbstractRunner *runner, QList<Plasma::QueryMatch> &matches, KConfigGroup &configGroup,
+                    Status &vpnStatus, QString &term);
 
     static void generateConnectionOptions(Plasma::AbstractRunner *runner, QList<Plasma::QueryMatch> &matches,
                                           const QString &term, const QString &data, double relevance);
 
-
+    static Plasma::QueryMatch
+    createMatch(Plasma::AbstractRunner *runner, KConfigGroup &configGroup, const QString &text, const QString &data,
+                double relevance);
 };
 
 

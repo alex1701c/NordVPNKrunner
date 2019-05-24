@@ -36,6 +36,8 @@ public:
 
     void reloadConfiguration() override;
 
+    KConfigGroup vpnConfigGroup;
+
     QString ICON_PATH; //TODO put icon in resources
 
     Status vpnStatus;
