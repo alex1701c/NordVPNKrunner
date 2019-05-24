@@ -14,9 +14,11 @@ class Config {
 public:
     static KConfigGroup getConfigGroup();
 
-    static void generateOptions(Plasma::AbstractRunner *runner, QList<Plasma::QueryMatch> &matches, KConfigGroup &configGroup,QString &term);
+    static void
+    generateOptions(Plasma::AbstractRunner *runner, QList<Plasma::QueryMatch> &matches, KConfigGroup &configGroup,
+                    QString &term);
 
-    static void configureOptions(QString &data);
+    static void configureOptions(KConfigGroup &configGroup, QString &data);
 };
 
 

@@ -42,10 +42,11 @@ NordVPN::NordVPN(QObject *parent, const QVariantList &args)
 NordVPN::~NordVPN() {
 }
 
+// TODO Order settings options
 // TODO Read default target (currently US) from config ✔
-// TODO Add option to set the config values from Krunner
-// TODO Add reset to default option
-// TODO Add filters for history (to remove disconnect entries from autocompletion)
+// TODO Add option to set the config values from Krunner ✔
+// TODO Add reset to default option ✔
+// TODO Add filters for history (to remove disconnect entries from autocompletion) ✔
 // TODO Script that runs after the command gets executed  ✔
 // TODO Implement dialog to change the config, how?
 void NordVPN::reloadConfiguration() {
@@ -55,7 +56,7 @@ void NordVPN::reloadConfiguration() {
     statusSource = vpnConfigGroup.readEntry("source", "nordvpn status");
     ICON_PATH = vpnConfigGroup.readEntry("icon", "/home/alex/Downloads/ico/nordvpn_favicon57x57.png");
     changeScript = vpnConfigGroup.readEntry("script", "");
-    defaultTarget = vpnConfigGroup.readEntry("default", "US");
+    defaultTarget = vpnConfigGroup.readEntry("target", "US");
     //std::cout << config->group("General").readEntry("history").toStdString() << std::endl;
     /*vpnConfigGroup.writeEntry("msg", "Test 🙂🙃");
     vpnConfigGroup.sync();*/
@@ -102,7 +103,28 @@ void NordVPN::prepareForMatchSession() {
 }
 
 void NordVPN::matchSessionFinished() {
+    if (vpnConfigGroup.readEntry("clean_history", true) == QString("true")) {
+        QString history = vpnConfigGroup.parent().parent().group("General").readEntry("history");
+        QString filteredHistory = history.replace(QRegExp(R"([nord]?vpn set[^,]*,?)"), "");
+        QFile f(QString(getenv("HOME")) + "/.config/krunnerrc");
+        if (f.open(QIODevice::ReadWrite)) {
+            QString s;
+            QTextStream t(&f);
+            while (!t.atEnd()) {
+                QString line = t.readLine();
+                if (!line.startsWith("history")) {
+                    s.append(line + "\n");
+                } else {
+                    s.append("history=" + filteredHistory + "\n");
+                }
+            }
+            f.resize(0);
+            t << s;
+            std::cout << f.isWritable() << std::endl;
 
+            f.close();
+        }
+    }
 }
 
 void NordVPN::init() {
@@ -125,17 +147,24 @@ void NordVPN::match(Plasma::RunnerContext &context) {
 
 void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) {
     Q_UNUSED(context)
+    QString payload = match.data().toString();
     QString cmd = "";
+    if (payload.startsWith("settings|")) {
+        payload = payload.split('|')[1];
+        Config::configureOptions(vpnConfigGroup, payload);
+        reloadConfiguration();
+        return;
+    }
     QString startFilter(R"( | tr -d '/\-|\\' | tail -2 | cut -d '(' -f 1  |xargs -d '\n' notify-send --icon <ICON> )");
-    if (match.data().toString() == "disconnect") {
+    if (payload == "disconnect") {
         cmd = R"($( nordvpn d | tr -d '/\-|\\' | xargs -d '\n' notify-send --icon <ICON>; <SCRIPT>) )";
-    } else if (match.data().toString() == "status") {
+    } else if (payload == "status") {
         cmd = "$(vpnStatus=$(nordvpn status 2>&1 | grep -E 'Status|Current server|Transfer|Your new IP');"
               "notify-send  \"$vpnStatus\"  --icon <ICON> )  ";
-    } else if (match.data().toString().startsWith("nordvpn connect")) {
-        cmd = "$( " + match.data().toString() + startFilter + " ; <SCRIPT>  )";
-    } else if (match.data().toString().startsWith("nordvpn d")) {
-        cmd = "$( " + match.data().toString() + startFilter + "; <SCRIPT>  )";
+    } else if (payload.startsWith("nordvpn connect")) {
+        cmd = "$( " + payload + startFilter + " ; <SCRIPT>  )";
+    } else if (payload.startsWith("nordvpn d")) {
+        cmd = "$( " + payload + startFilter + "; <SCRIPT>  )";
     }
     cmd = cmd.replace("<ICON>", ICON_PATH).replace("<SCRIPT>", changeScript);
     //std::cout << cmd.toStdString() << std::endl;
