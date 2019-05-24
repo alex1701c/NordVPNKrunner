@@ -18,6 +18,7 @@
 #include "nordvpn.h"
 #include "Status.h"
 #include "Config.h"
+#include "Match.h"
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -128,6 +129,7 @@ void NordVPN::match(Plasma::RunnerContext &context) {
         return;
     }
     QList<Plasma::QueryMatch> matches;
+    Match::generateOptions(this, matches, "Hello Options", "status", 0);
     createMatch(matches, vpnStatus.status, QString("status"), 0.5);     // Status
     QString target = Status::evalConnectQuery(term, defaultTarget);
     if (target == "CONFIG") {
