@@ -103,25 +103,29 @@ void NordVPN::prepareForMatchSession() {
 }
 
 void NordVPN::matchSessionFinished() {
-    if (vpnConfigGroup.readEntry("clean_history", true) == QString("true")) {
+
+    if (vpnConfigGroup.readEntry("clean_history", "true") == QString("true")) {
         QString history = vpnConfigGroup.parent().parent().group("General").readEntry("history");
         QString filteredHistory = history.replace(QRegExp(R"([nord]?vpn set[^,]*,?)"), "");
         QFile f(QString(getenv("HOME")) + "/.config/krunnerrc");
+        bool changed = false;
         if (f.open(QIODevice::ReadWrite)) {
             QString s;
             QTextStream t(&f);
             while (!t.atEnd()) {
                 QString line = t.readLine();
-                if (!line.startsWith("history")) {
+                if (!line.startsWith("history") || QString("history=" + filteredHistory) == line) {
                     s.append(line + "\n");
                 } else {
                     s.append("history=" + filteredHistory + "\n");
+                    changed = true;
                 }
             }
-            f.resize(0);
-            t << s;
-            std::cout << f.isWritable() << std::endl;
-
+            if (changed) {
+                f.resize(0);
+                t << s;
+                std::cout << "Changed" << std::endl;
+            }
             f.close();
         }
     }

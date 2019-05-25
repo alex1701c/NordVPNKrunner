@@ -27,13 +27,12 @@ void Config::configureOptions(KConfigGroup &configGroup, QString &data) {
         if (payload.captureCount() == 2) {
             QString key = payload.capturedTexts().at(1);
             QString value = payload.capturedTexts().at(2);
-            std::cout << key.toStdString() << "==>" << value.toStdString() << std::endl;
-            configGroup.writeEntry(key, value);
+            if (!value.isEmpty()) {
+                std::cout << key.toStdString() << "==>" << value.toStdString() << std::endl;
+                configGroup.writeEntry(key, value);
+            }
         }
     }
-    /*std::cout << std::endl << std::endl << std::endl << std::endl << std::endl;
-    std::cout << configGroup.parent().parent().group("General")
-            .readEntry("history").replace(QRegExp("[nord]?vpn set[^,\\n]*,?)"), "").count('\n') << std::endl;*/
     configGroup.sync();
 
 }
@@ -44,10 +43,15 @@ void Config::generateOptions(Plasma::AbstractRunner *runner, QList<Plasma::Query
 
     if (term.contains(QRegExp("^(nord)?vpn set defaults ?$"))) {
         matches.append(Match::createMatch(runner, configGroup, "Set all settings to defaults", "settings|defaults", 1));
-    } else if (term.contains(QRegExp("^(nord)?vpn set default .+$"))) {
-        QString selected = term.split("vpn set default ").last();
-        matches.append(Match::createMatch(runner, configGroup, QString("Set " + selected + " to default"),
-                                          QString("settings|default  " + selected), 1));
+    } else if (term.contains(QRegExp("^(nord)?vpn set .* default[ ]*$"))) {
+        QString selected = term.split("vpn set ").last().split("default").at(0);
+        if (selected.contains('*')) {
+            matches.append(
+                    Match::createMatch(runner, configGroup, "Set all settings to defaults", "settings|defaults", 1));
+        } else {
+            matches.append(Match::createMatch(runner, configGroup, QString("Set " + selected + "to default"),
+                                              QString("settings|default  " + selected), 1));
+        }
     } else if (term.contains(QRegExp("^(nord)?vpn set .+$"))) {
         QString selected = term.split("vpn set ").last();
         QString first = selected.split(' ').first();
