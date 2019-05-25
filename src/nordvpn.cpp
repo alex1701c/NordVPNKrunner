@@ -20,8 +20,6 @@
 #include "Config.h"
 #include "Match.h"
 #include <iostream>
-#include <string>
-#include <sstream>
 // KF
 #include <KLocalizedString>
 #include <QtGui/QtGui>
@@ -39,23 +37,16 @@ NordVPN::NordVPN(QObject *parent, const QVariantList &args)
                     Plasma::RunnerContext::NetworkLocation);
 }
 
-NordVPN::~NordVPN() {
-}
+NordVPN::~NordVPN() = default;
 
-// TODO Remove from option history for disconnect
-// TODO Clean up code
+// TODO Remove from option history for disconnect ?
 // TODO Implement dialog to change the config, how?
 void NordVPN::reloadConfiguration() {
-    std::cout << "Initializing" << std::endl;
     vpnConfigGroup = Config::getConfigGroup();
 
     statusSource = vpnConfigGroup.readEntry("source", "nordvpn status");
     ICON_PATH = vpnConfigGroup.readEntry("icon", "/usr/share/icons/nordvpn.png");
     changeScript = vpnConfigGroup.readEntry("script", "");
-    defaultTarget = vpnConfigGroup.readEntry("target", "US");
-    //std::cout << config->group("General").readEntry("history").toStdString() << std::endl;
-    /*vpnConfigGroup.writeEntry("msg", "Test 🙂🙃");
-    vpnConfigGroup.sync();*/
     //region syntax
     QList<Plasma::RunnerSyntax> syntaxes;
     syntaxes.append(Plasma::RunnerSyntax("vpn us", "Connect option to United States, server is chosen by NordVPN"));
@@ -81,9 +72,6 @@ void NordVPN::reloadConfiguration() {
 void NordVPN::prepareForMatchSession() {
     QProcess process;
     process.start(statusSource);
-    //std::cout << statusSource.toStdString() << std::endl;
-    //process.start("cat /tmp/ramdisktemp/status");
-    // I have the issue that it es sometimes very slow, file gets updated by command output widget
     process.waitForFinished(-1);
     QByteArray out = process.readAllStandardOutput();
 
@@ -120,7 +108,6 @@ void NordVPN::matchSessionFinished() {
             if (changed) {
                 f.resize(0);
                 t << s;
-                std::cout << "Changed" << std::endl;
             }
             f.close();
         }
@@ -167,18 +154,11 @@ void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch
         cmd = "$( " + payload + startFilter + "; <SCRIPT>  )";
     }
     cmd = cmd.replace("<ICON>", ICON_PATH).replace("<SCRIPT>", changeScript);
-    std::cout << cmd.toStdString() << std::endl;
     system(qPrintable(cmd + " 2>&1 &"));
 }
 
 void NordVPN::createRunOptions(QWidget *widget) {
     Q_UNUSED(widget);
-    /*std::cout << "CONFIGURE" << std::endl;
-    QVBoxLayout *layout = new QVBoxLayout(widget);
-    QCheckBox *cb = new QCheckBox(widget);
-    cb->setText(i18n("This is just for show"));
-    layout->addWidget(cb);
-    widget->showNormal();*/
 }
 
 K_EXPORT_PLASMA_RUNNER(nordvpn, NordVPN)

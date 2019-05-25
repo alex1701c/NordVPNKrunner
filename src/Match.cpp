@@ -5,7 +5,6 @@
 #include "Match.h"
 #include "Config.h"
 #include "Status.h"
-#include <iostream>
 
 void Match::generateOptions(Plasma::AbstractRunner *runner, QList<Plasma::QueryMatch> &matches,
                             KConfigGroup &configGroup, Status &vpnStatus, QString &term) {

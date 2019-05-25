@@ -4,7 +4,6 @@
 
 #include "Config.h"
 #include "Match.h"
-#include <iostream>
 #include <QtGui/QtGui>
 #include <KSharedConfig>
 
@@ -12,7 +11,6 @@
 void Config::configureOptions(KConfigGroup &configGroup, QString &data) {
     if (data == "defaults") {
         for (const auto &key : configGroup.keyList()) {
-            std::cout << key.toStdString() << std::endl;
             configGroup.deleteEntry(key);
         }
     } else if (data.startsWith("default")) {
@@ -28,7 +26,6 @@ void Config::configureOptions(KConfigGroup &configGroup, QString &data) {
             QString key = payload.capturedTexts().at(1);
             QString value = payload.capturedTexts().at(2);
             if (!value.isEmpty()) {
-                std::cout << key.toStdString() << "==>" << value.toStdString() << std::endl;
                 configGroup.writeEntry(key, value);
             }
         }

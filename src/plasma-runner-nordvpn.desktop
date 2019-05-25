@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=NordVPN
-Comment=Krunner addon fpr NordVPN cli
+Comment=Krunner addon for NordVPN cli. Visit https://github.com/alex1701c/NordVPNKrunner for more information.
 Icon=/usr/share/icons/nordvpn.png
 X-KDE-ServiceTypes=Plasma/Runner
 Type=Service
