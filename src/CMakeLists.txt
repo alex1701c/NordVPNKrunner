@@ -5,6 +5,7 @@ set(nordvpn_SRCS nordvpn.cpp Status.cpp Status.h Config.cpp Config.h Match.cpp M
 add_library(krunner_nordvpn MODULE ${nordvpn_SRCS})
 target_link_libraries(krunner_nordvpn KF5::Runner KF5::I18n)
 
-install(TARGETS krunner_nordvpn DESTINATION ${KDE_INSTALL_PLUGINDIR})
 
+install(TARGETS krunner_nordvpn DESTINATION ${PLUGIN_INSTALL_DIR})
+install(FILES nordvpn.png DESTINATION /usr/share/icons/)
 install(FILES plasma-runner-nordvpn.desktop DESTINATION ${KDE_INSTALL_KSERVICES5DIR})

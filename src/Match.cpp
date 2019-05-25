@@ -67,7 +67,7 @@ void Match::generateConnectionOptions(Plasma::AbstractRunner *runner, QList<Plas
 Plasma::QueryMatch Match::createMatch(Plasma::AbstractRunner *runner, KConfigGroup &configGroup,
                                       const QString &text, const QString &data, double relevance) {
     Plasma::QueryMatch match(runner);
-    match.setIconName(configGroup.readEntry("icon", "/home/alex/Downloads/ico/nordvpn_favicon57x57.png"));
+    match.setIconName(configGroup.readEntry("icon", "/usr/share/icons/nordvpn.png"));
     match.setText(text);
     match.setData(data);
     match.setRelevance(relevance);

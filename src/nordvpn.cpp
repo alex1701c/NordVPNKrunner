@@ -50,7 +50,7 @@ void NordVPN::reloadConfiguration() {
     vpnConfigGroup = Config::getConfigGroup();
 
     statusSource = vpnConfigGroup.readEntry("source", "nordvpn status");
-    ICON_PATH = vpnConfigGroup.readEntry("icon", "/home/alex/Downloads/ico/nordvpn_favicon57x57.png");
+    ICON_PATH = vpnConfigGroup.readEntry("icon", "/usr/share/icons/nordvpn.png");
     changeScript = vpnConfigGroup.readEntry("script", "");
     defaultTarget = vpnConfigGroup.readEntry("target", "US");
     //std::cout << config->group("General").readEntry("history").toStdString() << std::endl;
@@ -167,7 +167,7 @@ void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch
         cmd = "$( " + payload + startFilter + "; <SCRIPT>  )";
     }
     cmd = cmd.replace("<ICON>", ICON_PATH).replace("<SCRIPT>", changeScript);
-    //std::cout << cmd.toStdString() << std::endl;
+    std::cout << cmd.toStdString() << std::endl;
     system(qPrintable(cmd + " 2>&1 &"));
 }
 
