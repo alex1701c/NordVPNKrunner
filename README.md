@@ -2,19 +2,22 @@
 Work In Progress ... 🙃
 
 
-Runner Template
+NordVPNKrunner Build Instructions
 ----------------------
 
--- Build instructions --
+`git clone https://github.com/alex1701c/NordVPNKrunner`
 
-cd /where/your/runner/is/installed
-mkdir build
-cd build
-cmake -DCMAKE_INSTALL_PREFIX=MYPREFIX .. 
-make 
-make install
+`cd NordVPNKrunner/`
 
-(MYPREFIX is where you install your Plasma setup, replace it accordingly)
+`mkdir build`
 
-Restart krunner to load the runner (in a terminal type: `kquitapp krunner;krunner` )
+`cd build`
+
+`cmake -DCMAKE_INSTALL_PREFIX=MYPREFIX ..` 
+
+`make`
+
+`make install`
+
+Restart krunner to load the runner (in a terminal type: `kquitapp5 krunner;kstart5 krunner` )
 
