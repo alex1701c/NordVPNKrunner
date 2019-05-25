@@ -42,12 +42,8 @@ NordVPN::NordVPN(QObject *parent, const QVariantList &args)
 NordVPN::~NordVPN() {
 }
 
-// TODO Order settings options
-// TODO Read default target (currently US) from config ✔
-// TODO Add option to set the config values from Krunner ✔
-// TODO Add reset to default option ✔
-// TODO Add filters for history (to remove disconnect entries from autocompletion) ✔
-// TODO Script that runs after the command gets executed  ✔
+// TODO Remove from option history for disconnect
+// TODO Clean up code
 // TODO Implement dialog to change the config, how?
 void NordVPN::reloadConfiguration() {
     std::cout << "Initializing" << std::endl;
