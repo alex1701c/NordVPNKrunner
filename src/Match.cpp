@@ -19,8 +19,8 @@ void Match::generateOptions(Plasma::AbstractRunner *runner, QList<Plasma::QueryM
 }
 
 void Match::runMatch(Plasma::RunnerContext &context, Plasma::QueryMatch &match) {
-    Q_UNUSED(context);
-    Q_UNUSED(match);
+    Q_UNUSED(context)
+    Q_UNUSED(match)
 }
 
 void Match::generateConnectionOptions(Plasma::AbstractRunner *runner, QList<Plasma::QueryMatch> &matches,

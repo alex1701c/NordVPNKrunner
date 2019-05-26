@@ -44,7 +44,8 @@ Valid keys are:
 * `source` Command used to fetch the status from NordVPN, the default one is `nordvpn status`. This is useful if you have the issue that the NordVPN CLI is sometimes very slow when displaying the status. Instead of executing the slow command you can fetch the data from a file that gets regulary updated. I personally use this in combination with the Command Output Plasmoid, which executes `nordvpn status | tee <path> | grep 'Status'` and the Krunner plugin executed `cat <path>`.
 * `script` Command that gets executed after the connection is changed(disconnect, connect, reconnect), the default is empty. This can be used to update a file(as in source explained). Krunner detaches from the process.
 * `clean_history` Remove commands from the Krunner history that were used to change the settings. The default value is true.
- 
+* `notify` Send notifications if the connection changes, default is true. 
+
 `vpn set defaults` /  `vpn set * default` Set all settings to their original value  
 `vpn set icon default` Set icon to default value  
 `vpn set icon script default` Set icon and script to default value  

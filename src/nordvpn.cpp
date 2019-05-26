@@ -88,7 +88,7 @@ void NordVPN::prepareForMatchSession() {
 
 void NordVPN::matchSessionFinished() {
 
-    if (vpnConfigGroup.readEntry("clean_history", "true") == QString("true")) {
+    if (vpnConfigGroup.readEntry("clean_history", "true") == "true") {
         QString history = vpnConfigGroup.parent().parent().group("General").readEntry("history");
         QString filteredHistory = history.replace(QRegExp(R"([nord]?vpn set[^,]*,?)"), "");
         QFile f(QString(getenv("HOME")) + "/.config/krunnerrc");
@@ -142,9 +142,15 @@ void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch
         reloadConfiguration();
         return;
     }
+    bool notify = vpnConfigGroup.readEntry("notify", "true") == "true";
     QString startFilter(R"( | tr -d '/\-|\\' | tail -2 | cut -d '(' -f 1  |xargs -d '\n' notify-send --icon <ICON> )");
+    if (!notify) startFilter = " 2>&1 > /dev/null";
     if (payload == "disconnect") {
-        cmd = R"($( nordvpn d | tr -d '/\-|\\' | xargs -d '\n' notify-send --icon <ICON>; <SCRIPT>) )";
+        if (notify) {
+            cmd = R"($( nordvpn d | tr -d '/\-|\\' | xargs -d '\n' notify-send --icon <ICON>; <SCRIPT>) )";
+        } else {
+            cmd = R"($( nordvpn d; <SCRIPT>) )";
+        }
     } else if (payload == "status") {
         cmd = "$(vpnStatus=$(nordvpn status 2>&1 | grep -E 'Status|Current server|Transfer|Your new IP');"
               "notify-send  \"$vpnStatus\"  --icon <ICON> )  ";

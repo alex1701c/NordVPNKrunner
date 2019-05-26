@@ -20,7 +20,7 @@ void Config::configureOptions(KConfigGroup &configGroup, QString &data) {
             }
         }
     } else if (data.startsWith("set")) {
-        QRegExp payload("set[ ]+([a-z]+)[ ]+(.*)$");
+        QRegExp payload("set[ ]+([a-z_]+)[ ]+(.*)$");
         payload.indexIn(data);
         if (payload.captureCount() == 2) {
             QString key = payload.capturedTexts().at(1);
@@ -40,7 +40,7 @@ void Config::generateOptions(Plasma::AbstractRunner *runner, QList<Plasma::Query
 
     if (term.contains(QRegExp("^(nord)?vpn set defaults ?$"))) {
         matches.append(Match::createMatch(runner, configGroup, "Set all settings to defaults", "settings|defaults", 1));
-    } else if (term.contains(QRegExp("^(nord)?vpn set .* default[ ]*$"))) {
+    } else if (term.contains(QRegExp("^(nord)?vpn set .+ default[ ]*$"))) {
         QString selected = term.split("vpn set ").last().split("default").at(0);
         if (selected.contains('*')) {
             matches.append(
@@ -52,9 +52,14 @@ void Config::generateOptions(Plasma::AbstractRunner *runner, QList<Plasma::Query
     } else if (term.contains(QRegExp("^(nord)?vpn set .+$"))) {
         QString selected = term.split("vpn set ").last();
         QString first = selected.split(' ').first();
+
         matches.append(
-                Match::createMatch(runner, configGroup, QString("Set " + first + " to" + selected.replace(first, "")),
-                                   QString("settings|set  " + selected), 1));
+                Match::createMatch(
+                        runner, configGroup, QString(
+                                "Set " + first + " to" + selected.replace(selected.indexOf(first), first.size(), "")),
+                        QString("settings|set  " + selected), 1
+                )
+        );
     }
 }
 
