@@ -1,5 +1,4 @@
-NordVPNKrunner Build Instructions
-----------------------
+# NordVPNKrunner Build Instructions
 
 Required Dependencies on Debian/Ubuntu:  
 `sudo apt install cmake extra-cmake-modules build-essential libkf5runner-dev libkf5textwidgets-dev qtdeclarative5-dev gettext libnotify-bin`
@@ -20,6 +19,13 @@ sudo make install
 ```
 Restart krunner to load the runner (in a terminal type: `kquitapp5 krunner;kstart5 krunner` )
 
+### Screenshots:
+#### Connect to the default country
+![Connect to default country](https://raw.githubusercontent.com/alex1701c/NordVPNKrunner/master/screenshots/connect_default.png)
+#### The notification if the Status is selected and the user is connected
+![Notification if Status: Connected is selected](https://raw.githubusercontent.com/alex1701c/NordVPNKrunner/master/screenshots/connected_notification.png)
+#### Reconnect to another country and specify the server
+![Reconnect to other county with specific server](https://raw.githubusercontent.com/alex1701c/NordVPNKrunner/master/screenshots/reconnect_other_country_with_server.png)
 
 ### Syntax Examples:
 
