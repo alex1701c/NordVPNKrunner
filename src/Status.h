@@ -11,7 +11,7 @@ class Status {
 public:
     QString status = "Error";
     QString current_server = "";
-    QString country = "US";
+    QString country = "";
     QString server = "";
 
     void extractConectionInformation();

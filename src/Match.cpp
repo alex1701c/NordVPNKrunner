@@ -9,7 +9,11 @@
 void Match::generateOptions(Plasma::AbstractRunner *runner, QList<Plasma::QueryMatch> &matches,
                             KConfigGroup &configGroup, Status &vpnStatus, QString &term) {
 
-    matches.append(createMatch(runner, configGroup, vpnStatus.status, "status", 0.5));     // Status
+    matches.append(createMatch(runner, configGroup,
+                               configGroup.readEntry("status", "%st")
+                                       .replace("%st", vpnStatus.status)
+                                       .replace("%c", vpnStatus.country.toUpper())
+                                       .replace("%s", vpnStatus.server), "status", 0.5));
     if (term.contains("vpn set") || term.contains("settings")) {
         Config::generateOptions(runner, matches, configGroup, term);
     } else {

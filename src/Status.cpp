@@ -4,13 +4,18 @@
 #include <QtCore/QRegExp>
 #include <KConfigCore/KSharedConfig>
 #include <KConfigCore/KConfigGroup>
+#include <iostream>
 #include "Status.h"
 
 void Status::extractConectionInformation() {
+    if (status == "Status: Disconnected") {
+        country = "";
+        server = "";
+        return;
+    }
     if (!current_server.isEmpty()) {
         QRegExp regex("Current server: ([a-z]{2})(\\d{1,5})");
         regex.indexIn(current_server);
-
         QStringList res = regex.capturedTexts();
         if (res.size() == 3) {
             country = res.at(1);
