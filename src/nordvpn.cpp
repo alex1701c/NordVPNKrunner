@@ -137,7 +137,8 @@ void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch
     QString payload = match.data().toString();
     QString cmd = "";
     if (payload.startsWith("settings|")) {
-        payload = payload.split('|')[1];
+        payload = payload.section('|', 1);
+        std::cout << payload.toStdString() << std::endl;
         Config::configureOptions(vpnConfigGroup, payload);
         reloadConfiguration();
         return;
@@ -152,8 +153,9 @@ void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch
             cmd = R"($( nordvpn d; <SCRIPT>) )";
         }
     } else if (payload == "status") {
-        cmd = "$(vpnStatus=$(nordvpn status 2>&1 | grep -E 'Status|Current server|Transfer|Your new IP');"
-              "notify-send  \"$vpnStatus\"  --icon <ICON> )  ";
+        cmd = QString("$(vpnStatus=$(nordvpn status 2>&1 | grep -i -E '%1');"
+                      "notify-send  \"$vpnStatus\"  --icon <ICON> ) ")
+                .arg(vpnConfigGroup.readEntry("status_keys", "Status|Current server|Transfer|IP"));
     } else if (payload.startsWith("nordvpn connect")) {
         cmd = "$( " + payload + startFilter + " ; <SCRIPT>  )";
     } else if (payload.startsWith("nordvpn d")) {

@@ -52,7 +52,6 @@ void Config::generateOptions(Plasma::AbstractRunner *runner, QList<Plasma::Query
     } else if (term.contains(QRegExp("^(nord)?vpn set .+$"))) {
         QString selected = term.split("vpn set ").last();
         QString first = selected.split(' ').first();
-
         matches.append(
                 Match::createMatch(
                         runner, configGroup, QString(

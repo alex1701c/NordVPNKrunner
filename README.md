@@ -45,7 +45,8 @@ Valid keys are:
 * `script` Command that gets executed after the connection is changed(disconnect, connect, reconnect), the default is empty. This can be used to update a file(as in source explained). Krunner detaches from the process.
 * `clean_history` Remove commands from the Krunner history that were used to change the settings. The default value is true.
 * `notify` Send notifications if the connection changes, default is true. 
-
+* `status_keys` Set the keys for the status notification. They are used to filter the information from the NordVPN cli. Valid keys are: `Status, Current server, Country, City, Your new IP, Current protocol, Transfer, Uptime or *`. They need to be seperated by a | character. The keys you set are case insensitive and they just need to be contained in the ones from the list, for example "ip" selects the line "Your new IP".  The default value is "Status|Current server|Transfer|IP". 
+    
 `vpn set defaults` /  `vpn set * default` Set all settings to their original value  
 `vpn set icon default` Set icon to default value  
 `vpn set icon script default` Set icon and script to default value  
