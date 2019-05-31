@@ -14,7 +14,7 @@ public:
     QString country = "";
     QString server = "";
 
-    void extractConectionInformation();
+    void extractConnectionInformation();
 
     bool connectionExists();
 

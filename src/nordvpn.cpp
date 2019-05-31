@@ -83,14 +83,16 @@ void NordVPN::prepareForMatchSession() {
             break;
         }
     }
-    vpnStatus.extractConectionInformation();
+    vpnStatus.extractConnectionInformation();
 }
 
 void NordVPN::matchSessionFinished() {
 
     if (vpnConfigGroup.readEntry("clean_history", "true") == "true") {
         QString history = vpnConfigGroup.parent().parent().group("General").readEntry("history");
-        QString filteredHistory = history.replace(QRegExp(R"([nord]?vpn set[^,]*,?)"), "");
+        QString filteredHistory = history
+                .replace(QRegExp(R"((?:nord)?vpn set[^,]*,?)"), "")
+                .replace(QRegExp(R"((?:nord)?vpn d(?:isconnect)?[^ek],?)"), "");
         QFile f(QString(getenv("HOME")) + "/.config/krunnerrc");
         bool changed = false;
         if (f.open(QIODevice::ReadWrite)) {
@@ -138,7 +140,6 @@ void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch
     QString cmd = "";
     if (payload.startsWith("settings|")) {
         payload = payload.section('|', 1);
-        std::cout << payload.toStdString() << std::endl;
         Config::configureOptions(vpnConfigGroup, payload);
         reloadConfiguration();
         return;

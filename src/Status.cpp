@@ -7,7 +7,7 @@
 #include <iostream>
 #include "Status.h"
 
-void Status::extractConectionInformation() {
+void Status::extractConnectionInformation() {
     if (status == "Status: Disconnected") {
         country = "";
         server = "";
