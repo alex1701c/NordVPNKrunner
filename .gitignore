@@ -4,3 +4,5 @@
 changescommit
 *.swp
 /src/*.swp
+/.vscode
+*/.vscode

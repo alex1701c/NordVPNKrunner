@@ -29,16 +29,13 @@ public:
 
     ~NordVPN() override;
 
-    void createMatch(QList<Plasma::QueryMatch> &matches,
-                     const QString &text, const QString &data, double relevance = 0);
-
     void createRunOptions(QWidget *widget) override;
 
     void reloadConfiguration() override;
 
     KConfigGroup vpnConfigGroup;
 
-    QString ICON_PATH; //TODO put icon in resources
+    QString ICON_PATH;
 
     Status vpnStatus;
 

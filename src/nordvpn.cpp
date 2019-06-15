@@ -93,24 +93,22 @@ void NordVPN::matchSessionFinished() {
         QString filteredHistory = history
                 .replace(QRegExp(R"((?:nord)?vpn set[^,]*,?)"), "")
                 .replace(QRegExp(R"((?:nord)?vpn d(?:isconnect)?[^ek],?)"), "");
+        if (filteredHistory.size() == vpnConfigGroup.parent().parent().group("General").readEntry("history").size()) {
+            return;
+        }
         QFile f(QString(getenv("HOME")) + "/.config/krunnerrc");
-        bool changed = false;
         if (f.open(QIODevice::ReadWrite)) {
             QString s;
             QTextStream t(&f);
             while (!t.atEnd()) {
                 QString line = t.readLine();
-                if (!line.startsWith("history") || QString("history=" + filteredHistory) == line) {
+                if (!line.startsWith("history")) {
                     s.append(line + "\n");
                 } else {
                     s.append("history=" + filteredHistory + "\n");
-                    changed = true;
                 }
             }
-            if (changed) {
-                f.resize(0);
-                t << s;
-            }
+            f.write(s.toLocal8Bit());
             f.close();
         }
     }
@@ -124,12 +122,12 @@ void NordVPN::init() {
 
 void NordVPN::match(Plasma::RunnerContext &context) {
     QString term = context.query();
-
     if (!context.isValid()) return;
+    QList<Plasma::QueryMatch> matches;
     if (term.length() < 3 || (!term.startsWith("vpn") && !term.startsWith("nordvpn"))) return;
     if (vpnStatus.status == "Error") return;
 
-    QList<Plasma::QueryMatch> matches;
+
     Match::generateOptions(this, matches, vpnConfigGroup, vpnStatus, term);
     context.addMatches(matches);
 }
