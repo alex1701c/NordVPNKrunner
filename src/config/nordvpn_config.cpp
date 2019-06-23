@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright (C) 2013 – 2018 by David Baum <david.baum@naraesk.eu>           *
+ *  Copyright (C) 2013 – 2018                                                 *
  *                                                                            *
  *  This library is free software; you can redistribute it and/or modify      *
  *  it under the terms of the GNU Lesser General Public License as published  *
@@ -61,7 +61,22 @@ void NordVPNConfig::save() {
 }
 
 void NordVPNConfig::defaults() {
+    m_ui->defaultConnectionTarget->setText("US");
+    m_ui->krunnerStatus->setText("%st");
+    m_ui->iconButton->setIcon(QIcon("/usr/share/icons/nordvpn.png"));
+    m_ui->source->setText("nordvpn status");
+    m_ui->changeScript->setText("");
+    m_ui->cleanHistory->setChecked(true);
+    m_ui->notify->setChecked(true);
 
+    m_ui->statusKeysStatus->setChecked(true);
+    m_ui->statusKeysCurrentServer->setChecked(true);
+    m_ui->statusKeysCountry->setChecked(false);
+    m_ui->statusKeysCity->setChecked(false);
+    m_ui->statusKeysNewIP->setChecked(true);
+    m_ui->statusKeysCurrentProtocol->setChecked(false);
+    m_ui->statusKeysTransfer->setChecked(true);
+    m_ui->statusKeysUptime->setChecked(false);
     emit changed(true);
 }
 
