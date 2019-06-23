@@ -26,6 +26,8 @@ Restart krunner to load the runner (in a terminal type: `kquitapp5 krunner;kstar
 ![Notification if Status: Connected is selected](https://raw.githubusercontent.com/alex1701c/NordVPNKrunner/master/screenshots/connected_notification.png)
 #### Reconnect to another country and specify the server
 ![Reconnect to other county with specific server](https://raw.githubusercontent.com/alex1701c/NordVPNKrunner/master/screenshots/reconnect_other_country_with_server.png)
+#### Configure settings
+![Configure settings in GUI](https://raw.githubusercontent.com/alex1701c/NordVPNKrunner/master/screenshots/settings_dialog.png)
 
 ### Syntax Examples:
 
