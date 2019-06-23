@@ -8,6 +8,7 @@ set(KF5_MIN_VERSION "5.42.0")
 find_package(ECM 5.12.0 REQUIRED NO_MODULE)
 find_package(ECM ${KF5_MIN_VERSION} REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} ${CMAKE_MODULE_PATH})
+#add_compile_definitions(RUNNER_SETTINGS) #If you enable this, you can configure all options inside krunner
 
 # Find the required Libaries
 find_package(Qt5 ${QT_MIN_VERSION} REQUIRED CONFIG COMPONENTS Widgets Core Network Quick QuickWidgets)

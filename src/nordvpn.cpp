@@ -25,10 +25,6 @@
 #include <QtGui/QtGui>
 #include <KSharedConfig>
 
-/**
- * TODO Icon default and manually choose
- * Remove settings from krunner options
- */
 NordVPN::NordVPN(QObject *parent, const QVariantList &args)
         : Plasma::AbstractRunner(parent, args) {
     setObjectName("NordVPN");
@@ -88,8 +84,9 @@ void NordVPN::prepareForMatchSession() {
 }
 
 void NordVPN::matchSessionFinished() {
-
+    if (!wasActive) return;
     if (vpnConfigGroup.readEntry("clean_history", "true") == "true") {
+        wasActive = false;
         QString history = vpnConfigGroup.parent().parent().group("General").readEntry("history");
         QString filteredHistory = history
                 .replace(QRegExp(R"((?:nord)?vpn set[^,]*,?)"), "")
@@ -135,14 +132,18 @@ void NordVPN::match(Plasma::RunnerContext &context) {
 
 void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) {
     Q_UNUSED(context)
+    wasActive = true;
     QString payload = match.data().toString();
     QString cmd = "";
+#ifdef RUNNER_SETTINGS
     if (payload.startsWith("settings|")) {
         payload = payload.section('|', 1);
         Config::configureOptions(vpnConfigGroup, payload);
         reloadConfiguration();
         return;
     }
+#endif
+
     bool notify = vpnConfigGroup.readEntry("notify", "true") == "true";
     QString startFilter(R"( | tr -d '/\-|\\' | tail -2 | cut -d '(' -f 1  |xargs -d '\n' notify-send --icon <ICON> )");
     if (!notify) startFilter = " 2>&1 > /dev/null";

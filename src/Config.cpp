@@ -7,7 +7,7 @@
 #include <QtGui/QtGui>
 #include <KSharedConfig>
 
-
+#ifdef RUNNER_SETTINGS
 void Config::configureOptions(KConfigGroup &configGroup, QString &data) {
     if (data == "defaults") {
         for (const auto &key : configGroup.keyList()) {
@@ -61,6 +61,7 @@ void Config::generateOptions(Plasma::AbstractRunner *runner, QList<Plasma::Query
         );
     }
 }
+#endif
 
 KConfigGroup Config::getConfigGroup() {
     KConfigGroup vpnConfigGroup = KSharedConfig::openConfig("krunnerrc")->group("Runners");

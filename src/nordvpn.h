@@ -42,7 +42,7 @@ public:
     QString statusSource;
     QString changeScript;
     QString defaultTarget;
-
+    bool wasActive=false;
 
 protected Q_SLOTS:
 

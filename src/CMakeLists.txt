@@ -25,5 +25,4 @@ add_dependencies(krunner_nordvpn kcm_krunner_nordvpn)
 
 
 install(TARGETS krunner_nordvpn kcm_krunner_nordvpn DESTINATION ${PLUGIN_INSTALL_DIR})
-install(FILES nordvpn.png DESTINATION /usr/share/icons/)
 install(FILES plasma-runner-nordvpn.desktop config/plasma-runner-nordvpn_config.desktop DESTINATION ${KDE_INSTALL_KSERVICES5DIR})

@@ -16,13 +16,12 @@
  *  If not, see <http://www.gnu.org/licenses/>.                               *
  *****************************************************************************/
 
-#ifndef TRANSLATORCONFIG_H
-#define TRANSLATORCONFIG_H
+#ifndef NORDVPNCONFIG_H
+#define NORDVPNCONFIG_H
 
 #include "ui_nordvpn_config.h"
 #include <KCModule>
 #include <KConfigCore/KConfigGroup>
-
 
 class NordVPNConfigForm : public QWidget, public Ui::NordVPNConfigUi {
 Q_OBJECT
@@ -41,6 +40,8 @@ public:
 
     QString newIcon;
 
+    const QString defaultIcon = "/usr/share/icons/nordvpn.png";
+
 public Q_SLOTS:
 
     void save() override;
@@ -52,6 +53,8 @@ public Q_SLOTS:
     void showExampleStatusNotification();
 
     void openIconFileChooser();
+
+    void setDefaultIcon();
 
 
 private:

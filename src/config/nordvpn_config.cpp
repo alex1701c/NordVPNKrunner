@@ -40,9 +40,8 @@ NordVPNConfig::NordVPNConfig(QWidget *parent, const QVariantList &args) : KCModu
 
     m_ui->krunnerStatusExampleLabel->hide();
     m_ui->krunnerStatusExample->hide();
-    m_ui->iconDefaultButton->hide();
-    m_ui->iconManually->hide();
-
+    m_ui->iconDefaultButton->setHidden(config.readEntry("icon", defaultIcon) == defaultIcon);
+    m_ui->statusKeysStatus->setEnabled(false);
     connect(m_ui->defaultConnectionTarget, SIGNAL(textChanged(QString)), this, SLOT(changed()));
     connect(m_ui->krunnerStatus, SIGNAL(textChanged(QString)), this, SLOT(changed()));
     connect(m_ui->source, SIGNAL(textChanged(QString)), this, SLOT(changed()));
@@ -61,6 +60,7 @@ NordVPNConfig::NordVPNConfig(QWidget *parent, const QVariantList &args) : KCModu
 
     connect(m_ui->statusKeysExampleNotification, SIGNAL(clicked(bool)), this, SLOT(showExampleStatusNotification()));
     connect(m_ui->iconButton, SIGNAL(clicked(bool)), this, SLOT(openIconFileChooser()));
+    connect(m_ui->iconDefaultButton, SIGNAL(clicked(bool)), this, SLOT(setDefaultIcon()));
 
     load();
 
@@ -92,8 +92,8 @@ void NordVPNConfig::save() {
 void NordVPNConfig::defaults() {
     m_ui->defaultConnectionTarget->setText("US");
     m_ui->krunnerStatus->setText("%st");
-    m_ui->iconButton->setIcon(QIcon("/usr/share/icons/nordvpn.png"));
-    newIcon = "/usr/share/icons/nordvpn.png";
+    m_ui->iconButton->setIcon(QIcon(defaultIcon));
+    newIcon = defaultIcon;
     m_ui->source->setText("nordvpn status");
     m_ui->changeScript->setText("");
     m_ui->cleanHistory->setChecked(true);
@@ -113,7 +113,7 @@ void NordVPNConfig::defaults() {
 void NordVPNConfig::setCurrentSettings() {
     m_ui->defaultConnectionTarget->setText(config.readEntry("default", "US"));
     m_ui->krunnerStatus->setText(config.readEntry("status", "%st"));
-    m_ui->iconButton->setIcon(QIcon(config.readEntry("icon", "/usr/share/icons/nordvpn.png")));
+    m_ui->iconButton->setIcon(QIcon(config.readEntry("icon", defaultIcon)));
     m_ui->source->setText(config.readEntry("source", "nordvpn status"));
     m_ui->changeScript->setText(config.readEntry("script", ""));
     m_ui->cleanHistory->setChecked(config.readEntry("clean_history", "true") == "true");
@@ -147,7 +147,7 @@ void NordVPNConfig::showExampleStatusNotification() {
     QString cmd = QString(
             "$($(vpnStatus=$(nordvpn status 2>&1 | grep -i -E '%1');" "notify-send  \"$vpnStatus\" --icon %2 )) 2>&1 &")
             .arg(getStatusNotificationKeys())
-            .arg(config.readEntry("icon", "/usr/share/icons/nordvpn.png"));
+            .arg(config.readEntry("icon", defaultIcon));
     system(qPrintable(cmd));
 }
 
@@ -165,9 +165,20 @@ void NordVPNConfig::openIconFileChooser() {
     if (!iconPath.isEmpty()) {
         newIcon = iconPath;
         m_ui->iconButton->setIcon(QIcon(newIcon));
-        m_ui->iconButton->clearFocus();
+        m_ui->iconDefaultButton->setHidden(newIcon == defaultIcon);
+        m_ui->iconDefaultButton->clearFocus();
         changed(true);
     }
+    m_ui->iconButton->clearFocus();
+
+}
+
+void NordVPNConfig::setDefaultIcon() {
+    m_ui->iconButton->setIcon(QIcon(defaultIcon));
+    m_ui->iconDefaultButton->setHidden(true);
+    newIcon = defaultIcon;
+    m_ui->iconButton->clearFocus();
+    changed(true);
 }
 
 #include "nordvpn_config.moc"

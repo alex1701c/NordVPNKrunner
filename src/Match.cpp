@@ -14,12 +14,16 @@ void Match::generateOptions(Plasma::AbstractRunner *runner, QList<Plasma::QueryM
                                        .replace("%st", vpnStatus.status)
                                        .replace("%c", vpnStatus.country.toUpper())
                                        .replace("%s", vpnStatus.server), "status", 0.5));
+#ifdef RUNNER_SETTINGS
     if (term.contains("vpn set") || term.contains("settings")) {
         Config::generateOptions(runner, matches, configGroup, term);
     } else {
         generateConnectionOptions(runner, matches, configGroup, vpnStatus, term);
     }
+#else
+    generateConnectionOptions(runner, matches, configGroup, vpnStatus, term);
 
+#endif
 }
 
 void Match::runMatch(Plasma::RunnerContext &context, Plasma::QueryMatch &match) {
