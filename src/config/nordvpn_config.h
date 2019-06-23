@@ -50,6 +50,8 @@ public Q_SLOTS:
 
 private:
     NordVPNConfigForm *m_ui;
+
+    void setCurrentSettings();
 };
 
 #endif
