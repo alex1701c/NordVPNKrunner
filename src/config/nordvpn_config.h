@@ -39,6 +39,8 @@ public:
 
     KConfigGroup config;
 
+    QString newIcon;
+
 public Q_SLOTS:
 
     void save() override;
@@ -47,11 +49,19 @@ public Q_SLOTS:
 
     void defaults() override;
 
+    void showExampleStatusNotification();
+
+    void openIconFileChooser();
+
 
 private:
     NordVPNConfigForm *m_ui;
 
     void setCurrentSettings();
+
+    QString getStatusNotificationKeys();
+
+    void writeConfigText(QString key, QString text);
 };
 
 #endif

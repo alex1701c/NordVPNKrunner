@@ -38,7 +38,7 @@ void Match::generateConnectionOptions(Plasma::AbstractRunner *runner, QList<Plas
         }
         matches.append(createMatch(runner, configGroup, "Disconnect", "disconnect", relevanceDisconnect));
     } else {
-        target = Status::evalConnectQuery(term, configGroup.readEntry("target", "US"));
+        target = Status::evalConnectQuery(term, configGroup.readEntry("default", "US")).toUpper();
         matches.append(createMatch(
                 runner, configGroup, QString("Connect To " + target), QString("nordvpn connect " + target), 1)
         );

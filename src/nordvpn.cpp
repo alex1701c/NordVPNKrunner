@@ -25,7 +25,10 @@
 #include <QtGui/QtGui>
 #include <KSharedConfig>
 
-
+/**
+ * TODO Icon default and manually choose
+ * Remove settings from krunner options
+ */
 NordVPN::NordVPN(QObject *parent, const QVariantList &args)
         : Plasma::AbstractRunner(parent, args) {
     setObjectName("NordVPN");
@@ -39,8 +42,6 @@ NordVPN::NordVPN(QObject *parent, const QVariantList &args)
 
 NordVPN::~NordVPN() = default;
 
-// TODO Remove from option history for disconnect ?
-// TODO Implement dialog to change the config, how?
 void NordVPN::reloadConfiguration() {
     vpnConfigGroup = Config::getConfigGroup();
 
