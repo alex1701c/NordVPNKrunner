@@ -5,6 +5,8 @@
 #include <KConfigCore/KSharedConfig>
 #include <KConfigCore/KConfigGroup>
 #include <iostream>
+#include <QtCore/QProcess>
+#include <QtGui/QtGui>
 #include "Status.h"
 
 void Status::extractConnectionInformation() {
@@ -52,4 +54,41 @@ QString Status::evalConnectQuery(QString &term, QString target) {
     }
 
     return target;
+}
+
+QString Status::getRawConnectionStatus(const QString &statusSource) {
+    QProcess process;
+    process.start(statusSource);
+    process.waitForFinished(-1);
+    return process.readAllStandardOutput();
+}
+
+Status Status::objectFromRawData(const QString &statusData) {
+    Status status;
+    for (const auto &line:statusData.split('\n')) {
+        if (line.startsWith("Status:")) {
+            status.status = line;
+        } else if (line.startsWith("Current server: ")) {
+            status.current_server = line;
+        }
+        if (!line.isEmpty()) {
+            status.rawData.insert("%" + line.split(':').first().replace(" ", "").toUpper(), line);
+            status.rawData.insert("%" + line.split(':').first().replace(" ", "").toLower(),
+                                  line.split(':').last().remove(0, 1));
+        }
+    }
+    status.extractConnectionInformation();
+    return status;
+}
+
+QString Status::formatString(QString raw) {
+    for (const auto &key:rawData.keys()) {
+        if (raw.contains(key)) {
+            raw.replace(key, rawData.value(key));
+        }
+    }
+    raw.replace("%server", country.toUpper() + server);
+    raw.replace("%st", rawData.value("%STATUS"));
+    raw.replace(QRegExp("%[a-zA-Z]+"), "");
+    return raw;
 }

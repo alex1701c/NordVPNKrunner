@@ -17,6 +17,7 @@
  *****************************************************************************/
 
 #include "nordvpn_config.h"
+#include "../Status.h"
 #include <KSharedConfig>
 #include <KPluginFactory>
 #include <krunner/abstractrunner.h>
@@ -45,6 +46,7 @@ NordVPNConfig::NordVPNConfig(QWidget *parent, const QVariantList &args) : KCModu
     connect(m_ui->defaultConnectionTarget, SIGNAL(textChanged(QString)), this, SLOT(changed()));
     connect(m_ui->krunnerStatus, SIGNAL(textChanged(QString)), this, SLOT(changed()));
     connect(m_ui->source, SIGNAL(textChanged(QString)), this, SLOT(changed()));
+    connect(m_ui->krunnerStatus, SIGNAL(textChanged(QString)), this, SLOT(exampleStatus()));
     connect(m_ui->changeScript, SIGNAL(textChanged(QString)), this, SLOT(changed()));
 
     connect(m_ui->cleanHistory, SIGNAL(clicked(bool)), this, SLOT(changed()));
@@ -91,7 +93,7 @@ void NordVPNConfig::save() {
 
 void NordVPNConfig::defaults() {
     m_ui->defaultConnectionTarget->setText("US");
-    m_ui->krunnerStatus->setText("%st");
+    m_ui->krunnerStatus->setText("%STATUS");
     m_ui->iconButton->setIcon(QIcon(defaultIcon));
     newIcon = defaultIcon;
     m_ui->source->setText("nordvpn status");
@@ -112,7 +114,7 @@ void NordVPNConfig::defaults() {
 
 void NordVPNConfig::setCurrentSettings() {
     m_ui->defaultConnectionTarget->setText(config.readEntry("default", "US"));
-    m_ui->krunnerStatus->setText(config.readEntry("status", "%st"));
+    m_ui->krunnerStatus->setText(config.readEntry("status", "%STATUS"));
     m_ui->iconButton->setIcon(QIcon(config.readEntry("icon", defaultIcon)));
     m_ui->source->setText(config.readEntry("source", "nordvpn status"));
     m_ui->changeScript->setText(config.readEntry("script", ""));
@@ -179,6 +181,21 @@ void NordVPNConfig::setDefaultIcon() {
     newIcon = defaultIcon;
     m_ui->iconButton->clearFocus();
     changed(true);
+}
+
+void NordVPNConfig::exampleStatus() {
+    m_ui->krunnerStatusExampleLabel->setHidden(false);
+    m_ui->krunnerStatusExample->setHidden(false);
+    QString exampleData = "Status: Connected\n"
+                          "Current server: us4276.nordvpn.com\n"
+                          "Country: United States\n"
+                          "City: Manassas\n"
+                          "Your new IP: 23.82.14.23\n"
+                          "Current protocol: UDP\n"
+                          "Transfer: 26.9 KiB received, 8.6 KiB sent\n"
+                          "Uptime: 7 seconds";
+    auto status = Status::objectFromRawData(exampleData);
+    m_ui->krunnerStatusExample->setText(status.formatString(m_ui->krunnerStatus->text()));
 }
 
 #include "nordvpn_config.moc"

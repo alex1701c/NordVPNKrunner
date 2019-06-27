@@ -67,20 +67,9 @@ void NordVPN::reloadConfiguration() {
 }
 
 void NordVPN::prepareForMatchSession() {
-    QProcess process;
-    process.start(statusSource);
-    process.waitForFinished(-1);
-    QByteArray out = process.readAllStandardOutput();
 
-    for (const auto &line:out.split('\n')) {
-        if (line.startsWith("Status:")) {
-            vpnStatus.status = line;
-        } else if (line.startsWith("Current server: ")) {
-            vpnStatus.current_server = line;
-            break;
-        }
-    }
-    vpnStatus.extractConnectionInformation();
+    QString statusData = Status::getRawConnectionStatus(statusSource);
+    vpnStatus = Status::objectFromRawData(statusData);
 }
 
 void NordVPN::matchSessionFinished() {

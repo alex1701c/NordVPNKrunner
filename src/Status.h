@@ -6,6 +6,7 @@
 
 
 #include <QtCore/QString>
+#include <QMap>
 
 class Status {
 public:
@@ -14,11 +15,19 @@ public:
     QString country = "";
     QString server = "";
 
+    QMap<QString, QString> rawData;
+
     void extractConnectionInformation();
 
     bool connectionExists();
 
     static QString evalConnectQuery(QString &term, QString target = "");
+
+    static QString getRawConnectionStatus(const QString &statusSource);
+
+    static Status objectFromRawData(const QString &statusData);
+
+    QString formatString(QString raw);
 
 };
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ $(basename "$PWD") != "NordVPNKrunner" ]];then
+if [[ $(basename "$PWD") != "NordVPNKrunner"* ]];then
     git clone https://github.com/alex1701c/NordVPNKrunner
     cd NordVPNKrunner/
 fi

@@ -7,6 +7,7 @@ target_link_libraries(krunner_nordvpn KF5::Runner KF5::I18n)
 
 set(kcm_krunner_nordvpn_SRCS
         config/nordvpn_config.cpp
+        Status.cpp
         )
 
 ki18n_wrap_ui(kcm_krunner_nordvpn_SRCS config/nordvpn_config.ui)

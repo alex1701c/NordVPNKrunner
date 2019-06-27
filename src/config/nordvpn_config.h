@@ -56,6 +56,7 @@ public Q_SLOTS:
 
     void setDefaultIcon();
 
+    void exampleStatus();
 
 private:
     NordVPNConfigForm *m_ui;

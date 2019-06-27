@@ -43,16 +43,15 @@ Restart krunner to load the runner (in a terminal type: `kquitapp5 krunner;kstar
 
 Valid keys are:
 
-* `default` Default country/server code to connect to e.g. DE or US2921, default value is US.
-* `icon` The path of the icon used for Krunner and the Notifications.
-* `source` Command used to fetch the status from NordVPN, the default one is `nordvpn status`. This is useful if you have the issue that the NordVPN CLI is sometimes very slow when displaying the status. Instead of executing the slow command you can fetch the data from a file that gets regularly updated. I personally use this in combination with the Command Output Plasmoid, which executes `nordvpn status | tee <path> | grep 'Status'` and the Krunner plugin executed `cat <path>`.
-* `script` Command that gets executed after the connection is changed(disconnect, connect, reconnect), the default is empty. This can be used to update a file(as in source explained). Krunner detaches from the process.
-* `clean_history` Remove commands from the Krunner history that were used to change the settings. The default value is true.
-* `notify` Send notifications if the connection changes, default is true. 
-* `status` Format for the text of status option. %st represents the status like "Status: Connected", %c the country abbreviation like "US" and %s the number of the current server. The default value is "%st".
-* `status_keys` Set the keys for the status notification. They are used to filter the information from the NordVPN CLI. Valid keys are: `Status, Current server, Country, City, Your new IP, Current protocol, Transfer, Uptime or *`. They need to be separated by a | character. The keys you set are case insensitive and they just need to be contained in the ones from the list, for example "ip" selects the line "Your new IP".  The default value is "Status|Current server|Transfer|IP". 
-    
-`vpn set defaults` /  `vpn set * default` Set all settings to their original value  
-`vpn set icon default` Set icon to default value  
-`vpn set icon script default` Set icon and script to default value  
-`vpn set icon /home/alex/icon.png ` Set value of icon to provided path, everything after `icon ` gets written in config  
+* `Default connection target` Default country/server code to connect to e.g. DE or US2921, default value is US.
+* `Status inside Krunner` Format for the text of status option. All the options are prefixed with a % character.
+The keys are the same as in the NordVPN CLi but the spaces have ben removed. To get the key and value you have to type the key in uppercase letters e.g.`%COUNTRY`,
+if you only want to get the value the key sould be lowercase like `%yournewip`. The love preview of a status shuld help with the formatting😄.
+* `icon` File chooser for the icon used in Krunner and the Notifications.
+* `Source for the status` Command used to fetch the status from NordVPN, the default one is `nordvpn status`. This is useful if you have the issue that the NordVPN CLI is sometimes very slow when displaying the status.
+Instead of executing the slow command you can fetch the data from a file that gets regularly updated. I personally use this in combination with the Command Output Plasmoid,
+which executes `nordvpn status | tee <path> | grep 'Status'` and the Krunner plugin executed `cat <path>`.
+* `Change script` Command that gets executed after the connection is changed(disconnect, connect, reconnect), the default is empty. This can be used to update a file(as in source explained).
+* `Clean History` Remove disconnect command from history.
+* `Notify` Send notifications if the connection changes, default is true. 
+* `Status Keys` Set the keys for the status notification. They are used to filter the information from the NordVPN CLI.
