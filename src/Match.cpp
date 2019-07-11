@@ -1,7 +1,3 @@
-//
-// Created by alex on 23.05.19.
-//
-
 #include "Match.h"
 #include "Config.h"
 #include "Status.h"

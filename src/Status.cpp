@@ -1,6 +1,3 @@
-//
-// Created by alex on 22.05.19.
-//
 #include <QtCore/QRegExp>
 #include <KConfigCore/KSharedConfig>
 #include <KConfigCore/KConfigGroup>

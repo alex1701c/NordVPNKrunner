@@ -1,6 +1,3 @@
-//
-// Created by alex on 22.05.19.
-//
 #ifndef NORDVPN_STATUS_H
 #define NORDVPN_STATUS_H
 

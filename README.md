@@ -21,13 +21,13 @@ Restart krunner to load the runner (in a terminal type: `kquitapp5 krunner;kstar
 
 ### Screenshots:
 #### Connect to the default country
-![Connect to default country](https://raw.githubusercontent.com/alex1701c/NordVPNKrunner/master/screenshots/connect_default.png)
+![Connect to default country](https://raw.githubusercontent.com/alex1701c/Screenshots/master/NordVPNKrunner/connect_default.png)
 #### The notification if the Status is selected and the user is connected
-![Notification if Status: Connected is selected](https://raw.githubusercontent.com/alex1701c/NordVPNKrunner/master/screenshots/connected_notification.png)
+![Notification if Status: Connected is selected](https://raw.githubusercontent.com/alex1701c/Screenshots/master/NordVPNKrunner/connected_notification.png)
 #### Reconnect to another country and specify the server
-![Reconnect to other county with specific server](https://raw.githubusercontent.com/alex1701c/NordVPNKrunner/master/screenshots/reconnect_other_country_with_server.png)
+![Reconnect to other county with specific server](https://raw.githubusercontent.com/alex1701c/Screenshots/master/NordVPNKrunner/reconnect_other_country_with_server.png)
 #### Configure settings
-![Configure settings in GUI](https://raw.githubusercontent.com/alex1701c/NordVPNKrunner/master/screenshots/formatting_example.png)
+![Configure settings in GUI](https://raw.githubusercontent.com/alex1701c/Screenshots/master/NordVPNKrunner/formatting_example.png)
 
 ### Syntax Examples:
 

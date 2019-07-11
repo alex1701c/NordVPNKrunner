@@ -1,7 +1,3 @@
-//
-// Created by alex on 23.05.19.
-//
-
 #ifndef NORDVPN_MATCH_H
 #define NORDVPN_MATCH_H
 

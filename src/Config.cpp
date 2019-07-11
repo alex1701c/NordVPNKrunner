@@ -1,7 +1,3 @@
-//
-// Created by alex on 23.05.19.
-//
-
 #include "Config.h"
 #include "Match.h"
 #include <QtGui/QtGui>

@@ -1,7 +1,3 @@
-//
-// Created by alex on 23.05.19.
-//
-
 #ifndef NORDVPN_CONFIG_H
 #define NORDVPN_CONFIG_H
 
