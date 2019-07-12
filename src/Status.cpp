@@ -64,7 +64,7 @@ QString Status::getRawConnectionStatus(const QString &statusSource) {
     return out;
 }
 
-Status Status::objectFromRawData(const QString &statusData) {
+Status Status::objectFromRawData(const QString &statusData)  {
     Status status;
     for (const auto &line:statusData.split('\n')) {
         if (line.startsWith("Status:")) {
@@ -72,7 +72,7 @@ Status Status::objectFromRawData(const QString &statusData) {
         } else if (line.startsWith("Current server: ")) {
             status.current_server = line;
         }
-        if (!line.isEmpty()) {
+        if (!line.isEmpty() && line.contains(':')) {
             status.rawData.insert("%" + line.split(':').first().replace(" ", "").toUpper(), line);
             status.rawData.insert("%" + line.split(':').first().replace(" ", "").toLower(),
                                   line.split(':').last().remove(0, 1));
