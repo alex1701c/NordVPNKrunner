@@ -129,7 +129,7 @@ QString NordVPNConfig::getStatusNotificationKeys() {
 
 void NordVPNConfig::showExampleStatusNotification() {
     QString cmd = QString(
-            "$($(vpnStatus=$(nordvpn status 2>&1 | grep -i -E '%1');" "notify-send  \"$vpnStatus\" --icon %2 )) 2>&1 &")
+            "$($(vpnStatus=$(printf '"+ exampleData+"' | grep -i -E '%1');" "notify-send  \"$vpnStatus\" --icon %2 )) 2>&1 &")
             .arg(getStatusNotificationKeys())
             .arg(config.readEntry("icon", defaultIcon));
     system(qPrintable(cmd));
@@ -168,14 +168,6 @@ void NordVPNConfig::setDefaultIcon() {
 void NordVPNConfig::exampleStatus() {
     m_ui->krunnerStatusExampleLabel->setHidden(false);
     m_ui->krunnerStatusExample->setHidden(false);
-    QString exampleData = "Status: Connected\n"
-                          "Current server: us4276.nordvpn.com\n"
-                          "Country: United States\n"
-                          "City: Manassas\n"
-                          "Your new IP: 23.82.14.23\n"
-                          "Current protocol: UDP\n"
-                          "Transfer: 26.9 KiB received, 8.6 KiB sent\n"
-                          "Uptime: 7 seconds";
     auto status = Status::objectFromRawData(exampleData);
     m_ui->krunnerStatusExample->setText(status.formatString(m_ui->krunnerStatus->text()));
 }

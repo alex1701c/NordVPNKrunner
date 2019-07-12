@@ -7,7 +7,7 @@
 #include "Status.h"
 
 void Status::extractConnectionInformation() {
-    if (status == "Status: Disconnected") {
+    if (status == "Status: Disconnected" || status == "Status: No Internet") {
         country = "";
         server = "";
         return;
@@ -57,7 +57,11 @@ QString Status::getRawConnectionStatus(const QString &statusSource) {
     QProcess process;
     process.start(statusSource);
     process.waitForFinished(-1);
-    return process.readAllStandardOutput();
+    QString out = process.readAllStandardOutput();
+    if (QString(out).replace('\n', "") == "Please check your internet connection and try again.") {
+        return "Status: No Internet";
+    }
+    return out;
 }
 
 Status Status::objectFromRawData(const QString &statusData) {
