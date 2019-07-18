@@ -18,7 +18,7 @@ NordVPN::NordVPN(QObject *parent, const QVariantList &args)
 }
 
 NordVPN::~NordVPN() = default;
-// TODO Better solution to create matches
+
 void NordVPN::init() {
     reloadConfiguration();
     connect(this, SIGNAL(prepare()), this, SLOT(prepareForMatchSession()));
@@ -26,9 +26,9 @@ void NordVPN::init() {
 }
 
 void NordVPN::reloadConfiguration() {
-    vpnConfigGroup = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("NordVPN");
+    config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("NordVPN");
+    statusSource = config.readEntry("source", "nordvpn status");
 
-    statusSource = vpnConfigGroup.readEntry("source", "nordvpn status");
     //region syntax
     QList<Plasma::RunnerSyntax> syntaxes;
     syntaxes.append(Plasma::RunnerSyntax("vpn us", "Connect option to United States, server is chosen by NordVPN"));
@@ -63,15 +63,13 @@ void NordVPN::prepareForMatchSession() {
 
 void NordVPN::matchSessionFinished() {
     if (!wasActive) return;
-    if (vpnConfigGroup.readEntry("clean_history", "true") == "true") {
+    if (config.readEntry("clean_history", "true") == "true") {
         wasActive = false;
-        QString history = vpnConfigGroup.parent().parent().group("General").readEntry("history");
-        QString filteredHistory = history
-                .replace(QRegExp(R"((?:nord)?vpn set[^,]*,?)"), "")
-                .replace(QRegExp(R"((?:nord)?vpn d(?:isconnect)?[^ek],?)"), "");
-        if (filteredHistory.size() == vpnConfigGroup.parent().parent().group("General").readEntry("history").size()) {
-            return;
-        }
+        QString history = config.parent().parent().group("General").readEntry("history");
+        const int historySize = history.size();
+        QString filteredHistory = history.replace(QRegExp(R"((?:nord)?vpn d(?:isconnect)?[^ek],?)"), "");
+        if (filteredHistory.size() == historySize) return;
+
         QFile f(QString(getenv("HOME")) + "/.config/krunnerrc");
         if (f.open(QIODevice::ReadWrite)) {
             QString s;
@@ -100,30 +98,38 @@ void NordVPN::match(Plasma::RunnerContext &context) {
     if (!term.startsWith("vpn") && !term.startsWith("nordvpn")) return;
     if (vpnStatus.status == "Error") return;
 
-    Match::generateOptions(this, matches, vpnConfigGroup, vpnStatus, term);
-
+    QList<Match> matchList = Match::generateOptions(vpnStatus, term);
+    for (const auto &m:matchList) {
+        Plasma::QueryMatch match(this);
+        match.setText(m.text);
+        match.setData(m.data);
+        match.setRelevance(m.relevance);
+        match.setIconName(config.readEntry("icon", "/usr/share/icons/nordvpn.png"));
+        matches.append(match);
+    }
     context.addMatches(matches);
 }
 
 void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) {
     Q_UNUSED(context)
-    wasActive = true;
+
     QString payload = match.data().toString();
-    const QString iconPath = vpnConfigGroup.readEntry("icon", "/usr/share/icons/nordvpn.png");
-    const QString changeScript = vpnConfigGroup.readEntry("script", "");
+    const QString iconPath = config.readEntry("icon", "/usr/share/icons/nordvpn.png");
+    const QString changeScript = config.readEntry("script", "");
     QString cmd;
 
-    bool notify = vpnConfigGroup.readEntry("notify", "true") == "true";
-    QString startFilter(R"( | tr -d '/\-|\\' | tail -2 | cut -d '(' -f 1  |xargs -d '\n' notify-send --icon <ICON> )");
-    if (!notify) startFilter = " 2>&1 > /dev/null";
+    bool notify = config.readEntry("notify", "true") == "true";
+    QString notifyPipes(R"( | tr -d '/\-|\\' | tail -2 | cut -d '(' -f 1  |xargs -d '\n' notify-send --icon <ICON> )");
+    if (!notify) notifyPipes = " 2>&1 > /dev/null";
     if (payload == "disconnect") {
+        wasActive = true;
         cmd = R"($( nordvpn d PIPES; <SCRIPT>) )";
-        cmd.replace("PIPES", startFilter);
+        cmd.replace("PIPES", notifyPipes);
     } else if (payload == "status") {
         cmd = QString("$(vpnStatus=$(nordvpn status 2>&1 | grep -i -E '%1');notify-send  \"$vpnStatus\"  --icon <ICON> ) ")
-                .arg(vpnConfigGroup.readEntry("status_keys", "Status|Current server|Transfer|IP"));
+                .arg(config.readEntry("status_keys", "Status|Current server|Transfer|IP"));
     } else {
-        cmd = "$( " + payload + startFilter + "; <SCRIPT>  )";// Disconnect or connect
+        cmd = "$( " + payload + notifyPipes + "; <SCRIPT>  )";// Disconnect or connect
     }
     cmd = cmd.replace("<ICON>", iconPath).replace("<SCRIPT>", changeScript);
     system(qPrintable(cmd + " 2>&1 &"));

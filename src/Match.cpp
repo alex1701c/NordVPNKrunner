@@ -1,65 +1,50 @@
 #include "Match.h"
 #include "Status.h"
-#include <Plasma>
+#include <KSharedConfig>
 #include <KConfigGroup>
-#include <krunner/querymatch.h>
+#include <QDebug>
 
-void Match::generateOptions(Plasma::AbstractRunner *runner, QList<Plasma::QueryMatch> &matches,
-                            KConfigGroup &configGroup, Status &vpnStatus, QString &term) {
-
-    matches.append(
-            createMatch(runner, configGroup, vpnStatus.formatString(configGroup.readEntry("status", "%STATUS")), "status", 0.5)
-    );
-    generateConnectionOptions(runner, matches, configGroup, vpnStatus, term);
-
+QList<Match> Match::generateOptions(Status &vpnStatus, QString &term) {
+    QList<Match> matches;
+    const auto config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("NordVPN");
+    matches.append(Match(vpnStatus.formatString(config.readEntry("status", "%STATUS")), "status", 0.5));
+    matches.append(generateConnectionOptions(vpnStatus, config, term));
+    return matches;
 }
 
-void Match::generateConnectionOptions(Plasma::AbstractRunner *runner, QList<Plasma::QueryMatch> &matches,
-                                      KConfigGroup &configGroup, Status &vpnStatus, QString &term) {
+QList<Match> Match::generateConnectionOptions(Status &vpnStatus, const KConfigGroup &config, QString &term) {
     QString target;
-    // Disconnect/Connect options
+    QList<Match> matches;
+
     if (vpnStatus.connectionExists()) {
+        // Disconnect option always shown, relevance differs
         int relevanceDisconnect = 0;
-        if (term.contains(QRegExp("vpn d(isconnect)?[ ]*$"))) {
+        if (term.contains(QRegExp("vpn d(isconnect)? *$"))) {
             relevanceDisconnect = 1;
         }
-        matches.append(createMatch(runner, configGroup, "Disconnect", "disconnect", relevanceDisconnect));
+        matches.append(Match("Disconnect", "disconnect", relevanceDisconnect));
     } else {
-        target = Status::evalConnectQuery(term, configGroup.readEntry("default", "US")).toUpper();
-        matches.append(createMatch(
-                runner, configGroup, QString("Connect To " + target), QString("nordvpn connect " + target), 1)
-        );
+        // Connect to new
+        target = Status::evalConnectQuery(term, config.readEntry("default", "US")).toUpper();
+        matches.append(Match(QString("Connect To " + target), QString("nordvpn connect " + target), 1));
     }
     // Reconnect to current/other options
     if (vpnStatus.connectionExists() && (term.startsWith("vpn reconnect") || term.startsWith("nordvpn reconnect"))) {
         target = Status::evalConnectQuery(term, "");
-        bool textOnly = target.contains(QRegExp("[a-zA-z ]{2,50}$"));
-        bool sameStart = QString((vpnStatus.country + vpnStatus.server)).replace(" ", "").toUpper()
-                .startsWith(target.replace(" ", "").toUpper());
+        bool countryOnly = target.contains(QRegExp("[a-zA-z ]{2,50}$"));
+        bool sameStart = QString((vpnStatus.country + vpnStatus.server)).replace(" ", "")
+                .startsWith(target.replace(" ", ""), Qt::CaseInsensitive);
+        bool emptyTarget = target.replace(" ", "").isEmpty();
 
-        if ((sameStart && (textOnly || target.endsWith(vpnStatus.server))) || target.replace(" ", "").isEmpty()) {
-            // [The address from the status startswith the one of the query &&
-            // (the server addresses match exactly || no server address specified)] || no targeted address
-            if (target.isEmpty()) {
-                target = vpnStatus.country + vpnStatus.server;
-            } else if (textOnly) {
-                target += vpnStatus.server;
-            }
-            matches.append(createMatch(runner, configGroup, "Reconnect To Current ",
-                                       QString("nordvpn d > /dev/null 2>&1 ;nordvpn c  " + target), 1));
+        if (emptyTarget || (sameStart && countryOnly) ||
+            target.toLower() == QString(vpnStatus.country + vpnStatus.status).toLower()) {
+            // Target is empty or the connection and target country are the same or the connection and target are exactly the same
+            if (target.isEmpty()) target = vpnStatus.country + vpnStatus.server;
+            else if (countryOnly) target += vpnStatus.server;
+            matches.append(Match("Reconnect To Current", "nordvpn d > /dev/null 2>&1 ;nordvpn c  " + target, 1));
         } else {
-            matches.append(createMatch(runner, configGroup, QString("Reconnect To " + target),
-                                       QString("nordvpn d > /dev/null 2>&1 ;nordvpn c  " + target), 1));
+            matches.append(Match("Reconnect To " + target, "nordvpn d > /dev/null 2>&1 ;nordvpn c  " + target, 1));
         }
     }
-}
-
-Plasma::QueryMatch Match::createMatch(Plasma::AbstractRunner *runner, KConfigGroup &configGroup,
-                                      const QString &text, const QString &data, double relevance) {
-    Plasma::QueryMatch match(runner);
-    match.setIconName(configGroup.readEntry("icon", "/usr/share/icons/nordvpn.png"));
-    match.setText(text);
-    match.setData(data);
-    match.setRelevance(relevance);
-    return match;
+    return matches;
 }

@@ -18,7 +18,7 @@ public:
 
     bool connectionExists();
 
-    static QString evalConnectQuery(QString &term, QString target = "");
+    static QString evalConnectQuery(QString &term, QString defaultTarget = "");
 
     static QString getRawConnectionStatus(const QString &statusSource);
 

@@ -1,3 +1,5 @@
+#include <utility>
+
 #ifndef NORDVPN_MATCH_H
 #define NORDVPN_MATCH_H
 
@@ -7,18 +9,17 @@
 
 class Match {
 public:
+    QString text;
+    QString data;
+    float relevance = 0;
 
-    static void
-    generateOptions(Plasma::AbstractRunner *runner, QList<Plasma::QueryMatch> &matches, KConfigGroup &configGroup,
-                    Status &vpnStatus, QString &term);
+    Match() = default;
 
-    static void
-    generateConnectionOptions(Plasma::AbstractRunner *runner, QList<Plasma::QueryMatch> &matches,
-                              KConfigGroup &configGroup, Status &vpnStatus, QString &term);
+    Match(QString text, QString data, float relevance) : text(std::move(text)), data(std::move(data)), relevance(relevance) {}
 
-    static Plasma::QueryMatch
-    createMatch(Plasma::AbstractRunner *runner, KConfigGroup &configGroup, const QString &text, const QString &data,
-                double relevance);
+    static QList<Match> generateOptions(Status &vpnStatus, QString &term);
+
+    static QList<Match> generateConnectionOptions(Status &vpnStatus, const KConfigGroup &config, QString &term);
 };
 
 

@@ -1,9 +1,7 @@
 #include <QtCore/QRegExp>
 #include <KConfigCore/KSharedConfig>
 #include <KConfigCore/KConfigGroup>
-#include <iostream>
 #include <QtCore/QProcess>
-#include <QtGui/QtGui>
 #include "Status.h"
 
 void Status::extractConnectionInformation() {
@@ -28,9 +26,10 @@ bool Status::connectionExists() {
     return status.startsWith("Status: Connect") || status == "Status: Reconnecting";
 }
 
-QString Status::evalConnectQuery(QString &term, QString target) {
+QString Status::evalConnectQuery(QString &term, QString defaultTarget) {
+    QString target;
     // Returns extracted target from normal or reconnect queries, rejects disconnect query
-    if (!term.contains("reconnect")) {// No reconnect in term
+    if (!term.contains("reconnect")) {
         if (term.contains(QRegExp("vpn d[ ]*$")) || term.contains("vpn di")) {
             // Rejects for example vpn d, vpn disconnect, vpn dis
             return target;
@@ -45,10 +44,12 @@ QString Status::evalConnectQuery(QString &term, QString target) {
         QRegExp regexReconnect("vpn reconnect ([a-zA-Z _]+[\\da-zA-Z_]*)$");
         regexReconnect.indexIn(term);
         QStringList reconnectRes = regexReconnect.capturedTexts();
-        if (reconnectRes.size() == 2 && !reconnectRes.at(1).isEmpty()) {
+        if (!reconnectRes.at(1).isEmpty()) {
             target = reconnectRes.at(1).toUpper();
         }
     }
+
+    if (target.isEmpty() || target.size() == 1) return defaultTarget;
 
     return target;
 }
@@ -64,7 +65,7 @@ QString Status::getRawConnectionStatus(const QString &statusSource) {
     return out;
 }
 
-Status Status::objectFromRawData(const QString &statusData)  {
+Status Status::objectFromRawData(const QString &statusData) {
     Status status;
     for (const auto &line:statusData.split('\n')) {
         if (line.startsWith("Status:")) {

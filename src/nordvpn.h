@@ -12,7 +12,7 @@ public:
 
     ~NordVPN() override;
 
-    KConfigGroup vpnConfigGroup;
+    KConfigGroup config;
     Status vpnStatus;
     QString statusSource;
     bool wasActive = false;
