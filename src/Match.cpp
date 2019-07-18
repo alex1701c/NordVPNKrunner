@@ -1,28 +1,17 @@
 #include "Match.h"
-#include "Config.h"
 #include "Status.h"
+#include <Plasma>
+#include <KConfigGroup>
+#include <krunner/querymatch.h>
 
 void Match::generateOptions(Plasma::AbstractRunner *runner, QList<Plasma::QueryMatch> &matches,
                             KConfigGroup &configGroup, Status &vpnStatus, QString &term) {
 
     matches.append(
-            createMatch(runner, configGroup,
-                        vpnStatus.formatString(configGroup.readEntry("status", "%STATUS")), "status", 0.5));
-#ifdef RUNNER_SETTINGS
-    if (term.contains("vpn set") || term.contains("settings")) {
-        Config::generateOptions(runner, matches, configGroup, term);
-    } else {
-        generateConnectionOptions(runner, matches, configGroup, vpnStatus, term);
-    }
-#else
+            createMatch(runner, configGroup, vpnStatus.formatString(configGroup.readEntry("status", "%STATUS")), "status", 0.5)
+    );
     generateConnectionOptions(runner, matches, configGroup, vpnStatus, term);
 
-#endif
-}
-
-void Match::runMatch(Plasma::RunnerContext &context, Plasma::QueryMatch &match) {
-    Q_UNUSED(context)
-    Q_UNUSED(match)
 }
 
 void Match::generateConnectionOptions(Plasma::AbstractRunner *runner, QList<Plasma::QueryMatch> &matches,

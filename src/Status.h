@@ -8,9 +8,9 @@
 class Status {
 public:
     QString status = "Error";
-    QString current_server = "";
-    QString country = "";
-    QString server = "";
+    QString current_server;
+    QString country;
+    QString server;
 
     QMap<QString, QString> rawData;
 

@@ -7,7 +7,6 @@
 
 class Match {
 public:
-    static void runMatch(Plasma::RunnerContext &context, Plasma::QueryMatch &match);
 
     static void
     generateOptions(Plasma::AbstractRunner *runner, QList<Plasma::QueryMatch> &matches, KConfigGroup &configGroup,

@@ -1,6 +1,6 @@
 add_definitions(-DTRANSLATION_DOMAIN=\"plasma_runner_org.kde.nordvpn\")
 
-set(nordvpn_SRCS nordvpn.cpp Status.cpp Status.h Config.cpp Config.h Match.cpp Match.h)
+set(nordvpn_SRCS nordvpn.cpp Status.cpp Status.h Match.cpp Match.h)
 
 add_library(krunner_nordvpn MODULE ${nordvpn_SRCS})
 target_link_libraries(krunner_nordvpn KF5::Runner KF5::I18n)

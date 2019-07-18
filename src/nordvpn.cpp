@@ -1,8 +1,6 @@
 #include "nordvpn.h"
 #include "Status.h"
-#include "Config.h"
 #include "Match.h"
-#include <iostream>
 // KF
 #include <KLocalizedString>
 #include <QtGui/QtGui>
@@ -20,13 +18,17 @@ NordVPN::NordVPN(QObject *parent, const QVariantList &args)
 }
 
 NordVPN::~NordVPN() = default;
+// TODO Better solution to create matches
+void NordVPN::init() {
+    reloadConfiguration();
+    connect(this, SIGNAL(prepare()), this, SLOT(prepareForMatchSession()));
+    connect(this, SIGNAL(teardown()), this, SLOT(matchSessionFinished()));
+}
 
 void NordVPN::reloadConfiguration() {
-    vpnConfigGroup = Config::getConfigGroup();
+    vpnConfigGroup = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("NordVPN");
 
     statusSource = vpnConfigGroup.readEntry("source", "nordvpn status");
-    ICON_PATH = vpnConfigGroup.readEntry("icon", "/usr/share/icons/nordvpn.png");
-    changeScript = vpnConfigGroup.readEntry("script", "");
     //region syntax
     QList<Plasma::RunnerSyntax> syntaxes;
     syntaxes.append(Plasma::RunnerSyntax("vpn us", "Connect option to United States, server is chosen by NordVPN"));
@@ -54,7 +56,7 @@ void NordVPN::prepareForMatchSession() {
     QString statusData = Status::getRawConnectionStatus(statusSource);
     if (!statusData.isEmpty()) {
         vpnStatus = Status::objectFromRawData(statusData);
-    } else if(vpnStatus.rawData.keys().isEmpty()){
+    } else if (vpnStatus.rawData.keys().isEmpty()) {
         vpnStatus = Status::objectFromRawData("Status: Disconnected");
     }
 }
@@ -82,27 +84,24 @@ void NordVPN::matchSessionFinished() {
                     s.append("history=" + filteredHistory + "\n");
                 }
             }
+            f.resize(0);
             f.write(s.toLocal8Bit());
             f.close();
         }
     }
 }
 
-void NordVPN::init() {
-    reloadConfiguration();
-    connect(this, SIGNAL(prepare()), this, SLOT(prepareForMatchSession()));
-    connect(this, SIGNAL(teardown()), this, SLOT(matchSessionFinished()));
-}
 
 void NordVPN::match(Plasma::RunnerContext &context) {
-    QString term = context.query();
     if (!context.isValid()) return;
+    QString term = context.query();
+
     QList<Plasma::QueryMatch> matches;
-    if (term.length() < 3 || (!term.startsWith("vpn") && !term.startsWith("nordvpn"))) return;
+    if (!term.startsWith("vpn") && !term.startsWith("nordvpn")) return;
     if (vpnStatus.status == "Error") return;
 
-
     Match::generateOptions(this, matches, vpnConfigGroup, vpnStatus, term);
+
     context.addMatches(matches);
 }
 
@@ -110,40 +109,24 @@ void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch
     Q_UNUSED(context)
     wasActive = true;
     QString payload = match.data().toString();
-    QString cmd = "";
-#ifdef RUNNER_SETTINGS
-    if (payload.startsWith("settings|")) {
-        payload = payload.section('|', 1);
-        Config::configureOptions(vpnConfigGroup, payload);
-        reloadConfiguration();
-        return;
-    }
-#endif
+    const QString iconPath = vpnConfigGroup.readEntry("icon", "/usr/share/icons/nordvpn.png");
+    const QString changeScript = vpnConfigGroup.readEntry("script", "");
+    QString cmd;
 
     bool notify = vpnConfigGroup.readEntry("notify", "true") == "true";
     QString startFilter(R"( | tr -d '/\-|\\' | tail -2 | cut -d '(' -f 1  |xargs -d '\n' notify-send --icon <ICON> )");
     if (!notify) startFilter = " 2>&1 > /dev/null";
     if (payload == "disconnect") {
-        if (notify) {
-            cmd = R"($( nordvpn d | tr -d '/\-|\\' | xargs -d '\n' notify-send --icon <ICON>; <SCRIPT>) )";
-        } else {
-            cmd = R"($( nordvpn d; <SCRIPT>) )";
-        }
+        cmd = R"($( nordvpn d PIPES; <SCRIPT>) )";
+        cmd.replace("PIPES", startFilter);
     } else if (payload == "status") {
-        cmd = QString("$(vpnStatus=$(nordvpn status 2>&1 | grep -i -E '%1');"
-                      "notify-send  \"$vpnStatus\"  --icon <ICON> ) ")
+        cmd = QString("$(vpnStatus=$(nordvpn status 2>&1 | grep -i -E '%1');notify-send  \"$vpnStatus\"  --icon <ICON> ) ")
                 .arg(vpnConfigGroup.readEntry("status_keys", "Status|Current server|Transfer|IP"));
-    } else if (payload.startsWith("nordvpn connect")) {
-        cmd = "$( " + payload + startFilter + " ; <SCRIPT>  )";
-    } else if (payload.startsWith("nordvpn d")) {
-        cmd = "$( " + payload + startFilter + "; <SCRIPT>  )";
+    } else {
+        cmd = "$( " + payload + startFilter + "; <SCRIPT>  )";// Disconnect or connect
     }
-    cmd = cmd.replace("<ICON>", ICON_PATH).replace("<SCRIPT>", changeScript);
+    cmd = cmd.replace("<ICON>", iconPath).replace("<SCRIPT>", changeScript);
     system(qPrintable(cmd + " 2>&1 &"));
-}
-
-void NordVPN::createRunOptions(QWidget *widget) {
-    Q_UNUSED(widget);
 }
 
 K_EXPORT_PLASMA_RUNNER(nordvpn, NordVPN)
