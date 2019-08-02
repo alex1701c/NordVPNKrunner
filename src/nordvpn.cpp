@@ -123,7 +123,7 @@ void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch
     if (!notify) notifyPipes = " 2>&1 > /dev/null";
     if (payload == "disconnect") {
         wasActive = true;
-        cmd = R"($( nordvpn d PIPES; <SCRIPT>) )";
+        cmd = R"($( nordvpn d |head -1 PIPES; <SCRIPT>) )";
         cmd.replace("PIPES", notifyPipes);
     } else if (payload == "status") {
         cmd = QString("$(vpnStatus=$(nordvpn status 2>&1 | grep -i -E '%1');notify-send  \"$vpnStatus\"  --icon <ICON> ) ")
