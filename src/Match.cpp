@@ -4,7 +4,7 @@
 #include <KConfigGroup>
 #include <QDebug>
 
-QList<Match> Match::generateOptions(Status &vpnStatus, QString &term) {
+QList<Match> Match::generateOptions(const Status &vpnStatus, const QString &term) {
     QList<Match> matches;
     const auto config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("NordVPN");
     matches.append(Match(vpnStatus.formatString(config.readEntry("status", "%STATUS")), "status", 0.5));
@@ -12,7 +12,7 @@ QList<Match> Match::generateOptions(Status &vpnStatus, QString &term) {
     return matches;
 }
 
-QList<Match> Match::generateConnectionOptions(Status &vpnStatus, const KConfigGroup &config, QString &term) {
+QList<Match> Match::generateConnectionOptions(const Status &vpnStatus, const KConfigGroup &config, const QString &term) {
     QString target;
     QList<Match> matches;
 
@@ -22,7 +22,7 @@ QList<Match> Match::generateConnectionOptions(Status &vpnStatus, const KConfigGr
         if (term.contains(QRegExp("vpn d(isconnect)? *$"))) {
             relevanceDisconnect = 1;
         }
-        matches.append(Match("Disconnect", "disconnect", relevanceDisconnect));
+        matches.append(Match("Disconnect", "disconnect", (float) relevanceDisconnect));
     } else {
         // Connect to new
         target = Status::evalConnectQuery(term, config.readEntry("default", "US")).toUpper();
@@ -31,10 +31,10 @@ QList<Match> Match::generateConnectionOptions(Status &vpnStatus, const KConfigGr
     // Reconnect to current/other options
     if (vpnStatus.connectionExists() && (term.startsWith("vpn reconnect") || term.startsWith("nordvpn reconnect"))) {
         target = Status::evalConnectQuery(term, "");
-        bool countryOnly = target.contains(QRegExp("[a-zA-z ]{2,50}$"));
-        bool sameStart = QString((vpnStatus.country + vpnStatus.server)).replace(" ", "")
-                .startsWith(target.replace(" ", ""), Qt::CaseInsensitive);
-        bool emptyTarget = target.replace(" ", "").isEmpty();
+        const bool countryOnly = target.contains(QRegExp("[a-zA-z ]{2,50}$"));
+        const bool sameStart = QString((vpnStatus.country + vpnStatus.server)).remove(" ")
+                .startsWith(target.remove(" "), Qt::CaseInsensitive);
+        const bool emptyTarget = target.remove(" ").isEmpty();
 
         if (emptyTarget || (sameStart && countryOnly) ||
             target.toLower() == QString(vpnStatus.country + vpnStatus.status).toLower()) {

@@ -20,40 +20,19 @@ NordVPN::NordVPN(QObject *parent, const QVariantList &args)
 NordVPN::~NordVPN() = default;
 
 void NordVPN::init() {
-    reloadConfiguration();
+    QList<Plasma::RunnerSyntax> syntaxes;
+    syntaxes.append(Plasma::RunnerSyntax("vpn us", "Connect option to United States, server is chosen by NordVPN"));
+    syntaxes.append(Plasma::RunnerSyntax("vpn us 3335", "Connect options to United States with server number 3335"));
+    syntaxes.append(Plasma::RunnerSyntax("vpn d", "Shows Disconnect option on top (just relevance changed)"));
+    syntaxes.append(Plasma::RunnerSyntax("vpn reconnect", "Reconnect to the current country and server. "
+                                                          "Sometimes you have to do this if you change from a wireless to a wired connection"));
+    setSyntaxes(syntaxes);
     connect(this, SIGNAL(prepare()), this, SLOT(prepareForMatchSession()));
     connect(this, SIGNAL(teardown()), this, SLOT(matchSessionFinished()));
 }
 
-void NordVPN::reloadConfiguration() {
-    config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("NordVPN");
-    statusSource = config.readEntry("source", "nordvpn status");
-
-    //region syntax
-    QList<Plasma::RunnerSyntax> syntaxes;
-    syntaxes.append(Plasma::RunnerSyntax("vpn us", "Connect option to United States, server is chosen by NordVPN"));
-    syntaxes.append(Plasma::RunnerSyntax("vpn us 3335", "Connect options to United States with server number 3335"));
-    syntaxes.append(
-            Plasma::RunnerSyntax("vpn germany berlin", "Can connect to country by name and city, case insensitive"));
-    syntaxes.append(Plasma::RunnerSyntax("vpn d", "Shows Disconnect option on top (just relevance changed)"));
-    syntaxes.append(Plasma::RunnerSyntax("vpn reconnect", "Reconnect to the current country and server. "
-                                                          "Sometimes you have to do this if you change from a wireless to a wired connection"));
-    syntaxes.append(
-            Plasma::RunnerSyntax(
-                    "vpn reconnect de",
-                    "Reconnect to specific country/server. "
-                    "This only supports formats like us3335 or us 3335 and not the names"
-                    "Additionally the plugin checks if the target matches the current connection and displays the \"Reconnect To Current option\","
-                    " otherwise it displays e.g.\"Reconnect To US 3335 option\""
-            ));
-
-    setSyntaxes(syntaxes);
-    //endregion
-}
-
 void NordVPN::prepareForMatchSession() {
-
-    QString statusData = Status::getRawConnectionStatus(statusSource);
+    const QString statusData = Status::getRawConnectionStatus(config.readEntry("source", "nordvpn status"));
     if (!statusData.isEmpty()) {
         vpnStatus = Status::objectFromRawData(statusData);
     } else if (vpnStatus.rawData.keys().isEmpty()) {
@@ -67,15 +46,15 @@ void NordVPN::matchSessionFinished() {
         wasActive = false;
         QString history = config.parent().parent().group("General").readEntry("history");
         const int historySize = history.size();
-        QString filteredHistory = history.replace(QRegExp(R"((?:nord)?vpn d(?:isconnect)?[^ek],?)"), "");
+        const QString filteredHistory = history.replace(QRegExp(R"((?:nord)?vpn d(?:isconnect)?[^ek],?)"), "");
         if (filteredHistory.size() == historySize) return;
 
-        QFile f(QString(getenv("HOME")) + "/.config/krunnerrc");
+        QFile f(QDir::homePath() + "/.config/krunnerrc");
         if (f.open(QIODevice::ReadWrite)) {
             QString s;
             QTextStream t(&f);
             while (!t.atEnd()) {
-                QString line = t.readLine();
+                const QString line = t.readLine();
                 if (!line.startsWith("history")) {
                     s.append(line + "\n");
                 } else {
@@ -104,7 +83,7 @@ void NordVPN::match(Plasma::RunnerContext &context) {
         match.setText(m.text);
         match.setData(m.data);
         match.setRelevance(m.relevance);
-        match.setIconName(config.readEntry("icon", "/usr/share/icons/nordvpn.png"));
+        match.setIconName(config.readEntry("icon", "nordvpn"));
         matches.append(match);
     }
     context.addMatches(matches);
@@ -113,12 +92,12 @@ void NordVPN::match(Plasma::RunnerContext &context) {
 void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) {
     Q_UNUSED(context)
 
-    QString payload = match.data().toString();
-    const QString iconPath = config.readEntry("icon", "/usr/share/icons/nordvpn.png");
+    const QString payload = match.data().toString();
+    const QString iconPath = config.readEntry("icon", "nordvpn");
     const QString changeScript = config.readEntry("script", "");
     QString cmd;
 
-    bool notify = config.readEntry("notify", "true") == "true";
+    const bool notify = config.readEntry("notify", "true") == "true";
     QString notifyPipes(R"( | tr -d '/\-|\\' | tail -2 | cut -d '(' -f 1  |xargs -d '\n' notify-send --icon <ICON> )");
     if (!notify) notifyPipes = " 2>&1 > /dev/null";
     if (payload == "disconnect") {

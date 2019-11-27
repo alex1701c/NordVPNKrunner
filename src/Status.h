@@ -16,15 +16,15 @@ public:
 
     void extractConnectionInformation();
 
-    bool connectionExists();
+    bool connectionExists() const;
 
-    static QString evalConnectQuery(QString &term, QString defaultTarget = "");
+    static QString evalConnectQuery(const QString &term, const QString &defaultTarget = "");
 
     static QString getRawConnectionStatus(const QString &statusSource);
 
     static Status objectFromRawData(const QString &statusData);
 
-    QString formatString(QString raw);
+    QString formatString(QString raw) const;
 
 };
 

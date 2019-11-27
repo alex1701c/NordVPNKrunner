@@ -22,16 +22,16 @@ public:
 
     QString newIcon;
 
-    const QString defaultIcon = "/usr/share/icons/nordvpn.png";
+    const QString defaultIcon = "nordvpn";
 
     const QString exampleData = "Status: Connected\n"
-                          "Current server: us4276.nordvpn.com\n"
-                          "Country: United States\n"
-                          "City: Manassas\n"
-                          "Your new IP: 23.82.14.23\n"
-                          "Current protocol: UDP\n"
-                          "Transfer: 26.9 KiB received, 8.6 KiB sent\n"
-                          "Uptime: 7 seconds";
+                                "Current server: us4276.nordvpn.com\n"
+                                "Country: United States\n"
+                                "City: Manassas\n"
+                                "Your new IP: 23.82.14.23\n"
+                                "Current protocol: UDP\n"
+                                "Transfer: 26.9 KiB received, 8.6 KiB sent\n"
+                                "Uptime: 7 seconds";
 
 public Q_SLOTS:
 
@@ -56,7 +56,7 @@ private:
 
     QString getStatusNotificationKeys();
 
-    void writeConfigText(QString key, QString text);
+    void writeConfigText(const QString &key, const QString &text);
 };
 
 #endif

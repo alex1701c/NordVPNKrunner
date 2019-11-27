@@ -13,20 +13,18 @@ void Status::extractConnectionInformation() {
     if (!current_server.isEmpty()) {
         QRegExp regex("Current server: ([a-z]{2})(\\d{1,5})");
         regex.indexIn(current_server);
-        QStringList res = regex.capturedTexts();
-        if (res.size() == 3) {
-            country = res.at(1);
-            server = res.at(2);
-        }
+        const QStringList res = regex.capturedTexts();
+        country = res.at(1);
+        server = res.at(2);
     }
 }
 
-bool Status::connectionExists() {
+bool Status::connectionExists() const {
     // Valid statuses: Connected, Connecting, Reconnecting
     return status.startsWith("Status: Connect") || status == "Status: Reconnecting";
 }
 
-QString Status::evalConnectQuery(QString &term, QString defaultTarget) {
+QString Status::evalConnectQuery(const QString &term, const QString &defaultTarget) {
     QString target;
     // Returns extracted target from normal or reconnect queries, rejects disconnect query
     if (!term.contains("reconnect")) {
@@ -36,14 +34,14 @@ QString Status::evalConnectQuery(QString &term, QString defaultTarget) {
         }
         QRegExp regex("vpn ([a-zA-Z _]+[\\da-zA-Z_]*)$");// vpn us42; vpn us 42; vpn united_states
         regex.indexIn(term);
-        QStringList res = regex.capturedTexts();
+        const QStringList res = regex.capturedTexts();
         if (res.size() == 2 && !res.at(1).isEmpty()) {
             target = res.at(1).toUpper();
         }
     } else {// Reconnect in term
         QRegExp regexReconnect("vpn reconnect ([a-zA-Z _]+[\\da-zA-Z_]*)$");
         regexReconnect.indexIn(term);
-        QStringList reconnectRes = regexReconnect.capturedTexts();
+        const QStringList reconnectRes = regexReconnect.capturedTexts();
         if (!reconnectRes.at(1).isEmpty()) {
             target = reconnectRes.at(1).toUpper();
         }
@@ -74,8 +72,8 @@ Status Status::objectFromRawData(const QString &statusData) {
             status.current_server = line;
         }
         if (!line.isEmpty() && line.contains(':')) {
-            status.rawData.insert("%" + line.split(':').first().replace(" ", "").toUpper(), line);
-            status.rawData.insert("%" + line.split(':').first().replace(" ", "").toLower(),
+            status.rawData.insert("%" + line.split(':').first().remove(" ").toUpper(), line);
+            status.rawData.insert("%" + line.split(':').first().remove(" ").toLower(),
                                   line.split(':').last().remove(0, 1));
         }
     }
@@ -83,7 +81,7 @@ Status Status::objectFromRawData(const QString &statusData) {
     return status;
 }
 
-QString Status::formatString(QString raw) {
+QString Status::formatString(QString raw) const {
     for (const auto &key:rawData.keys()) {
         if (raw.contains(key)) {
             raw.replace(key, rawData.value(key));

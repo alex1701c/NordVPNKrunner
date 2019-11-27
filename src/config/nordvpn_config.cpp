@@ -45,21 +45,15 @@ NordVPNConfig::NordVPNConfig(QWidget *parent, const QVariantList &args) : KCModu
     connect(m_ui->statusKeysExampleNotification, SIGNAL(clicked(bool)), this, SLOT(showExampleStatusNotification()));
     connect(m_ui->iconButton, SIGNAL(clicked(bool)), this, SLOT(openIconFileChooser()));
     connect(m_ui->iconDefaultButton, SIGNAL(clicked(bool)), this, SLOT(setDefaultIcon()));
-
-    load();
-
 }
 
 void NordVPNConfig::load() {
-    KCModule::load();
     setCurrentSettings();
     emit changed(false);
 }
 
 
 void NordVPNConfig::save() {
-
-    KCModule::save();
     writeConfigText("default", m_ui->defaultConnectionTarget->text());
     writeConfigText("status", m_ui->krunnerStatus->text());
     writeConfigText("source", m_ui->source->text());
@@ -69,6 +63,8 @@ void NordVPNConfig::save() {
     config.writeEntry("notify", m_ui->notify->isChecked());
     if (!newIcon.isEmpty()) config.writeEntry("icon", newIcon);
     config.writeEntry("status_keys", getStatusNotificationKeys());
+
+    config.sync();
 
     emit changed(true);
 }
@@ -97,7 +93,7 @@ void NordVPNConfig::defaults() {
 void NordVPNConfig::setCurrentSettings() {
     m_ui->defaultConnectionTarget->setText(config.readEntry("default", "US"));
     m_ui->krunnerStatus->setText(config.readEntry("status", "%STATUS"));
-    m_ui->iconButton->setIcon(QIcon(config.readEntry("icon", defaultIcon)));
+    m_ui->iconButton->setIcon(QIcon::fromTheme(config.readEntry("icon", defaultIcon)));
     m_ui->source->setText(config.readEntry("source", "nordvpn status"));
     m_ui->changeScript->setText(config.readEntry("script", ""));
     m_ui->cleanHistory->setChecked(config.readEntry("clean_history", "true") == "true");
@@ -128,14 +124,14 @@ QString NordVPNConfig::getStatusNotificationKeys() {
 }
 
 void NordVPNConfig::showExampleStatusNotification() {
-    QString cmd = QString(
-            "$($(vpnStatus=$(printf '"+ exampleData+"' | grep -i -E '%1');" "notify-send  \"$vpnStatus\" --icon %2 )) 2>&1 &")
+    const QString cmd = QString(
+            "$($(vpnStatus=$(printf '" + exampleData + "' | grep -i -E '%1');" "notify-send  \"$vpnStatus\" --icon %2 )) 2>&1 &")
             .arg(getStatusNotificationKeys())
             .arg(config.readEntry("icon", defaultIcon));
     system(qPrintable(cmd));
 }
 
-void NordVPNConfig::writeConfigText(QString key, QString text) {
+void NordVPNConfig::writeConfigText(const QString &key, const QString &text) {
     if (text.isEmpty()) {
         config.deleteEntry(key);
     } else {
@@ -144,7 +140,7 @@ void NordVPNConfig::writeConfigText(QString key, QString text) {
 }
 
 void NordVPNConfig::openIconFileChooser() {
-    QString iconPath = QFileDialog::getOpenFileName(this, tr("Select Icon"), "",
+    const QString iconPath = QFileDialog::getOpenFileName(this, tr("Select Icon"), "",
                                                     tr("Images (.*.jpg *.jpeg *.png *.ico *.svg *.svgz)"));
     if (!iconPath.isEmpty()) {
         newIcon = iconPath;
@@ -158,7 +154,7 @@ void NordVPNConfig::openIconFileChooser() {
 }
 
 void NordVPNConfig::setDefaultIcon() {
-    m_ui->iconButton->setIcon(QIcon(defaultIcon));
+    m_ui->iconButton->setIcon(QIcon::fromTheme(defaultIcon));
     m_ui->iconDefaultButton->setHidden(true);
     newIcon = defaultIcon;
     m_ui->iconButton->clearFocus();
@@ -168,7 +164,7 @@ void NordVPNConfig::setDefaultIcon() {
 void NordVPNConfig::exampleStatus() {
     m_ui->krunnerStatusExampleLabel->setHidden(false);
     m_ui->krunnerStatusExample->setHidden(false);
-    auto status = Status::objectFromRawData(exampleData);
+    const auto status = Status::objectFromRawData(exampleData);
     m_ui->krunnerStatusExample->setText(status.formatString(m_ui->krunnerStatus->text()));
 }
 

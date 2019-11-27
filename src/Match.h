@@ -17,9 +17,9 @@ public:
 
     Match(QString text, QString data, float relevance) : text(std::move(text)), data(std::move(data)), relevance(relevance) {}
 
-    static QList<Match> generateOptions(Status &vpnStatus, QString &term);
+    static QList<Match> generateOptions(const Status &vpnStatus, const QString &term);
 
-    static QList<Match> generateConnectionOptions(Status &vpnStatus, const KConfigGroup &config, QString &term);
+    static QList<Match> generateConnectionOptions(const Status &vpnStatus, const KConfigGroup &config, const QString &term);
 };
 
 
