@@ -2,6 +2,7 @@
 #define NORDVPN_UTILITIES_H
 
 #include <QString>
+#include "Status.h"
 
 /**
  * Shome useful utility functions
@@ -13,6 +14,11 @@ public:
      * Filters loading characters and useless linebreaks etc. from the beginning
      */
     static QString filterBeginning(QString &str);
+
+    /**
+     * If the term and the status have the same target
+     */
+    static bool sameTarget(QString &target, const Status &status);
 };
 
 

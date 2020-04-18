@@ -33,6 +33,7 @@ QString Status::evalConnectQuery(const QString &term, const QString &defaultTarg
         }
     }
 
+    // Target countries have at least two letters
     if (target.isEmpty() || target.size() == 1) {
         return defaultTarget;
     }
