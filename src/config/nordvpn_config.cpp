@@ -8,6 +8,7 @@
 #include <iostream>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QFileDialog>
+#include <core/NotificationManager.h>
 
 #include "kcmutils_version.h"
 
@@ -115,6 +116,7 @@ void NordVPNConfig::setCurrentSettings() {
 }
 
 QString NordVPNConfig::getStatusNotificationKeys() {
+    // TODO Refactor to QStringList
     QList<QString> keys;
     if (m_ui->statusKeysStatus->isChecked()) keys.append("Status");
     if (m_ui->statusKeysCurrentServer->isChecked()) keys.append("Current server");
@@ -128,14 +130,10 @@ QString NordVPNConfig::getStatusNotificationKeys() {
 }
 
 void NordVPNConfig::showExampleStatusNotification() {
-    // TODO Move notification logic to class, use KNotifications
-    const QString cmd = QString(
-            "$($(vpnStatus=$(printf '" + exampleData + "' | grep -i -E '%1');" "notify-send  \"$vpnStatus\" --icon %2 )) 2>&1 &")
-            .arg(getStatusNotificationKeys())
-            .arg(config.readEntry("icon", defaultIcon));
-#pragma GCC diagnostic ignored "-Wunused-result"
-    system(qPrintable(cmd));
-#pragma GCC diagnostic pop
+    const QString text = NotificationManager::createNotificationText(exampleData, getStatusNotificationKeys().split('|'));
+    NotificationManager::displayStatusNotification(text,
+            newIcon.isEmpty() ? config.readEntry("icon", defaultIcon) : newIcon,
+            "Example Status Notification");
 }
 
 void NordVPNConfig::exampleStatus() {
@@ -164,7 +162,6 @@ void NordVPNConfig::openIconFileChooser() {
         changed(true);
     }
     m_ui->iconButton->clearFocus();
-
 }
 
 void NordVPNConfig::setDefaultIcon() {
