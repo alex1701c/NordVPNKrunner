@@ -12,8 +12,11 @@ class NotificationManager {
 public:
     static QString createNotificationText(const QString &processOutput, const QStringList &keyList);
 
-    static void displayStatusNotification(const QString &status, const QString &icon = QStringLiteral("nordvpn"),
-            const QString &title = QStringLiteral("NordVPN Krunner"));
+    static void displayStatusNotification(const QString &status, const QString &icon = "nordvpn",
+            const QString &title = "NordVPN Krunner");
+
+    static void displayConnectNotification(QString processOutput);
+    static void displayDisconnectNotification(QString processOutput);
 };
 
 

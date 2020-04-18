@@ -12,18 +12,7 @@ void ProcessManager::connectVPN(bool notify, const QString &target) {
                 Q_UNUSED(exitCode)
                 Q_UNUSED(exitStatus)
                 if (notify) {
-                    QString res = QString::fromLocal8Bit(process->readAll());
-                    auto resList = Utilities::filterBeginning(res).split('\n');
-                    for (auto &filteredRes: resList) {
-                        if (filteredRes.startsWith(QLatin1String("Connecting to"))) {
-                            continue;
-                        }
-                        filteredRes = Utilities::filterBeginning(filteredRes);
-                        if (!filteredRes.isEmpty()) {
-                            NotificationManager::displayStatusNotification(filteredRes);
-                            break;
-                        }
-                    }
+                   NotificationManager::displayConnectNotification(QString::fromLocal8Bit(process->readAll()));
                 }
                 process->close();
                 process->deleteLater();
@@ -39,11 +28,7 @@ void ProcessManager::disconnectVPN(const bool notify) {
                 Q_UNUSED(exitCode)
                 Q_UNUSED(exitStatus)
                 if (notify) {
-                    QString res = QString::fromLocal8Bit(process->readAll());
-                    auto resList = Utilities::filterBeginning(res).split('\n');
-                    if (!resList.isEmpty()) {
-                        NotificationManager::displayStatusNotification(resList.first());
-                    }
+                    NotificationManager::displayDisconnectNotification(QString::fromLocal8Bit(process->readAll()));
                 }
                 process->close();
                 process->deleteLater();
