@@ -7,6 +7,7 @@
  */
 class ProcessManager : public QObject {
 public:
+    static void connectVPN(bool notify, const QString &target);
     static void disconnectVPN(bool notify);
 };
 
