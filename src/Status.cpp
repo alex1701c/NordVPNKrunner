@@ -1,53 +1,52 @@
 #include <QtCore/QRegExp>
-#include <KConfigCore/KSharedConfig>
 #include <KConfigCore/KConfigGroup>
+#include <QRegularExpression>
 #include <QtCore/QProcess>
 #include "Status.h"
 
 void Status::extractConnectionInformation() {
     if (status == "Status: Disconnected" || status == "Status: No Internet") {
-        country = "";
-        server = "";
+        country = QString();
+        server = QString();
         return;
     }
     if (!current_server.isEmpty()) {
-        QRegExp regex("Current server: ([a-z]{2})(\\d{1,5})");
-        regex.indexIn(current_server);
-        const QStringList res = regex.capturedTexts();
-        country = res.at(1);
-        server = res.at(2);
+        static QRegularExpression regex("Current server: ([a-z]{2})(\\d{1,5})");
+        const auto res = regex.match(current_server);
+        country = res.captured(1);
+        server = res.captured(2);
     }
 }
 
 bool Status::connectionExists() const {
     // Valid statuses: Connected, Connecting, Reconnecting
-    return status.startsWith("Status: Connect") || status == "Status: Reconnecting";
+    return status.startsWith(QLatin1String("Status: Connect")) || status == QLatin1String("Status: Reconnecting");
 }
 
 QString Status::evalConnectQuery(const QString &term, const QString &defaultTarget) {
     QString target;
     // Returns extracted target from normal or reconnect queries, rejects disconnect query
     if (!term.contains("reconnect")) {
-        if (term.contains(QRegExp("vpn d[ ]*$")) || term.contains("vpn di")) {
+        if (term.contains(QRegularExpression("vpn d[ ]*$")) || term.contains(QLatin1String("vpn di"))) {
             // Rejects for example vpn d, vpn disconnect, vpn dis
             return target;
         }
-        QRegExp regex("vpn ([a-zA-Z _]+[\\da-zA-Z_]*)$");// vpn us42; vpn us 42; vpn united_states
-        regex.indexIn(term);
-        const QStringList res = regex.capturedTexts();
-        if (res.size() == 2 && !res.at(1).isEmpty()) {
-            target = res.at(1).toUpper();
+        static QRegularExpression regex("vpn ([a-zA-Z _]+[\\da-zA-Z_]*)$");// vpn us42; vpn us 42; vpn united_states
+        const auto res = regex.match(term);
+        if (res.lastCapturedIndex() == 1 && !res.captured(1).isEmpty()) {
+            target = res.captured(1).toUpper();
         }
     } else {// Reconnect in term
-        QRegExp regexReconnect("vpn reconnect ([a-zA-Z _]+[\\da-zA-Z_]*)$");
-        regexReconnect.indexIn(term);
-        const QStringList reconnectRes = regexReconnect.capturedTexts();
-        if (!reconnectRes.at(1).isEmpty()) {
-            target = reconnectRes.at(1).toUpper();
+        static QRegularExpression regexReconnect("vpn reconnect ([a-zA-Z _]+[\\da-zA-Z_]*)$");
+        const auto res = regexReconnect.match(term);
+        if (!res.captured(1).isEmpty()) {
+            target = res.captured(1).toUpper();
         }
     }
 
-    if (target.isEmpty() || target.size() == 1) return defaultTarget;
+    if (target.isEmpty() || target.size() == 1) {
+        return defaultTarget;
+    }
 
     return target;
 }
@@ -57,23 +56,23 @@ QString Status::getRawConnectionStatus(const QString &statusSource) {
     process.start(statusSource);
     process.waitForFinished(-1);
     QString out = process.readAllStandardOutput();
-    if (QString(out).replace('\n', "") == "Please check your internet connection and try again.") {
-        return "Status: No Internet";
+    if (QString(out).remove('\n') == QLatin1String("Please check your internet connection and try again.")) {
+        return QStringLiteral("Status: No Internet");
     }
     return out;
 }
 
 Status Status::objectFromRawData(const QString &statusData) {
     Status status;
-    for (const auto &line:statusData.split('\n')) {
-        if (line.startsWith("Status:")) {
+    for (const auto &line: statusData.split('\n')) {
+        if (line.startsWith(QLatin1String("Status:"))) {
             status.status = line;
-        } else if (line.startsWith("Current server: ")) {
+        } else if (line.startsWith(QLatin1String("Current server: "))) {
             status.current_server = line;
         }
         if (!line.isEmpty() && line.contains(':')) {
-            status.rawData.insert("%" + line.split(':').first().remove(" ").toUpper(), line);
-            status.rawData.insert("%" + line.split(':').first().remove(" ").toLower(),
+            status.rawData.insert('%' + line.split(':').first().remove(' ').toUpper(), line);
+            status.rawData.insert('%' + line.split(':').first().remove(' ').toLower(),
                                   line.split(':').last().remove(0, 1));
         }
     }
@@ -82,13 +81,13 @@ Status Status::objectFromRawData(const QString &statusData) {
 }
 
 QString Status::formatString(QString raw) const {
-    for (const auto &key:rawData.keys()) {
+    for (const auto &key: rawData.keys()) {
         if (raw.contains(key)) {
             raw.replace(key, rawData.value(key));
         }
     }
     raw.replace("%server", country.toUpper() + server);
     raw.replace("%st", rawData.value("%STATUS"));
-    raw.replace(QRegExp("%[a-zA-Z]+"), "");
+    raw.remove(QRegularExpression("%[a-zA-Z]+"));
     return raw;
 }
