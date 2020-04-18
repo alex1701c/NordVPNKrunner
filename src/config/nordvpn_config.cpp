@@ -50,7 +50,9 @@ NordVPNConfig::NordVPNConfig(QWidget *parent, const QVariantList &args) : KCModu
     connect(m_ui->statusKeysTransfer, &QCheckBox::clicked, this, changedSlotPointer);
     connect(m_ui->statusKeysUptime, &QCheckBox::clicked, this, changedSlotPointer);
 
-    connect(m_ui->statusKeysExampleNotification, &QPushButton::clicked, this, &NordVPNConfig::showExampleStatusNotification);
+    connect(m_ui->statusKeysExampleNotification, &QPushButton::clicked, [this]() {
+        NotificationManager::displayStatusNotification(exampleData, getStatusNotificationKeys());
+    });
     connect(m_ui->iconButton, &QPushButton::clicked, this, &NordVPNConfig::openIconFileChooser);
     connect(m_ui->iconDefaultButton, &QPushButton::clicked, this, &NordVPNConfig::setDefaultIcon);
 }
@@ -131,13 +133,6 @@ QStringList NordVPNConfig::getStatusNotificationKeys() {
     return keys;
 }
 
-void NordVPNConfig::showExampleStatusNotification() {
-    const QString text = NotificationManager::createNotificationText(exampleData, getStatusNotificationKeys());
-    NotificationManager::displaySimpleNotification(text,
-            newIcon.isEmpty() ? config.readEntry("icon", defaultIcon) : newIcon,
-            "Example Status Notification");
-}
-
 void NordVPNConfig::exampleStatus() {
     m_ui->krunnerStatusExampleLabel->setHidden(false);
     m_ui->krunnerStatusExample->setHidden(false);
@@ -155,7 +150,7 @@ void NordVPNConfig::writeConfigText(const QString &key, const QString &text) {
 
 void NordVPNConfig::openIconFileChooser() {
     const QString iconPath = QFileDialog::getOpenFileName(this, tr("Select Icon"), "",
-                                                    tr("Images (.*.jpg *.jpeg *.png *.ico *.svg *.svgz)"));
+                                                          tr("Images (.*.jpg *.jpeg *.png *.ico *.svg *.svgz)"));
     if (!iconPath.isEmpty()) {
         newIcon = iconPath;
         m_ui->iconButton->setIcon(QIcon(newIcon));

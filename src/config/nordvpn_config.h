@@ -40,7 +40,6 @@ public Q_SLOTS:
     void defaults() override;
 
     void exampleStatus();
-    void showExampleStatusNotification();
 
     void openIconFileChooser();
     void setDefaultIcon();

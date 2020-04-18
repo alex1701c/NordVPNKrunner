@@ -5,20 +5,18 @@
 #include "Status.h"
 
 /**
- * This class handles the display of the notifications and contains some utilities for  them
+ * This class handles the display of the notifications
  */
 class NotificationManager {
 
 public:
-    typedef void (displayFunction)(QString);
-    static QString createNotificationText(const QString &processOutput, const QStringList &keyList);
-
     static void displaySimpleNotification(const QString &status, const QString &icon = "nordvpn",
                                           const QString &title = "NordVPN Krunner");
 
-    static void displayConnectNotification(QString processOutput);
-    static void displayDisconnectNotification(QString processOutput);
-    static void displayStatusNotification(QString processOutput);
+    static void displayConnectNotification(const QString &processOutput);
+    static void displayDisconnectNotification(const QString &processOutput);
+    static void displayStatusNotification(const QString &processOutput);
+    static void displayStatusNotification(const QString &processOutput, const QStringList &keys);
 };
 
 

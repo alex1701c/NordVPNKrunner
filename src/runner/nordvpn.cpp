@@ -67,32 +67,22 @@ void NordVPN::match(Plasma::RunnerContext &context) {
 void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) {
     Q_UNUSED(context)
 
-    // TODO Reqrite using QProcess
     const QString payload = match.data().toString();
     const QString iconPath = config.readEntry("icon", "nordvpn");
     const QString changeScript = config.readEntry("script");
     QString cmd;
 
     const bool notify = config.readEntry("notify", true);
-    QString notifyPipes(R"( | tr -d '/\-|\\' | tail -2 | cut -d '(' -f 1  |xargs -d '\n' notify-send --icon <ICON> )");
-    if (!notify) notifyPipes = " 2>&1 > /dev/null";
     if (payload == QLatin1String("disconnect")) {
         ProcessManager::disconnectVPN(notify);
-        return;
     } else if (payload == QLatin1String("status")) {
         ProcessManager::vpnStatus();
-        return;
     } else if (payload.startsWith(QLatin1String("nordvpn connect"))){
         ProcessManager::connectVPN(notify, payload.split(' ').last());
-        return;
     } else {
-        // TODO Handle reconnect
-        cmd = "$( " + payload + notifyPipes + "; <SCRIPT>  )";// Disconnect or connect
+        // Since a few nordvpn versions the connect command can be used to reconnect to other server
+        ProcessManager::connectVPN(notify, payload.split(' ').last());
     }
-    cmd = cmd.replace("<ICON>", iconPath).replace("<SCRIPT>", changeScript);
-#pragma GCC diagnostic ignored "-Wunused-result"
-    system(qPrintable(cmd + " 2>&1 &"));
-#pragma GCC diagnostic pop
 }
 
 K_EXPORT_PLASMA_RUNNER(nordvpn, NordVPN)
