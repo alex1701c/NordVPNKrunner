@@ -4,16 +4,16 @@
 #include "Utilities.h"
 #include "NotificationManager.h"
 
-void ProcessManager::connectVPN(bool notify, const QString &target) {
-    runNordVPNCommand({"c", target}, notify, &NotificationManager::displayConnectNotification);
+void ProcessManager::connectVPN(bool notify, const QStringList &args) {
+    runNordVPNCommand(args, notify, &NotificationManager::displayConnectNotification);
 }
 
-void ProcessManager::disconnectVPN(const bool notify) {
-    runNordVPNCommand({"d"}, notify, &NotificationManager::displayDisconnectNotification);
+void ProcessManager::disconnectVPN(const bool notify,const QStringList &args) {
+    runNordVPNCommand(args, notify, &NotificationManager::displayDisconnectNotification);
 }
 
-void ProcessManager::vpnStatus() {
-    runNordVPNCommand({"status"}, true, &NotificationManager::displayStatusNotification);
+void ProcessManager::vpnStatus(const QStringList &args) {
+    runNordVPNCommand(args, true, &NotificationManager::displayStatusNotification);
 }
 
 void ProcessManager::runNordVPNCommand(const QStringList &args, bool notify, ProcessCallback *notificationFunction) {

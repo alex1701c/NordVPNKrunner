@@ -8,14 +8,12 @@
  * with the NotificationManager to handle the notifications
  */
 class ProcessManager : public QObject {
+
 public:
-
-    typedef void (ProcessCallback)(const QString&);
-
-    static void connectVPN(bool notify, const QString &target);
-    static void disconnectVPN(bool notify);
-
-    static void vpnStatus();
+    typedef void (ProcessCallback)(const QString &);
+    static void connectVPN(bool notify, const QStringList &args);
+    static void disconnectVPN(bool notify, const QStringList &args);
+    static void vpnStatus(const QStringList &args);
 
 protected:
 

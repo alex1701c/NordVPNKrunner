@@ -67,21 +67,17 @@ void NordVPN::match(Plasma::RunnerContext &context) {
 void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) {
     Q_UNUSED(context)
 
-    const QString payload = match.data().toString();
-    const QString iconPath = config.readEntry("icon", "nordvpn");
-    const QString changeScript = config.readEntry("script");
-    QString cmd;
+    QStringList args = match.data().toStringList();
+    const QString command = args.takeFirst();
 
     const bool notify = config.readEntry("notify", true);
-    if (payload == QLatin1String("disconnect")) {
-        ProcessManager::disconnectVPN(notify);
-    } else if (payload == QLatin1String("status")) {
-        ProcessManager::vpnStatus();
-    } else if (payload.startsWith(QLatin1String("nordvpn connect"))){
-        ProcessManager::connectVPN(notify, payload.split(' ').last());
+    if (command == QLatin1String("disconnect")) {
+        ProcessManager::disconnectVPN(notify, args);
+    } else if (command == QLatin1String("status")) {
+        ProcessManager::vpnStatus(args);
     } else {
         // Since a few nordvpn versions the connect command can be used to reconnect to other server
-        ProcessManager::connectVPN(notify, payload.split(' ').last());
+        ProcessManager::connectVPN(notify, args);
     }
 }
 

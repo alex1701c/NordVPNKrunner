@@ -10,16 +10,14 @@
 class Match {
 public:
     QString text;
-    QString data;
+    QStringList data;
     float relevance = 0;
 
     Match() = default;
 
-    Match(QString text, QString data, float relevance) : text(std::move(text)), data(std::move(data)), relevance(relevance) {}
+    Match(QString text, QStringList data, float relevance) : text(std::move(text)), data(std::move(data)), relevance(relevance) {}
 
     static QList<Match> generateOptions(const Status &vpnStatus, const QString &term);
-
-    static QList<Match> generateConnectionOptions(const Status &vpnStatus, const KConfigGroup &config, const QString &term);
 };
 
 
