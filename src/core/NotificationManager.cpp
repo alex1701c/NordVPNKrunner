@@ -16,7 +16,7 @@ QString NotificationManager::createNotificationText(const QString &processOutput
     return res;
 }
 
-void NotificationManager::displayStatusNotification(const QString &status, const QString &icon, const QString &title) {
+void NotificationManager::displaySimpleNotification(const QString &status, const QString &icon, const QString &title) {
     KNotification::event(KNotification::Notification, title, status, icon);
 }
 
@@ -28,7 +28,7 @@ void NotificationManager::displayConnectNotification(QString processOutput) {
         }
         filteredRes = Utilities::filterBeginning(filteredRes);
         if (!filteredRes.isEmpty()) {
-            NotificationManager::displayStatusNotification(filteredRes);
+            NotificationManager::displaySimpleNotification(filteredRes);
             break;
         }
     }
@@ -37,7 +37,7 @@ void NotificationManager::displayConnectNotification(QString processOutput) {
 void NotificationManager::displayDisconnectNotification(QString processOutput) {
     auto resList = Utilities::filterBeginning(processOutput).split('\n');
     if (!resList.isEmpty()) {
-        NotificationManager::displayStatusNotification(resList.first());
+        NotificationManager::displaySimpleNotification(resList.first());
     }
 }
 

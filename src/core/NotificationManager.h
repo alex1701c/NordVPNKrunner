@@ -10,10 +10,11 @@
 class NotificationManager {
 
 public:
+    typedef void (displayFunction)(QString);
     static QString createNotificationText(const QString &processOutput, const QStringList &keyList);
 
-    static void displayStatusNotification(const QString &status, const QString &icon = "nordvpn",
-            const QString &title = "NordVPN Krunner");
+    static void displaySimpleNotification(const QString &status, const QString &icon = "nordvpn",
+                                          const QString &title = "NordVPN Krunner");
 
     static void displayConnectNotification(QString processOutput);
     static void displayDisconnectNotification(QString processOutput);
