@@ -3,7 +3,7 @@
 
 #include <KSharedConfig>
 #include <KRunner/AbstractRunner>
-#include "Status.h"
+#include "core/Status.h"
 
 class NordVPN : public Plasma::AbstractRunner {
 Q_OBJECT

@@ -1,13 +1,15 @@
 add_definitions(-DTRANSLATION_DOMAIN=\"plasma_runner_org.kde.nordvpn\")
 
-set(nordvpn_SRCS nordvpn.cpp Status.cpp Status.h Match.cpp Match.h)
+add_subdirectory(core)
+
+set(nordvpn_SRCS runner/nordvpn.cpp runner/Match.cpp)
 
 add_library(krunner_nordvpn MODULE ${nordvpn_SRCS})
 target_link_libraries(krunner_nordvpn KF5::Runner KF5::I18n)
+target_link_libraries(krunner_nordvpn core_api_static)
 
 set(kcm_krunner_nordvpn_SRCS
         config/nordvpn_config.cpp
-        Status.cpp
         )
 
 ki18n_wrap_ui(kcm_krunner_nordvpn_SRCS config/nordvpn_config.ui)
@@ -21,9 +23,7 @@ target_link_libraries(kcm_krunner_nordvpn
         KF5::ConfigWidgets
         KF5::Runner
         )
+target_link_libraries(kcm_krunner_nordvpn core_api_static)
 
-add_dependencies(krunner_nordvpn kcm_krunner_nordvpn)
-
-
-install(TARGETS krunner_nordvpn kcm_krunner_nordvpn DESTINATION ${PLUGIN_INSTALL_DIR})
-install(FILES plasma-runner-nordvpn.desktop config/plasma-runner-nordvpn_config.desktop DESTINATION ${KDE_INSTALL_KSERVICES5DIR})
+install(TARGETS krunner_nordvpn kcm_krunner_nordvpn DESTINATION ${KDE_INSTALL_QTPLUGINDIR})
+install(FILES runner/plasma-runner-nordvpn.desktop config/plasma-runner-nordvpn_config.desktop DESTINATION ${KDE_INSTALL_KSERVICES5DIR})

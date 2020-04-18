@@ -1,5 +1,5 @@
 #include "nordvpn.h"
-#include "Status.h"
+#include "core/Status.h"
 #include "Match.h"
 // KF
 #include <KLocalizedString>
@@ -86,7 +86,9 @@ void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch
         cmd = "$( " + payload + notifyPipes + "; <SCRIPT>  )";// Disconnect or connect
     }
     cmd = cmd.replace("<ICON>", iconPath).replace("<SCRIPT>", changeScript);
+#pragma GCC diagnostic ignored "-Wunused-result"
     system(qPrintable(cmd + " 2>&1 &"));
+#pragma GCC diagnostic pop
 }
 
 K_EXPORT_PLASMA_RUNNER(nordvpn, NordVPN)

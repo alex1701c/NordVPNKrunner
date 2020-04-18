@@ -5,7 +5,7 @@
 
 
 #include <krunner/runnercontext.h>
-#include "Status.h"
+#include "core/Status.h"
 
 class Match {
 public:

@@ -1,5 +1,5 @@
 #include "nordvpn_config.h"
-#include "../Status.h"
+#include "core/Status.h"
 #include <KSharedConfig>
 #include <KPluginFactory>
 #include <krunner/abstractrunner.h>
@@ -35,8 +35,8 @@ NordVPNConfig::NordVPNConfig(QWidget *parent, const QVariantList &args) : KCModu
     m_ui->statusKeysStatus->setEnabled(false);
     connect(m_ui->defaultConnectionTarget, &QLineEdit::textChanged, this, changedSlotPointer);
     connect(m_ui->krunnerStatus, &QLineEdit::textChanged, this, changedSlotPointer);
+    connect(m_ui->krunnerStatus, &QLineEdit::textChanged, this, &NordVPNConfig::exampleStatus);
     connect(m_ui->source, &QLineEdit::textChanged, this, changedSlotPointer);
-    connect(m_ui->krunnerStatus, &QLineEdit::textChanged, this, changedSlotPointer);
     connect(m_ui->changeScript, &QLineEdit::textChanged, this, changedSlotPointer);
 
     connect(m_ui->notify, &QCheckBox::clicked, this, changedSlotPointer);
@@ -133,7 +133,9 @@ void NordVPNConfig::showExampleStatusNotification() {
             "$($(vpnStatus=$(printf '" + exampleData + "' | grep -i -E '%1');" "notify-send  \"$vpnStatus\" --icon %2 )) 2>&1 &")
             .arg(getStatusNotificationKeys())
             .arg(config.readEntry("icon", defaultIcon));
+#pragma GCC diagnostic ignored "-Wunused-result"
     system(qPrintable(cmd));
+#pragma GCC diagnostic pop
 }
 
 void NordVPNConfig::exampleStatus() {

@@ -1,5 +1,5 @@
 #include "Match.h"
-#include "Status.h"
+#include "core/Status.h"
 #include <KSharedConfig>
 #include <KConfigGroup>
 #include <QDebug>
