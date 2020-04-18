@@ -1,0 +1,19 @@
+[Global]
+IconName=nordvpn
+Comment=Krunner integration for nordvpn
+Name=KRunner NordVPN
+
+[Event/status]
+Name=Status
+Comment=Display status notification with configured entries
+Action=Popup
+
+[Event/connect]
+Name=Connect
+Comment=Notification if NordVPN connects to a server
+Action=Popup
+
+[Event/disconnect]
+Name=Notification if NordVPN disconnects
+Comment=Display status notification with configured entries
+Action=Popup

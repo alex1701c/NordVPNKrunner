@@ -10,8 +10,7 @@
 class NotificationManager {
 
 public:
-    static void displaySimpleNotification(const QString &status, const QString &icon = "nordvpn",
-                                          const QString &title = "NordVPN Krunner");
+    static void displaySimpleNotification(const QString &event, const QString &status, const QString &title = QString());
 
     static void displayConnectNotification(const QString &processOutput);
     static void displayDisconnectNotification(const QString &processOutput);

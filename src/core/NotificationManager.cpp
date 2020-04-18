@@ -6,8 +6,12 @@
 #include <QDebug>
 #include <KSharedConfig>
 
-void NotificationManager::displaySimpleNotification(const QString &status, const QString &icon, const QString &title) {
-    KNotification::event(KNotification::Notification, title, status, icon);
+void NotificationManager::displaySimpleNotification(const QString &event,
+                                                    const QString &status,
+                                                    const QString &title) {
+    // small NordVPN icon is used, param changes nothing
+    KNotification::event(event, title, status, QString(), nullptr,
+                         KNotification::CloseOnTimeout, "krunner_nordvpn");
 }
 
 void NotificationManager::displayConnectNotification(const QString &processOutput) {
@@ -18,7 +22,8 @@ void NotificationManager::displayConnectNotification(const QString &processOutpu
         }
         filteredRes = Utilities::filterBeginning(filteredRes);
         if (!filteredRes.isEmpty()) {
-            NotificationManager::displaySimpleNotification(filteredRes);
+            static const QString eventID = QStringLiteral("connect");
+            NotificationManager::displaySimpleNotification(eventID, filteredRes);
             break;
         }
     }
@@ -27,7 +32,8 @@ void NotificationManager::displayConnectNotification(const QString &processOutpu
 void NotificationManager::displayDisconnectNotification(const QString &processOutput) {
     auto resList = processOutput.split('\n');
     if (!resList.isEmpty()) {
-        NotificationManager::displaySimpleNotification(resList.first());
+        static const QString eventID = QStringLiteral("disconnect");
+        NotificationManager::displaySimpleNotification(eventID, resList.first());
     }
 }
 
@@ -52,6 +58,7 @@ void NotificationManager::displayStatusNotification(const QString &processOutput
             }
         }
     }
-    displaySimpleNotification(notifyText);
+    static const QString eventID = QStringLiteral("status");
+    displaySimpleNotification(eventID, notifyText);
 }
 
