@@ -12,6 +12,10 @@ void ProcessManager::disconnectVPN(const bool notify) {
     abstractVPNCommand("nordvpn", {"d"}, notify, &NotificationManager::displayDisconnectNotification);
 }
 
+void ProcessManager::vpnStatus() {
+    abstractVPNCommand("nordvpn", {"status"}, true, &NotificationManager::displayStatusNotification);
+}
+
 void ProcessManager::abstractVPNCommand(const QString &program, const QStringList &args, bool notify,
                                         NotificationManager::displayFunction *notificationFunction) {
     auto *process = new QProcess;

@@ -18,6 +18,7 @@ public:
 
     static void displayConnectNotification(QString processOutput);
     static void displayDisconnectNotification(QString processOutput);
+    static void displayStatusNotification(QString processOutput);
 };
 
 

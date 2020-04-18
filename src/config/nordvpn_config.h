@@ -51,7 +51,7 @@ private:
 
     void setCurrentSettings();
 
-    QString getStatusNotificationKeys();
+    QStringList getStatusNotificationKeys();
 
     void writeConfigText(const QString &key, const QString &text);
 };

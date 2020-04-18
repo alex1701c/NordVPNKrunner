@@ -13,6 +13,8 @@ public:
 
     static void disconnectVPN(bool notify);
 
+    static void vpnStatus();
+
 protected:
 
     /**

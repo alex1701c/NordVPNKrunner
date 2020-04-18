@@ -69,7 +69,7 @@ void NordVPNConfig::save() {
 
     config.writeEntry("notify", m_ui->notify->isChecked());
     if (!newIcon.isEmpty()) config.writeEntry("icon", newIcon);
-    config.writeEntry("status_keys", getStatusNotificationKeys());
+    config.writeEntry("status_filter_keys", getStatusNotificationKeys());
 
     config.config()->sync();
 
@@ -104,7 +104,10 @@ void NordVPNConfig::setCurrentSettings() {
     m_ui->changeScript->setText(config.readEntry("script"));
     m_ui->notify->setChecked(config.readEntry("notify", true));
 
-    QList<QString> values = config.readEntry("status_keys", "Status|Current server|Transfer|Your new IP").split('|');
+    auto values = config.readEntry("status_filter_keys", QStringList());
+    if (values.isEmpty()) {
+        values = QStringList({"Status", "Current server", "Transfer", "Your new IP"});
+    }
     m_ui->statusKeysStatus->setChecked(values.contains("Status"));
     m_ui->statusKeysCurrentServer->setChecked(values.contains("Current server"));
     m_ui->statusKeysCountry->setChecked(values.contains("Country"));
@@ -115,9 +118,8 @@ void NordVPNConfig::setCurrentSettings() {
     m_ui->statusKeysUptime->setChecked(values.contains("Uptime"));
 }
 
-QString NordVPNConfig::getStatusNotificationKeys() {
-    // TODO Refactor to QStringList
-    QList<QString> keys;
+QStringList NordVPNConfig::getStatusNotificationKeys() {
+    QStringList keys;
     if (m_ui->statusKeysStatus->isChecked()) keys.append("Status");
     if (m_ui->statusKeysCurrentServer->isChecked()) keys.append("Current server");
     if (m_ui->statusKeysCountry->isChecked()) keys.append("Country");
@@ -126,12 +128,12 @@ QString NordVPNConfig::getStatusNotificationKeys() {
     if (m_ui->statusKeysCurrentProtocol->isChecked()) keys.append("Current protocol");
     if (m_ui->statusKeysTransfer->isChecked()) keys.append("Transfer");
     if (m_ui->statusKeysUptime->isChecked()) keys.append("Uptime");
-    return keys.join('|');
+    return keys;
 }
 
 void NordVPNConfig::showExampleStatusNotification() {
-    const QString text = NotificationManager::createNotificationText(exampleData, getStatusNotificationKeys().split('|'));
-    NotificationManager::displayStatusNotification(text,
+    const QString text = NotificationManager::createNotificationText(exampleData, getStatusNotificationKeys());
+    NotificationManager::displaySimpleNotification(text,
             newIcon.isEmpty() ? config.readEntry("icon", defaultIcon) : newIcon,
             "Example Status Notification");
 }

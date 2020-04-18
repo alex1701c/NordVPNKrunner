@@ -80,8 +80,8 @@ void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch
         ProcessManager::disconnectVPN(notify);
         return;
     } else if (payload == QLatin1String("status")) {
-        cmd = QString("$(vpnStatus=$(nordvpn status 2>&1 | grep -i -E '%1');notify-send  \"$vpnStatus\"  --icon <ICON> ) ")
-                .arg(config.readEntry("status_keys", "Status|Current server|Transfer|IP"));
+        ProcessManager::vpnStatus();
+        return;
     } else if (payload.startsWith(QLatin1String("nordvpn connect"))){
         ProcessManager::connectVPN(notify, payload.split(' ').last());
         return;
