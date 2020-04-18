@@ -11,8 +11,8 @@ class ProcessManager : public QObject {
 
 public:
     typedef void (ProcessCallback)(const QString &);
-    static void connectVPN(bool notify, const QStringList &args);
-    static void disconnectVPN(bool notify, const QStringList &args);
+    static void connectVPN(bool notify, const QStringList &args, const QString &changeScript);
+    static void disconnectVPN(bool notify, const QStringList &args, const QString &changeScript);
     static void vpnStatus(const QStringList &args);
 
 protected:
@@ -20,7 +20,7 @@ protected:
     /**
      * Gets called by public functions, makes logic reusable
      */
-    static void runNordVPNCommand(const QStringList &args, bool notify, ProcessCallback *notificationFunction);
+    static void runNordVPNCommand(const QStringList &args, bool notify, ProcessCallback *notificationFunction, const QString &script = QString());
 };
 
 

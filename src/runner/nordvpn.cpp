@@ -72,12 +72,12 @@ void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch
 
     const bool notify = config.readEntry("notify", true);
     if (command == QLatin1String("disconnect")) {
-        ProcessManager::disconnectVPN(notify, args);
+        ProcessManager::disconnectVPN(notify, args, config.readEntry("script"));
     } else if (command == QLatin1String("status")) {
         ProcessManager::vpnStatus(args);
     } else {
         // Since a few nordvpn versions the connect command can be used to reconnect to other server
-        ProcessManager::connectVPN(notify, args);
+        ProcessManager::connectVPN(notify, args, config.readEntry("script"));
     }
 }
 
