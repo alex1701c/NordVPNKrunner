@@ -9,6 +9,8 @@
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QFileDialog>
 
+#include "kcmutils_version.h"
+
 K_PLUGIN_FACTORY(NordVPNConfigFactory, registerPlugin<NordVPNConfig>("kcm_krunner_nordvpn");)
 
 NordVPNConfigForm::NordVPNConfigForm(QWidget *parent) : QWidget(parent) {
@@ -21,30 +23,35 @@ NordVPNConfig::NordVPNConfig(QWidget *parent, const QVariantList &args) : KCModu
     layout->addWidget(m_ui, 0, 0);
     config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("NordVPN");
 
+#if KCMUTILS_VERSION >= QT_VERSION_CHECK(5, 64, 0)
+    const auto changedSlotPointer = &NordVPNConfig::markAsChanged;
+#else
+    const auto changedSlotPointer = static_cast<void (NordVPNConfig::*)()>(&NordVPNConfig::changed);
+#endif
+
     m_ui->krunnerStatusExampleLabel->hide();
     m_ui->krunnerStatusExample->hide();
     m_ui->iconDefaultButton->setHidden(config.readEntry("icon", defaultIcon) == defaultIcon);
     m_ui->statusKeysStatus->setEnabled(false);
-    // TODO Use QT5 Syntax
-    connect(m_ui->defaultConnectionTarget, SIGNAL(textChanged(QString)), this, SLOT(changed()));
-    connect(m_ui->krunnerStatus, SIGNAL(textChanged(QString)), this, SLOT(changed()));
-    connect(m_ui->source, SIGNAL(textChanged(QString)), this, SLOT(changed()));
-    connect(m_ui->krunnerStatus, SIGNAL(textChanged(QString)), this, SLOT(exampleStatus()));
-    connect(m_ui->changeScript, SIGNAL(textChanged(QString)), this, SLOT(changed()));
+    connect(m_ui->defaultConnectionTarget, &QLineEdit::textChanged, this, changedSlotPointer);
+    connect(m_ui->krunnerStatus, &QLineEdit::textChanged, this, changedSlotPointer);
+    connect(m_ui->source, &QLineEdit::textChanged, this, changedSlotPointer);
+    connect(m_ui->krunnerStatus, &QLineEdit::textChanged, this, changedSlotPointer);
+    connect(m_ui->changeScript, &QLineEdit::textChanged, this, changedSlotPointer);
 
-    connect(m_ui->notify, SIGNAL(clicked(bool)), this, SLOT(changed()));
-    connect(m_ui->statusKeysStatus, SIGNAL(clicked(bool)), this, SLOT(changed()));
-    connect(m_ui->statusKeysCurrentServer, SIGNAL(clicked(bool)), this, SLOT(changed()));
-    connect(m_ui->statusKeysCountry, SIGNAL(clicked(bool)), this, SLOT(changed()));
-    connect(m_ui->statusKeysCity, SIGNAL(clicked(bool)), this, SLOT(changed()));
-    connect(m_ui->statusKeysNewIP, SIGNAL(clicked(bool)), this, SLOT(changed()));
-    connect(m_ui->statusKeysCurrentProtocol, SIGNAL(clicked(bool)), this, SLOT(changed()));
-    connect(m_ui->statusKeysTransfer, SIGNAL(clicked(bool)), this, SLOT(changed()));
-    connect(m_ui->statusKeysUptime, SIGNAL(clicked(bool)), this, SLOT(changed()));
+    connect(m_ui->notify, &QCheckBox::clicked, this, changedSlotPointer);
+    connect(m_ui->statusKeysStatus, &QCheckBox::clicked, this, changedSlotPointer);
+    connect(m_ui->statusKeysCurrentServer, &QCheckBox::clicked, this, changedSlotPointer);
+    connect(m_ui->statusKeysCountry, &QCheckBox::clicked, this, changedSlotPointer);
+    connect(m_ui->statusKeysCity, &QCheckBox::clicked, this, changedSlotPointer);
+    connect(m_ui->statusKeysNewIP, &QCheckBox::clicked, this, changedSlotPointer);
+    connect(m_ui->statusKeysCurrentProtocol, &QCheckBox::clicked, this, changedSlotPointer);
+    connect(m_ui->statusKeysTransfer, &QCheckBox::clicked, this, changedSlotPointer);
+    connect(m_ui->statusKeysUptime, &QCheckBox::clicked, this, changedSlotPointer);
 
-    connect(m_ui->statusKeysExampleNotification, SIGNAL(clicked(bool)), this, SLOT(showExampleStatusNotification()));
-    connect(m_ui->iconButton, SIGNAL(clicked(bool)), this, SLOT(openIconFileChooser()));
-    connect(m_ui->iconDefaultButton, SIGNAL(clicked(bool)), this, SLOT(setDefaultIcon()));
+    connect(m_ui->statusKeysExampleNotification, &QPushButton::clicked, this, &NordVPNConfig::showExampleStatusNotification);
+    connect(m_ui->iconButton, &QPushButton::clicked, this, &NordVPNConfig::openIconFileChooser);
+    connect(m_ui->iconDefaultButton, &QPushButton::clicked, this, &NordVPNConfig::setDefaultIcon);
 }
 
 void NordVPNConfig::load() {
