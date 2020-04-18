@@ -27,7 +27,6 @@ void NordVPN::init() {
                                                           "Sometimes you have to do this if you change from a wireless to a wired connection"));
     setSyntaxes(syntaxes);
     connect(this, &NordVPN::prepare, this, &NordVPN::prepareForMatchSession);
-    connect(this, &NordVPN::teardown, this, &NordVPN::matchSessionFinished);
 }
 
 void NordVPN::prepareForMatchSession() {
@@ -40,37 +39,8 @@ void NordVPN::prepareForMatchSession() {
     suspendMatching(vpnStatus.status == QLatin1String("Error"));
 }
 
-void NordVPN::matchSessionFinished() {
-    if (!wasActive) return;
-    if (config.readEntry("clean_history", true)) {
-        wasActive = false;
-        QString history = config.parent().parent().group("General").readEntry("history");
-        const int historySize = history.size();
-        const QString filteredHistory = history.remove(QRegularExpression(R"((?:nord)?vpn d(?:isconnect)?[^ek],?)"));
-        if (filteredHistory.size() == historySize) return;
-
-        QFile f(QDir::homePath() + "/.config/krunnerrc");
-        if (f.open(QIODevice::ReadWrite)) {
-            QString s;
-            QTextStream t(&f);
-            while (!t.atEnd()) {
-                const QString line = t.readLine();
-                if (!line.startsWith(QLatin1String("history"))) {
-                    s.append(line + "\n");
-                } else {
-                    s.append("history=" + filteredHistory + "\n");
-                }
-            }
-            f.resize(0);
-            f.write(s.toLocal8Bit());
-            f.close();
-        }
-    }
-}
-
 
 void NordVPN::match(Plasma::RunnerContext &context) {
-    if (!context.isValid()) return;
     QString term = context.query();
 
     if (!term.startsWith(shortTriggerWord) && !term.startsWith(triggerWord)) {
@@ -79,6 +49,9 @@ void NordVPN::match(Plasma::RunnerContext &context) {
 
     QList<Plasma::QueryMatch> matches;
     const QList<Match> matchList = Match::generateOptions(vpnStatus, term);
+    if (!context.isValid()) {
+        return;
+    }
     for (const auto &m: matchList) {
         Plasma::QueryMatch match(this);
         match.setText(m.text);
@@ -93,6 +66,7 @@ void NordVPN::match(Plasma::RunnerContext &context) {
 void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) {
     Q_UNUSED(context)
 
+    // TODO Reqrite using QProcess
     const QString payload = match.data().toString();
     const QString iconPath = config.readEntry("icon", "nordvpn");
     const QString changeScript = config.readEntry("script");

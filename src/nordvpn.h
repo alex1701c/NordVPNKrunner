@@ -24,7 +24,6 @@ protected Q_SLOTS:
 
     void init() override;
     void prepareForMatchSession();
-    void matchSessionFinished();
 
 
 public: // Plasma::AbstractRunner API

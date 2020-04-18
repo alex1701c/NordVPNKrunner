@@ -25,13 +25,13 @@ NordVPNConfig::NordVPNConfig(QWidget *parent, const QVariantList &args) : KCModu
     m_ui->krunnerStatusExample->hide();
     m_ui->iconDefaultButton->setHidden(config.readEntry("icon", defaultIcon) == defaultIcon);
     m_ui->statusKeysStatus->setEnabled(false);
+    // TODO Use QT5 Syntax
     connect(m_ui->defaultConnectionTarget, SIGNAL(textChanged(QString)), this, SLOT(changed()));
     connect(m_ui->krunnerStatus, SIGNAL(textChanged(QString)), this, SLOT(changed()));
     connect(m_ui->source, SIGNAL(textChanged(QString)), this, SLOT(changed()));
     connect(m_ui->krunnerStatus, SIGNAL(textChanged(QString)), this, SLOT(exampleStatus()));
     connect(m_ui->changeScript, SIGNAL(textChanged(QString)), this, SLOT(changed()));
 
-    connect(m_ui->cleanHistory, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->notify, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->statusKeysStatus, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->statusKeysCurrentServer, SIGNAL(clicked(bool)), this, SLOT(changed()));
@@ -59,12 +59,11 @@ void NordVPNConfig::save() {
     writeConfigText("source", m_ui->source->text());
     writeConfigText("script", m_ui->changeScript->text());
 
-    config.writeEntry("clean_history", m_ui->cleanHistory->isChecked());
     config.writeEntry("notify", m_ui->notify->isChecked());
     if (!newIcon.isEmpty()) config.writeEntry("icon", newIcon);
     config.writeEntry("status_keys", getStatusNotificationKeys());
 
-    config.sync();
+    config.config()->sync();
 
     emit changed(true);
 }
@@ -76,7 +75,6 @@ void NordVPNConfig::defaults() {
     newIcon = defaultIcon;
     m_ui->source->setText("nordvpn status");
     m_ui->changeScript->setText("");
-    m_ui->cleanHistory->setChecked(true);
     m_ui->notify->setChecked(true);
 
     m_ui->statusKeysStatus->setChecked(true);
@@ -95,9 +93,8 @@ void NordVPNConfig::setCurrentSettings() {
     m_ui->krunnerStatus->setText(config.readEntry("status", "%STATUS"));
     m_ui->iconButton->setIcon(QIcon::fromTheme(config.readEntry("icon", defaultIcon)));
     m_ui->source->setText(config.readEntry("source", "nordvpn status"));
-    m_ui->changeScript->setText(config.readEntry("script", ""));
-    m_ui->cleanHistory->setChecked(config.readEntry("clean_history", "true") == "true");
-    m_ui->notify->setChecked(config.readEntry("notify", "true") == "true");
+    m_ui->changeScript->setText(config.readEntry("script"));
+    m_ui->notify->setChecked(config.readEntry("notify", true));
 
     QList<QString> values = config.readEntry("status_keys", "Status|Current server|Transfer|Your new IP").split('|');
     m_ui->statusKeysStatus->setChecked(values.contains("Status"));
@@ -124,11 +121,19 @@ QString NordVPNConfig::getStatusNotificationKeys() {
 }
 
 void NordVPNConfig::showExampleStatusNotification() {
+    // TODO Move notification logic to class, use KNotifications
     const QString cmd = QString(
             "$($(vpnStatus=$(printf '" + exampleData + "' | grep -i -E '%1');" "notify-send  \"$vpnStatus\" --icon %2 )) 2>&1 &")
             .arg(getStatusNotificationKeys())
             .arg(config.readEntry("icon", defaultIcon));
     system(qPrintable(cmd));
+}
+
+void NordVPNConfig::exampleStatus() {
+    m_ui->krunnerStatusExampleLabel->setHidden(false);
+    m_ui->krunnerStatusExample->setHidden(false);
+    const auto status = Status::objectFromRawData(exampleData);
+    m_ui->krunnerStatusExample->setText(status.formatString(m_ui->krunnerStatus->text()));
 }
 
 void NordVPNConfig::writeConfigText(const QString &key, const QString &text) {
@@ -159,13 +164,6 @@ void NordVPNConfig::setDefaultIcon() {
     newIcon = defaultIcon;
     m_ui->iconButton->clearFocus();
     changed(true);
-}
-
-void NordVPNConfig::exampleStatus() {
-    m_ui->krunnerStatusExampleLabel->setHidden(false);
-    m_ui->krunnerStatusExample->setHidden(false);
-    const auto status = Status::objectFromRawData(exampleData);
-    m_ui->krunnerStatusExample->setText(status.formatString(m_ui->krunnerStatus->text()));
 }
 
 #include "nordvpn_config.moc"

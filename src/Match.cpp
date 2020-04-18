@@ -3,6 +3,7 @@
 #include <KSharedConfig>
 #include <KConfigGroup>
 #include <QDebug>
+#include <QRegularExpression>
 
 QList<Match> Match::generateOptions(const Status &vpnStatus, const QString &term) {
     QList<Match> matches;
@@ -19,22 +20,22 @@ QList<Match> Match::generateConnectionOptions(const Status &vpnStatus, const KCo
     if (vpnStatus.connectionExists()) {
         // Disconnect option always shown, relevance differs
         int relevanceDisconnect = 0;
-        if (term.contains(QRegExp("vpn d(isconnect)? *$"))) {
+        if (term.contains(QRegularExpression("vpn d(isconnect)? *$"))) {
             relevanceDisconnect = 1;
         }
         matches.append(Match("Disconnect", "disconnect", (float) relevanceDisconnect));
     } else {
         // Connect to new
         target = Status::evalConnectQuery(term, config.readEntry("default", "US")).toUpper();
-        matches.append(Match(QString("Connect To " + target), QString("nordvpn connect " + target), 1));
+        matches.append(Match("Connect To " + target, "nordvpn connect " + target, 1));
     }
     // Reconnect to current/other options
     if (vpnStatus.connectionExists() && (term.startsWith("vpn reconnect") || term.startsWith("nordvpn reconnect"))) {
         target = Status::evalConnectQuery(term, "");
         const bool countryOnly = target.contains(QRegExp("[a-zA-z ]{2,50}$"));
         const bool sameStart = QString((vpnStatus.country + vpnStatus.server)).remove(" ")
-                .startsWith(target.remove(" "), Qt::CaseInsensitive);
-        const bool emptyTarget = target.remove(" ").isEmpty();
+                .startsWith(target.remove(' '), Qt::CaseInsensitive);
+        const bool emptyTarget = target.remove(' ').isEmpty();
 
         if (emptyTarget || (sameStart && countryOnly) ||
             target.toLower() == QString(vpnStatus.country + vpnStatus.status).toLower()) {

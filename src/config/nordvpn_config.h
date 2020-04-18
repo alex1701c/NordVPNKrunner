@@ -24,30 +24,27 @@ public:
 
     const QString defaultIcon = "nordvpn";
 
-    const QString exampleData = "Status: Connected\n"
+    const QString exampleData = QStringLiteral("Status: Connected\n"
                                 "Current server: us4276.nordvpn.com\n"
                                 "Country: United States\n"
                                 "City: Manassas\n"
                                 "Your new IP: 23.82.14.23\n"
                                 "Current protocol: UDP\n"
                                 "Transfer: 26.9 KiB received, 8.6 KiB sent\n"
-                                "Uptime: 7 seconds";
+                                "Uptime: 7 seconds");
 
 public Q_SLOTS:
 
     void save() override;
-
     void load() override;
-
     void defaults() override;
 
+    void exampleStatus();
     void showExampleStatusNotification();
 
     void openIconFileChooser();
-
     void setDefaultIcon();
 
-    void exampleStatus();
 
 private:
     NordVPNConfigForm *m_ui;

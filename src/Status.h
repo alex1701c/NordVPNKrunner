@@ -14,8 +14,6 @@ public:
 
     QMap<QString, QString> rawData;
 
-    void extractConnectionInformation();
-
     bool connectionExists() const;
 
     static QString evalConnectQuery(const QString &term, const QString &defaultTarget = "");
