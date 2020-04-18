@@ -1,4 +1,4 @@
-set(core_api_SRCS Status.cpp NotificationManager.cpp)
+set(core_api_SRCS Status.cpp NotificationManager.cpp ProcessManager.cpp Utilities.cpp)
 
 add_library(core_api_static STATIC ${core_api_SRCS})
 

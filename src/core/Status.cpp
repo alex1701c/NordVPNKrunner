@@ -3,7 +3,9 @@
 #include <QRegularExpression>
 #include <QtCore/QProcess>
 #include <KCoreAddons/KMacroExpander>
+
 #include "Status.h"
+#include "Utilities.h"
 
 bool Status::connectionExists() const {
     // Valid statuses: Connected, Connecting, Reconnecting
@@ -42,8 +44,8 @@ QString Status::getRawConnectionStatus(const QString &statusSource) {
     QProcess process;
     process.start(statusSource);
     process.waitForFinished(-1);
-    static const QRegularExpression cleanupRegex(R"(^[\r\- ]*)");
-    QString out = QString::fromLocal8Bit(process.readAllStandardOutput()).remove(cleanupRegex);
+    QString out = QString::fromLocal8Bit(process.readAll());
+    out = Utilities::filterBeginning(out);
     if (QString(out).remove('\n') == QLatin1String("Please check your internet connection and try again.")) {
         return QStringLiteral("Status: No Internet");
     }
