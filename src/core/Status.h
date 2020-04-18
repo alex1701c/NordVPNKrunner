@@ -3,7 +3,7 @@
 
 
 #include <QtCore/QString>
-#include <QMap>
+#include <QHash>
 
 class Status {
 public:
@@ -12,7 +12,7 @@ public:
     QString country;
     QString server;
 
-    QMap<QString, QString> rawData;
+    QHash<QString, QString> rawData;
 
     bool connectionExists() const;
 
@@ -22,7 +22,7 @@ public:
 
     static Status objectFromRawData(const QString &statusData);
 
-    QString formatString(QString raw) const;
+    QString formatString(const QString &raw) const;
 
 };
 

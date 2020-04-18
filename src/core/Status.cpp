@@ -2,6 +2,7 @@
 #include <KConfigCore/KConfigGroup>
 #include <QRegularExpression>
 #include <QtCore/QProcess>
+#include <KCoreAddons/KMacroExpander>
 #include "Status.h"
 
 bool Status::connectionExists() const {
@@ -58,8 +59,8 @@ Status Status::objectFromRawData(const QString &statusData) {
             status.current_server = line;
         }
         if (!line.isEmpty() && line.contains(':')) {
-            status.rawData.insert('%' + line.split(':').first().remove(' ').toUpper(), line);
-            status.rawData.insert('%' + line.split(':').first().remove(' ').toLower(),
+            status.rawData.insert(line.split(':').first().remove(' ').toUpper(), line);
+            status.rawData.insert(line.split(':').first().remove(' ').toLower(),
                                   line.split(':').last().remove(0, 1));
         }
     }
@@ -68,20 +69,11 @@ Status Status::objectFromRawData(const QString &statusData) {
         const auto res = regex.match(status.current_server);
         status.country = res.captured(1);
         status.server = res.captured(2);
+        status.rawData.insert("server", status.country + status.server);
     }
-
     return status;
 }
 
-QString Status::formatString(QString raw) const {
-    // TODO Use KDE Macro exapnder
-    for (const auto &key: rawData.keys()) {
-        if (raw.contains(key)) {
-            raw.replace(key, rawData.value(key));
-        }
-    }
-    raw.replace("%server", country.toUpper() + server);
-    raw.replace("%st", rawData.value("%STATUS"));
-    raw.remove(QRegularExpression("%[a-zA-Z]+"));
-    return raw;
+QString Status::formatString(const QString &raw) const {
+    return KMacroExpander::expandMacros(raw, rawData).remove(QRegularExpression("%[a-zA-Z]+"));
 }
