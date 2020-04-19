@@ -12,7 +12,7 @@
 void NotificationManager::displaySimpleNotification(const QString &event,
                                                     const QString &status,
                                                     const QString &title) {
-    // small NordVPN icon is used, param changes nothing
+    // NordVPN icon is used, param changes nothing
     KNotification::event(event, title, status, QString(), nullptr,
                          KNotification::CloseOnTimeout, "krunner_nordvpn");
 }
@@ -41,12 +41,13 @@ void NotificationManager::displayDisconnectNotification(const QString &processOu
 }
 
 void NotificationManager::displayStatusNotification(const QString &processOutput) {
-    KConfigGroup config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("NordVPN");
-    config.config()->reparseConfiguration();
-    QStringList keys = config.readEntry("status_filter_keys", QStringList());
-    if (keys.isEmpty()) {
-        keys = QStringList({"Status", "Current server", "Transfer", "Your new IP"});
-    }
+    // Because the static context is used the keys are fetched for every notification
+    const static QStringList defaultKeys = {"Status", "Current server", "Transfer", "Your new IP"};
+    static auto _config = KSharedConfig::openConfig("krunnerplugins/nordvpnrunnerrc", KConfig::NoGlobals);
+    _config->reparseConfiguration();
+    const KConfigGroup config = _config->group("Config");
+
+    QStringList keys = config.readEntry("status_filter_keys", defaultKeys);
     displayStatusNotification(processOutput, keys, config.readEntry("ip", false));
 }
 

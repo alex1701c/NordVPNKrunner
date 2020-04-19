@@ -19,6 +19,11 @@ public:
      * If the term and the status have the same target
      */
     static bool sameTarget(QString &target, const Status &status);
+
+    /**
+     * Creates config file if it does not exist
+     */
+    static QString initializeConfigFile();
 };
 
 

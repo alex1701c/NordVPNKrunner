@@ -1,6 +1,8 @@
 #include "Utilities.h"
 
 #include <QRegularExpression>
+#include <QFile>
+#include <QDir>
 
 QString Utilities::filterBeginning(QString &str) {
     static const QRegularExpression cleanupRegex(R"(^[\r\\\|/\- ]*)");
@@ -14,7 +16,7 @@ bool Utilities::sameTarget(QString &target, const Status &status) {
 
 
     // Empty target is interpreted as same target
-    if (emptyTarget){
+    if (emptyTarget) {
         return true;
     }
     // Same country, no server specified
@@ -24,4 +26,20 @@ bool Utilities::sameTarget(QString &target, const Status &status) {
 
     // Country and server specified and they match exactly the target
     return target.compare(status.country + status.server, Qt::CaseInsensitive) == 0;
+}
+
+QString Utilities::initializeConfigFile() {
+    const QString configFolder = QDir::homePath() + QStringLiteral("/.config/krunnerplugins/");
+    const QString configFilePath = configFolder + QStringLiteral("nordvpnrunnerrc");
+    const QDir configDir(configFolder);
+    if (!configDir.exists()) {
+        configDir.mkpath(configFolder);
+    }
+    // Create file
+    QFile configFile(configFilePath);
+    if (!configFile.exists()) {
+        configFile.open(QIODevice::WriteOnly);
+        configFile.close();
+    }
+    return configFilePath;
 }

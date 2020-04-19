@@ -9,6 +9,7 @@
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QFileDialog>
 #include <core/NotificationManager.h>
+#include <core/Utilities.h>
 
 #include "kcmutils_version.h"
 
@@ -22,7 +23,7 @@ NordVPNConfig::NordVPNConfig(QWidget *parent, const QVariantList &args) : KCModu
     m_ui = new NordVPNConfigForm(this);
     auto *layout = new QGridLayout(this);
     layout->addWidget(m_ui, 0, 0);
-    config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("NordVPN");
+    config = KSharedConfig::openConfig(Utilities::initializeConfigFile())->group("Config");
 
 #if KCMUTILS_VERSION >= QT_VERSION_CHECK(5, 64, 0)
     const auto changedSlotPointer = &NordVPNConfig::markAsChanged;

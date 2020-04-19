@@ -4,6 +4,7 @@
 // KF
 #include <QtGui/QtGui>
 #include <core/ProcessManager.h>
+#include <core/Utilities.h>
 
 NordVPN::NordVPN(QObject *parent, const QVariantList &args)
         : Plasma::AbstractRunner(parent, args) {
@@ -26,10 +27,30 @@ void NordVPN::init() {
                                                           "Sometimes you have to do this if you change from a wireless to a wired connection"));
     setSyntaxes(syntaxes);
     connect(this, &NordVPN::prepare, this, &NordVPN::prepareForMatchSession);
+
+    // Add file watcher for config
+    configFilePath = Utilities::initializeConfigFile();
+    watcher.addPath(configFilePath);
+    connect(&watcher, &QFileSystemWatcher::fileChanged, this, &NordVPN::reloadPluginConfiguration);
+    reloadPluginConfiguration();
+}
+
+void NordVPN::reloadPluginConfiguration() {
+    KConfigGroup config = KSharedConfig::openConfig(configFilePath, KConfig::NoGlobals)->group("Config");
+    config.config()->reparseConfiguration();
+
+    // If the file gets edited with a text editor, it often gets replaced by the edited version
+    // https://stackoverflow.com/a/30076119/9342842
+    watcher.addPath(configFilePath);
+    source = config.readEntry("source", "nordvpn status");
+    icon = QIcon::fromTheme(config.readEntry("icon", "nordvpn"),
+                            QIcon("/var/lib/nordvpn/icon.svg"));
+    notify = config.readEntry("notify", true);
+    changeScript = config.readEntry("script");
 }
 
 void NordVPN::prepareForMatchSession() {
-    const QString statusData = Status::getRawConnectionStatus(config.readEntry("source", "nordvpn status"));
+    const QString statusData = Status::getRawConnectionStatus(source);
     if (!statusData.isEmpty()) {
         vpnStatus = Status::objectFromRawData(statusData);
     } else if (vpnStatus.rawData.isEmpty()) {
@@ -37,7 +58,6 @@ void NordVPN::prepareForMatchSession() {
     }
     suspendMatching(vpnStatus.status == QLatin1String("Error"));
 }
-
 
 void NordVPN::match(Plasma::RunnerContext &context) {
     QString term = context.query();
@@ -56,7 +76,7 @@ void NordVPN::match(Plasma::RunnerContext &context) {
         match.setText(m.text);
         match.setData(m.data);
         match.setRelevance(m.relevance);
-        match.setIconName(config.readEntry("icon", "nordvpn"));
+        match.setIcon(icon);
         matches.append(match);
     }
     context.addMatches(matches);
@@ -68,16 +88,14 @@ void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch
     QStringList args = match.data().toStringList();
     const QString command = args.takeFirst();
 
-    const bool notify = config.readEntry("notify", true);
     if (command == QLatin1String("disconnect")) {
-        ProcessManager::disconnectVPN(notify, args, config.readEntry("script"));
+        ProcessManager::disconnectVPN(notify, args, changeScript);
     } else if (command == QLatin1String("status")) {
         ProcessManager::vpnStatus(args);
     } else if (command == QLatin1String("reconnect")) {
-        ProcessManager::reconnectVPN(notify, args, config.readEntry("script"));
+        ProcessManager::reconnectVPN(notify, args, changeScript);
     } else {
-        // Since a few nordvpn versions the connect command can be used to reconnect to other server
-        ProcessManager::connectVPN(notify, args, config.readEntry("script"));
+        ProcessManager::connectVPN(notify, args, changeScript);
     }
 }
 
