@@ -82,10 +82,10 @@ void NordVPNConfig::save() {
 void NordVPNConfig::defaults() {
     m_ui->defaultConnectionTarget->setText("US");
     m_ui->krunnerStatus->setText("%STATUS");
-    m_ui->iconButton->setIcon(QIcon(defaultIcon));
+    m_ui->iconButton->setIcon(QIcon::fromTheme(defaultIcon));
     newIcon = defaultIcon;
     m_ui->source->setText("nordvpn status");
-    m_ui->changeScript->setText("");
+    m_ui->changeScript->setText(QString());
     m_ui->notify->setChecked(true);
     m_ui->ipCheckBox->setChecked(false);
 

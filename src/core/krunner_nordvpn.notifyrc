@@ -1,6 +1,6 @@
 [Global]
 IconName=nordvpn
-Comment=Krunner integration for nordvpn
+Comment=Krunner integration for NordVPN
 Name=KRunner NordVPN
 
 [Event/status]
