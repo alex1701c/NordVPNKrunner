@@ -44,8 +44,7 @@ QList<Match> Match::generateOptions(const Status &vpnStatus, const QString &term
     // The target is the same and the keywords match
     if (!differentConnect && (term.startsWith("vpn reconnect") || term.startsWith("nordvpn reconnect"))) {
         target = vpnStatus.country + vpnStatus.server;
-        // TODO This has to be handled seperately in backend ...
-        matches.append(Match("Reconnect To Current", {"connect", "connect", target}, 1));
+        matches.append(Match("Reconnect To Current", {"reconnect", "connect", target}, 1));
     }
     return matches;
 }

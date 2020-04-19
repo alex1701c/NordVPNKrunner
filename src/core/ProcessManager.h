@@ -13,6 +13,7 @@ public:
     typedef void (ProcessCallback)(const QString &);
     static void connectVPN(bool notify, const QStringList &args, const QString &changeScript);
     static void disconnectVPN(bool notify, const QStringList &args, const QString &changeScript);
+    static void reconnectVPN(bool notify, const QStringList &args, const QString &changeScript);
     static void vpnStatus(const QStringList &args);
 
 protected:

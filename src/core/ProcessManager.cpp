@@ -39,3 +39,17 @@ void ProcessManager::runNordVPNCommand(const QStringList &args,
             }
     );
 }
+
+void ProcessManager::reconnectVPN(bool notify, const QStringList &args, const QString &changeScript) {
+    auto *process = new QProcess;
+    process->start("nordvpn", {"d"});
+    connect(process, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+            [=](int exitCode, QProcess::ExitStatus exitStatus) {
+                Q_UNUSED(exitCode)
+                Q_UNUSED(exitStatus)
+                process->close();
+                process->deleteLater();
+                connectVPN(notify, args, changeScript);
+            }
+    );
+}

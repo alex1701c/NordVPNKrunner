@@ -2,9 +2,7 @@
 #include "core/Status.h"
 #include "Match.h"
 // KF
-#include <KLocalizedString>
 #include <QtGui/QtGui>
-#include <KSharedConfig>
 #include <core/ProcessManager.h>
 
 NordVPN::NordVPN(QObject *parent, const QVariantList &args)
@@ -75,6 +73,8 @@ void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch
         ProcessManager::disconnectVPN(notify, args, config.readEntry("script"));
     } else if (command == QLatin1String("status")) {
         ProcessManager::vpnStatus(args);
+    } else if (command == QLatin1String("reconnect")) {
+        ProcessManager::reconnectVPN(notify, args, config.readEntry("script"));
     } else {
         // Since a few nordvpn versions the connect command can be used to reconnect to other server
         ProcessManager::connectVPN(notify, args, config.readEntry("script"));
