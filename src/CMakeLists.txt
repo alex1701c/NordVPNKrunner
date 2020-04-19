@@ -26,4 +26,7 @@ target_link_libraries(kcm_krunner_nordvpn
 target_link_libraries(kcm_krunner_nordvpn core_api_static)
 
 install(TARGETS krunner_nordvpn kcm_krunner_nordvpn DESTINATION ${KDE_INSTALL_QTPLUGINDIR})
-install(FILES runner/plasma-runner-nordvpn.desktop config/plasma-runner-nordvpn_config.desktop DESTINATION ${KDE_INSTALL_KSERVICES5DIR})
+install(FILES config/plasma-runner-nordvpn_config.desktop DESTINATION ${KDE_INSTALL_KSERVICES5DIR})
+
+configure_file(runner/plasma-runner-nordvpn.desktop.in runner/plasma-runner-nordvpn.desktop)
+install(FILES ${CMAKE_BINARY_DIR}/src/runner/plasma-runner-nordvpn.desktop DESTINATION ${KDE_INSTALL_KSERVICES5DIR})
