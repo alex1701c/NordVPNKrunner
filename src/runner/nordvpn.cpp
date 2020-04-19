@@ -26,7 +26,11 @@ void NordVPN::init() {
     syntaxes.append(Plasma::RunnerSyntax("vpn reconnect", "Reconnect to the current country and server. "
                                                           "Sometimes you have to do this if you change from a wireless to a wired connection"));
     setSyntaxes(syntaxes);
-    connect(this, &NordVPN::prepare, this, &NordVPN::prepareForMatchSession);
+
+    // Fetch only the status data if the query matches
+    connect(this, &NordVPN::prepare, [=]() {
+        newMatchSession = true;
+    });
 
     // Add file watcher for config
     configFilePath = Utilities::initializeConfigFile();
@@ -49,20 +53,28 @@ void NordVPN::reloadPluginConfiguration() {
     changeScript = config.readEntry("script");
 }
 
-void NordVPN::prepareForMatchSession() {
+void NordVPN::loadStatus() {
     const QString statusData = Status::getRawConnectionStatus(source);
     if (!statusData.isEmpty()) {
         vpnStatus = Status::objectFromRawData(statusData);
     } else if (vpnStatus.rawData.isEmpty()) {
         vpnStatus = Status::objectFromRawData("Status: Disconnected");
     }
-    suspendMatching(vpnStatus.status == QLatin1String("Error"));
 }
 
 void NordVPN::match(Plasma::RunnerContext &context) {
     QString term = context.query();
 
     if (!term.startsWith(shortTriggerWord) && !term.startsWith(triggerWord)) {
+        return;
+    }
+    QMutexLocker locker(&mutex);
+    if (newMatchSession) {
+        loadStatus();
+        newMatchSession = false;
+    }
+    locker.unlock();
+    if (vpnStatus.status == QLatin1String("Error")) {
         return;
     }
 

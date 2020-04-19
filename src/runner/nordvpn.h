@@ -6,6 +6,7 @@
 #include <QFileSystemWatcher>
 #include <QtCore/QFile>
 #include <QtCore/QDir>
+#include <QMutex>
 #include "core/Status.h"
 
 class NordVPN : public Plasma::AbstractRunner {
@@ -22,6 +23,11 @@ public:
     const QLatin1String triggerWord = QLatin1String("nordvpn");
     const QLatin1String shortTriggerWord = QLatin1String("vpn");
 
+    // For thread sync, only fetch status if the query matches
+    // the trigger words and reuse the status for the match session
+    bool newMatchSession = false;
+    QMutex mutex;
+
     // Config stuff
     QString configFilePath;
     QString source;
@@ -32,7 +38,7 @@ public:
 protected Q_SLOTS:
 
     void init() override;
-    void prepareForMatchSession();
+    void loadStatus();
 
 
 public: // Plasma::AbstractRunner API
