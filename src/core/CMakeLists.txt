@@ -2,6 +2,6 @@ set(core_api_SRCS Status.cpp NotificationManager.cpp ProcessManager.cpp Utilitie
 
 add_library(core_api_static STATIC ${core_api_SRCS})
 
-target_link_libraries(core_api_static KF5::ConfigCore KF5::Notifications KF5::CoreAddons)
+target_link_libraries(core_api_static KF5::ConfigCore KF5::Notifications KF5::CoreAddons Qt5::Network)
 
 install(FILES krunner_nordvpn.notifyrc DESTINATION ${KNOTIFYRC_INSTALL_DIR})

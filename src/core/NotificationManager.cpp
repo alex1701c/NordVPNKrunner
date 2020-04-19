@@ -5,6 +5,9 @@
 #include <KConfigGroup>
 #include <QDebug>
 #include <KSharedConfig>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QTimer>
 
 void NotificationManager::displaySimpleNotification(const QString &event,
                                                     const QString &status,
@@ -44,10 +47,10 @@ void NotificationManager::displayStatusNotification(const QString &processOutput
     if (keys.isEmpty()) {
         keys = QStringList({"Status", "Current server", "Transfer", "Your new IP"});
     }
-    displayStatusNotification(processOutput, keys);
+    displayStatusNotification(processOutput, keys, config.readEntry("ip", false));
 }
 
-void NotificationManager::displayStatusNotification(const QString &processOutput, const QStringList &keys) {
+void NotificationManager::displayStatusNotification(const QString &processOutput, const QStringList &keys, bool ip) {
     QString notifyText;
     const auto resList = processOutput.split('\n');
     for (const auto &line: resList) {
@@ -59,6 +62,31 @@ void NotificationManager::displayStatusNotification(const QString &processOutput
         }
     }
     static const QString eventID = QStringLiteral("status");
-    displaySimpleNotification(eventID, notifyText);
+    if (!ip) {
+        displaySimpleNotification(eventID, notifyText);
+    } else {
+        auto manager = new QNetworkAccessManager();
+        QNetworkRequest request(QUrl(QStringLiteral("https://ifconfig.me/ip")));
+        auto reply = manager->get(request);
+
+        // Make sure to cancel request after two seconds, then delete pointers
+        QTimer::singleShot(2000, [=]() {
+            if (!reply->isFinished()) {
+                reply->abort();
+            }
+            // Deletes also reply
+            delete manager;
+        });
+        // Display notification when network request is finished
+        QObject::connect(manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
+            QString ipLine = QStringLiteral("Fetched Ip Address: %1");
+            if (reply->error() == QNetworkReply::NoError) {
+                ipLine = ipLine.arg(QString::fromLocal8Bit(reply->readAll()));
+            } else {
+                ipLine = ipLine.arg(reply->errorString());
+            }
+            displaySimpleNotification(eventID, notifyText + ipLine);
+        });
+    }
 }
 

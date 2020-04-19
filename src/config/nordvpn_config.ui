@@ -336,6 +336,13 @@
           </item>
          </layout>
         </item>
+        <item alignment="Qt::AlignRight">
+         <widget class="QCheckBox" name="ipCheckBox">
+          <property name="text">
+           <string>Display IP Address by making request to https://ifconfig.me/ip</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
      </layout>

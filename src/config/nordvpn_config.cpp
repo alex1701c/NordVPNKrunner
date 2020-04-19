@@ -48,10 +48,10 @@ NordVPNConfig::NordVPNConfig(QWidget *parent, const QVariantList &args) : KCModu
     connect(m_ui->statusKeysNewIP, &QCheckBox::clicked, this, changedSlotPointer);
     connect(m_ui->statusKeysCurrentProtocol, &QCheckBox::clicked, this, changedSlotPointer);
     connect(m_ui->statusKeysTransfer, &QCheckBox::clicked, this, changedSlotPointer);
-    connect(m_ui->statusKeysUptime, &QCheckBox::clicked, this, changedSlotPointer);
+    connect(m_ui->ipCheckBox, &QCheckBox::clicked, this, changedSlotPointer);
 
     connect(m_ui->statusKeysExampleNotification, &QPushButton::clicked, [this]() {
-        NotificationManager::displayStatusNotification(exampleData, getStatusNotificationKeys());
+        NotificationManager::displayStatusNotification(exampleData, getStatusNotificationKeys(), m_ui->ipCheckBox->isChecked());
     });
     connect(m_ui->iconButton, &QPushButton::clicked, this, &NordVPNConfig::openIconFileChooser);
     connect(m_ui->iconDefaultButton, &QPushButton::clicked, this, &NordVPNConfig::setDefaultIcon);
@@ -70,6 +70,7 @@ void NordVPNConfig::save() {
     writeConfigText("script", m_ui->changeScript->text());
 
     config.writeEntry("notify", m_ui->notify->isChecked());
+    config.writeEntry("ip", m_ui->ipCheckBox->isChecked());
     if (!newIcon.isEmpty()) config.writeEntry("icon", newIcon);
     config.writeEntry("status_filter_keys", getStatusNotificationKeys());
 
@@ -86,6 +87,7 @@ void NordVPNConfig::defaults() {
     m_ui->source->setText("nordvpn status");
     m_ui->changeScript->setText("");
     m_ui->notify->setChecked(true);
+    m_ui->ipCheckBox->setChecked(false);
 
     m_ui->statusKeysStatus->setChecked(true);
     m_ui->statusKeysCurrentServer->setChecked(true);
@@ -105,6 +107,7 @@ void NordVPNConfig::setCurrentSettings() {
     m_ui->source->setText(config.readEntry("source", "nordvpn status"));
     m_ui->changeScript->setText(config.readEntry("script"));
     m_ui->notify->setChecked(config.readEntry("notify", true));
+    m_ui->ipCheckBox->setChecked(config.readEntry("ip", false));
 
     auto values = config.readEntry("status_filter_keys", QStringList());
     if (values.isEmpty()) {

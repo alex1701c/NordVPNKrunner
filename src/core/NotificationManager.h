@@ -15,7 +15,7 @@ public:
     static void displayConnectNotification(const QString &processOutput);
     static void displayDisconnectNotification(const QString &processOutput);
     static void displayStatusNotification(const QString &processOutput);
-    static void displayStatusNotification(const QString &processOutput, const QStringList &keys);
+    static void displayStatusNotification(const QString &processOutput, const QStringList &keys, bool ip);
 };
 
 
