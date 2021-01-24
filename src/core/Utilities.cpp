@@ -6,6 +6,7 @@
 
 QString Utilities::filterBeginning(QString &str) {
     static const QRegularExpression cleanupRegex(R"(^[\r\\\|/\- ]*)");
+    str = str.remove("A new version of NordVPN is available! Please update the application.\n");
     return str.remove(cleanupRegex);
 }
 
