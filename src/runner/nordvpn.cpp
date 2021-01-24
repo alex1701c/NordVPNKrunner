@@ -86,6 +86,7 @@ void NordVPN::match(Plasma::RunnerContext &context) {
     for (const auto &m: matchList) {
         Plasma::QueryMatch match(this);
         match.setText(m.text);
+        match.setType(Plasma::QueryMatch::ExactMatch);
         match.setData(m.data);
         match.setRelevance(m.relevance);
         match.setIcon(icon);
