@@ -28,8 +28,12 @@ void NordVPN::init() {
     setSyntaxes(syntaxes);
 
     // Fetch only the status data if the query matches
+    connect(&vpnStatus, &Status::finished, this, [this](){
+        suspendMatching(false);
+    });
     connect(this, &NordVPN::prepare, [=]() {
-        newMatchSession = true;
+        suspendMatching(true);
+        vpnStatus.updateConnectionStatus();
     });
 
     // Add file watcher for config
@@ -53,36 +57,18 @@ void NordVPN::reloadPluginConfiguration() {
     changeScript = config.readEntry("script");
 }
 
-void NordVPN::loadStatus() {
-    const QString statusData = Status::getRawConnectionStatus(source);
-    if (!statusData.isEmpty()) {
-        vpnStatus = Status::objectFromRawData(statusData);
-    } else if (vpnStatus.rawData.isEmpty()) {
-        vpnStatus = Status::objectFromRawData("Status: Disconnected");
-    }
-}
-
 void NordVPN::match(Plasma::RunnerContext &context) {
     QString term = context.query();
 
     if (!term.startsWith(shortTriggerWord) && !term.startsWith(triggerWord)) {
         return;
     }
-    QMutexLocker locker(&mutex);
-    if (newMatchSession) {
-        loadStatus();
-        newMatchSession = false;
-    }
-    locker.unlock();
     if (vpnStatus.status == QLatin1String("Error")) {
         return;
     }
 
     QList<Plasma::QueryMatch> matches;
     const QList<Match> matchList = Match::generateOptions(vpnStatus, term);
-    if (!context.isValid()) {
-        return;
-    }
     for (const auto &m: matchList) {
         Plasma::QueryMatch match(this);
         match.setText(m.text);

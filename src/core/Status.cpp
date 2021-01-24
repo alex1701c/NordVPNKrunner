@@ -41,42 +41,45 @@ QString Status::evalConnectQuery(const QString &term, const QString &defaultTarg
     return target;
 }
 
-QString Status::getRawConnectionStatus(const QString &statusSource) {
-    QProcess process;
-    process.start(statusSource);
-    process.waitForFinished(-1);
-    QString out = QString::fromLocal8Bit(process.readAll());
-    out = Utilities::filterBeginning(out);
-    if (QString(out).remove('\n') == QLatin1String("Please check your internet connection and try again.")) {
-        return QStringLiteral("Status: No Internet");
-    }
-    return out;
+void Status::updateConnectionStatus() {
+    QProcess *process = new QProcess();
+    process->start("nordvpn", {"status"});
+    connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, [this, process](){
+        QString out = QString::fromLocal8Bit(process->readAll());
+        out = Utilities::filterBeginning(out);
+        if (QString(out).remove('\n') == QLatin1String("Please check your internet connection and try again.")) {
+            out = QStringLiteral("Status: No Internet");
+        }
+        parseStatusData(out);
+        process->deleteLater();
+    });
 }
 
-Status Status::objectFromRawData(const QString &statusData) {
-    Status status;
+void Status::parseStatusData(const QString &statusData) {
     for (const auto &line: statusData.split('\n')) {
         if (line.startsWith(QLatin1String("Status:"))) {
-            status.status = line;
+            status = line;
         } else if (line.startsWith(QLatin1String("Current server: "))) {
-            status.current_server = line;
+            current_server = line;
         }
         if (!line.isEmpty() && line.contains(':')) {
-            status.rawData.insert(line.split(':').first().remove(' ').toUpper(), line);
-            status.rawData.insert(line.split(':').first().remove(' ').toLower(),
+            rawData.insert(line.split(':').first().remove(' ').toUpper(), line);
+            rawData.insert(line.split(':').first().remove(' ').toLower(),
                                   line.split(':').last().remove(0, 1));
         }
     }
-    if (!status.current_server.isEmpty()) {
+    if (!current_server.isEmpty()) {
         static QRegularExpression regex(QStringLiteral("Current server: ([a-z]{2})(\\d{1,5})"));
-        const auto res = regex.match(status.current_server);
-        status.country = res.captured(1);
-        status.server = res.captured(2);
-        status.rawData.insert("server", status.country + status.server);
+        const auto res = regex.match(current_server);
+        country = res.captured(1);
+        server = res.captured(2);
+        rawData.insert("server", country + server);
     }
-    return status;
+    Q_EMIT finished();
 }
 
 QString Status::formatString(const QString &raw) const {
     return KMacroExpander::expandMacros(raw, rawData).remove(QRegularExpression("%[a-zA-Z]+"));
 }
+
+#include "Status.moc"

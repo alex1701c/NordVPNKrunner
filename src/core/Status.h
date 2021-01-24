@@ -4,9 +4,12 @@
 
 #include <QtCore/QString>
 #include <QHash>
+#include <QObject>
 
-class Status {
+class Status : public QObject {
+    Q_OBJECT
 public:
+    using QObject::QObject;
     QString status = "Error";
     QString current_server;
     QString country;
@@ -18,11 +21,13 @@ public:
 
     static QString evalConnectQuery(const QString &term, const QString &defaultTarget = "");
 
-    static QString getRawConnectionStatus(const QString &statusSource);
+    void updateConnectionStatus();
 
-    static Status objectFromRawData(const QString &statusData);
+    void parseStatusData(const QString &statusData);
 
     QString formatString(const QString &raw) const;
+
+    Q_SIGNAL void finished();
 
 };
 

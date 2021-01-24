@@ -140,7 +140,8 @@ QStringList NordVPNConfig::getStatusNotificationKeys() {
 void NordVPNConfig::exampleStatus() {
     m_ui->krunnerStatusExampleLabel->setHidden(false);
     m_ui->krunnerStatusExample->setHidden(false);
-    const auto status = Status::objectFromRawData(exampleData);
+    Status status;
+    status.parseStatusData(exampleData);
     m_ui->krunnerStatusExample->setText(status.formatString(m_ui->krunnerStatus->text()));
 }
 
