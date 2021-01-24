@@ -38,8 +38,6 @@ NordVPNConfig::NordVPNConfig(QWidget *parent, const QVariantList &args) : KCModu
     connect(m_ui->defaultConnectionTarget, &QLineEdit::textChanged, this, changedSlotPointer);
     connect(m_ui->krunnerStatus, &QLineEdit::textChanged, this, changedSlotPointer);
     connect(m_ui->krunnerStatus, &QLineEdit::textChanged, this, &NordVPNConfig::exampleStatus);
-    connect(m_ui->source, &QLineEdit::textChanged, this, changedSlotPointer);
-    connect(m_ui->changeScript, &QLineEdit::textChanged, this, changedSlotPointer);
 
     connect(m_ui->notify, &QCheckBox::clicked, this, changedSlotPointer);
     connect(m_ui->statusKeysStatus, &QCheckBox::clicked, this, changedSlotPointer);
@@ -67,8 +65,6 @@ void NordVPNConfig::load() {
 void NordVPNConfig::save() {
     writeConfigText("default", m_ui->defaultConnectionTarget->text());
     writeConfigText("status", m_ui->krunnerStatus->text());
-    writeConfigText("source", m_ui->source->text());
-    writeConfigText("script", m_ui->changeScript->text());
 
     config.writeEntry("notify", m_ui->notify->isChecked());
     config.writeEntry("ip", m_ui->ipCheckBox->isChecked());
@@ -85,8 +81,6 @@ void NordVPNConfig::defaults() {
     m_ui->krunnerStatus->setText("%STATUS");
     m_ui->iconButton->setIcon(QIcon::fromTheme(defaultIcon));
     newIcon = defaultIcon;
-    m_ui->source->setText("nordvpn status");
-    m_ui->changeScript->setText(QString());
     m_ui->notify->setChecked(true);
     m_ui->ipCheckBox->setChecked(false);
 
@@ -105,8 +99,6 @@ void NordVPNConfig::setCurrentSettings() {
     m_ui->defaultConnectionTarget->setText(config.readEntry("default", "US"));
     m_ui->krunnerStatus->setText(config.readEntry("status", "%STATUS"));
     m_ui->iconButton->setIcon(QIcon::fromTheme(config.readEntry("icon", defaultIcon)));
-    m_ui->source->setText(config.readEntry("source", "nordvpn status"));
-    m_ui->changeScript->setText(config.readEntry("script"));
     m_ui->notify->setChecked(config.readEntry("notify", true));
     m_ui->ipCheckBox->setChecked(config.readEntry("ip", false));
 

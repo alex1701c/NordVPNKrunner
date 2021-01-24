@@ -50,11 +50,9 @@ void NordVPN::reloadPluginConfiguration() {
     // If the file gets edited with a text editor, it often gets replaced by the edited version
     // https://stackoverflow.com/a/30076119/9342842
     watcher.addPath(configFilePath);
-    source = config.readEntry("source", "nordvpn status");
     icon = QIcon::fromTheme(config.readEntry("icon", "nordvpn"),
                             QIcon("/var/lib/nordvpn/icon.svg"));
     notify = config.readEntry("notify", true);
-    changeScript = config.readEntry("script");
 }
 
 void NordVPN::match(Plasma::RunnerContext &context) {
@@ -88,13 +86,13 @@ void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch
     const QString command = args.takeFirst();
 
     if (command == QLatin1String("disconnect")) {
-        ProcessManager::disconnectVPN(notify, args, changeScript);
+        ProcessManager::disconnectVPN(notify, args);
     } else if (command == QLatin1String("status")) {
         ProcessManager::vpnStatus(args);
     } else if (command == QLatin1String("reconnect")) {
-        ProcessManager::reconnectVPN(notify, args, changeScript);
+        ProcessManager::reconnectVPN(notify, args);
     } else {
-        ProcessManager::connectVPN(notify, args, changeScript);
+        ProcessManager::connectVPN(notify, args);
     }
 }
 

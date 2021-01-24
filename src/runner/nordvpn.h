@@ -30,10 +30,8 @@ public:
 
     // Config stuff
     QString configFilePath;
-    QString source;
     QIcon icon;
     bool notify;
-    QString changeScript;
 
 protected Q_SLOTS:
 

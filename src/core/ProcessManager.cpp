@@ -4,12 +4,12 @@
 #include "Utilities.h"
 #include "NotificationManager.h"
 
-void ProcessManager::connectVPN(bool notify, const QStringList &args, const QString &changeScript) {
-    runNordVPNCommand(args, notify, &NotificationManager::displayConnectNotification, changeScript);
+void ProcessManager::connectVPN(bool notify, const QStringList &args) {
+    runNordVPNCommand(args, notify, &NotificationManager::displayConnectNotification);
 }
 
-void ProcessManager::disconnectVPN(const bool notify, const QStringList &args, const QString &changeScript) {
-    runNordVPNCommand(args, notify, &NotificationManager::displayDisconnectNotification, changeScript);
+void ProcessManager::disconnectVPN(const bool notify, const QStringList &args) {
+    runNordVPNCommand(args, notify, &NotificationManager::displayDisconnectNotification);
 }
 
 void ProcessManager::vpnStatus(const QStringList &args) {
@@ -18,8 +18,7 @@ void ProcessManager::vpnStatus(const QStringList &args) {
 
 void ProcessManager::runNordVPNCommand(const QStringList &args,
                                        bool notify,
-                                       ProcessCallback *notificationFunction,
-                                       const QString &script) {
+                                       ProcessCallback *notificationFunction) {
     auto *process = new QProcess;
     process->start("nordvpn", args);
     connect(process, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
@@ -33,14 +32,11 @@ void ProcessManager::runNordVPNCommand(const QStringList &args,
                 }
                 process->close();
                 process->deleteLater();
-                if (!script.isEmpty()) {
-                    QProcess::startDetached(script);
-                }
             }
     );
 }
 
-void ProcessManager::reconnectVPN(bool notify, const QStringList &args, const QString &changeScript) {
+void ProcessManager::reconnectVPN(bool notify, const QStringList &args) {
     auto *process = new QProcess;
     process->start("nordvpn", {"d"});
     connect(process, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
@@ -49,7 +45,7 @@ void ProcessManager::reconnectVPN(bool notify, const QStringList &args, const QS
                 Q_UNUSED(exitStatus)
                 process->close();
                 process->deleteLater();
-                connectVPN(notify, args, changeScript);
+                connectVPN(notify, args);
             }
     );
 }

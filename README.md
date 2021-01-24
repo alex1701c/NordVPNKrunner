@@ -36,10 +36,6 @@ source as explained below.
 * `Status inside Krunner` Format for the text of status option. All the options are prefixed with a % character.
 The keys are the same as in the NordVPN CLi but the spaces have ben removed. To get the key and value you have to type the key in uppercase letters e.g.`%COUNTRY`,
 if you only want to get the value the key should be lowercase like `%yournewip`. The live preview of a status should help with the formatting.
-* `Source for the status` Command used to fetch the status from NordVPN, the default one is `nordvpn status`. This is useful if you have the issue that the NordVPN CLI is sometimes very slow when displaying the status.
-Instead of executing the slow command you can fetch the data from a file that gets regularly updated. I personally use this in combination with the Command Output Plasmoid,
-which executes `nordvpn status | tee <path> | grep 'Status'` and the Krunner plugin executed `cat <path>`.
-* `Change script` Command that gets executed after the connection is changed(disconnect, connect, reconnect), the default is empty. This can be used to update a file(as in source explained).
 * `Notify` Send notifications if the connection changes, if you use this you might want to disable the notifications
 of the nordvpn cli `nordvpn set notify disabled`
 * `Status Keys` Set the keys for the status notification. They are used to filter the information from the NordVPN CLI.
