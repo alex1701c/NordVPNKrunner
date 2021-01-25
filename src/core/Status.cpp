@@ -81,5 +81,3 @@ void Status::parseStatusData(const QString &statusData) {
 QString Status::formatString(const QString &raw) const {
     return KMacroExpander::expandMacros(raw, rawData).remove(QRegularExpression("%[a-zA-Z]+"));
 }
-
-#include "Status.moc"

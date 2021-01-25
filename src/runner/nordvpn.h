@@ -8,13 +8,19 @@
 #include <QtCore/QDir>
 #include <QMutex>
 #include "core/Status.h"
+#include <krunner_version.h>
 
 class NordVPN : public Plasma::AbstractRunner {
 Q_OBJECT
 
 public:
-    NordVPN(QObject *parent, const QVariantList &args);
-
+#if KRUNNER_VERSION <= QT_VERSION_CHECK(5, 77, 0)
+    NordVPN(QObject *parent, const QVariantList &args)
+        : Plasma::AbstractRunner(parent, args){};
+#else
+    NordVPN(QObject *parent, const KPluginMetaData &pluginMetaData, const QVariantList &args)
+        : Plasma::AbstractRunner(parent, pluginMetaData, args){};
+#endif
     ~NordVPN() override;
 
     QFileSystemWatcher watcher;
