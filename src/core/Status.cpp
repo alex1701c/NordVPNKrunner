@@ -56,6 +56,9 @@ void Status::updateConnectionStatus() {
 }
 
 void Status::parseStatusData(const QString &statusData) {
+    rawData.clear();
+    status.clear();
+    current_server.clear();
     for (const auto &line: statusData.split('\n')) {
         if (line.startsWith(QLatin1String("Status:"))) {
             status = line;
