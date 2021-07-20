@@ -11,8 +11,6 @@
 #include <core/NotificationManager.h>
 #include <core/Utilities.h>
 
-#include "kcmutils_version.h"
-
 K_PLUGIN_FACTORY(NordVPNConfigFactory, registerPlugin<NordVPNConfig>("kcm_krunner_nordvpn");)
 
 NordVPNConfigForm::NordVPNConfigForm(QWidget *parent) : QWidget(parent) {
@@ -25,11 +23,7 @@ NordVPNConfig::NordVPNConfig(QWidget *parent, const QVariantList &args) : KCModu
     layout->addWidget(m_ui, 0, 0);
     config = KSharedConfig::openConfig(Utilities::initializeConfigFile())->group("Config");
 
-#if KCMUTILS_VERSION >= QT_VERSION_CHECK(5, 64, 0)
     const auto changedSlotPointer = &NordVPNConfig::markAsChanged;
-#else
-    const auto changedSlotPointer = static_cast<void (NordVPNConfig::*)()>(&NordVPNConfig::changed);
-#endif
 
     m_ui->krunnerStatusExampleLabel->hide();
     m_ui->krunnerStatusExample->hide();

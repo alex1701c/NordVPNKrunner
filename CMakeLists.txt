@@ -8,8 +8,8 @@ set(CMAKE_PROJECT_HOMEPAGE_URL "https://github.com/alex1701c/NordVPNKrunner/")
 set(CMAKE_PROJECT_AUTHOR "alex1701c")
 set(CMAKE_PROJECT_AUTHOR_EMAIL "alex1701c.dev@gmx.net")
 
-set(QT_MIN_VERSION "5.9.0")
-set(KF5_MIN_VERSION "5.44.0")
+set(QT_MIN_VERSION "5.12.0")
+set(KF5_MIN_VERSION "5.72.0")
 
 find_package(ECM 5.12.0 REQUIRED NO_MODULE)
 find_package(ECM ${KF5_MIN_VERSION} REQUIRED NO_MODULE)

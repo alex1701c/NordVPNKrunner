@@ -10,7 +10,6 @@ NordVPN::~NordVPN() = default;
 
 void NordVPN::init() {
     setObjectName(QStringLiteral("NordVPN"));
-    setSpeed(NormalSpeed);
     setPriority(HighestPriority);
     QList<Plasma::RunnerSyntax> syntaxes;
     syntaxes.append(Plasma::RunnerSyntax("vpn us", "Connect option to United States, server is chosen by NordVPN"));
@@ -89,11 +88,7 @@ void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch
     }
 }
 
-#if KRUNNER_VERSION >= QT_VERSION_CHECK(5, 72, 0)
 K_EXPORT_PLASMA_RUNNER_WITH_JSON(NordVPN, "plasma-runner-nordvpn.json")
-#else
-K_EXPORT_PLASMA_RUNNER(nordvpn, NordVPN)
-#endif
 
 // needed for the QObject subclass declared as part of K_EXPORT_PLASMA_RUNNER
 #include "nordvpn.moc"

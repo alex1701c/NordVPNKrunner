@@ -27,11 +27,6 @@ target_link_libraries(kcm_krunner_nordvpn core_api_static)
 
 install(TARGETS krunner_nordvpn DESTINATION ${KDE_INSTALL_QTPLUGINDIR}/kf5/krunner/)
 install(TARGETS kcm_krunner_nordvpn DESTINATION ${KDE_INSTALL_QTPLUGINDIR})
-configure_file(runner/plasma-runner-nordvpn.desktop.in runner/plasma-runner-nordvpn.desktop)
-if(KF5Runner_VERSION VERSION_LESS 5.72.0)
-    install(FILES ${CMAKE_BINARY_DIR}/src/runner/plasma-runner-nordvpn.desktop DESTINATION ${KDE_INSTALL_KSERVICES5DIR})
-else()
-    kcoreaddons_desktop_to_json(krunner_nordvpn ${CMAKE_BINARY_DIR}/src/runner/plasma-runner-nordvpn.desktop)
-endif()
+configure_file(runner/plasma-runner-nordvpn.json.in plasma-runner-nordvpn.json)
 install(FILES config/plasma-runner-nordvpn_config.desktop DESTINATION ${KDE_INSTALL_KSERVICES5DIR})
 
