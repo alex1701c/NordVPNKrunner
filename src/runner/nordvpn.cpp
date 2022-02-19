@@ -6,8 +6,6 @@
 #include <core/ProcessManager.h>
 #include <core/Utilities.h>
 
-NordVPN::~NordVPN() = default;
-
 void NordVPN::init() {
     setObjectName(QStringLiteral("NordVPN"));
     setPriority(HighestPriority);

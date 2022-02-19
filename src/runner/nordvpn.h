@@ -14,14 +14,8 @@ class NordVPN : public Plasma::AbstractRunner {
 Q_OBJECT
 
 public:
-#if KRUNNER_VERSION <= QT_VERSION_CHECK(5, 77, 0)
-    NordVPN(QObject *parent, const QVariantList &args)
-        : Plasma::AbstractRunner(parent, args){};
-#else
     NordVPN(QObject *parent, const KPluginMetaData &pluginMetaData, const QVariantList &args)
         : Plasma::AbstractRunner(parent, pluginMetaData, args){};
-#endif
-    ~NordVPN() override;
 
     QFileSystemWatcher watcher;
     Status vpnStatus;
