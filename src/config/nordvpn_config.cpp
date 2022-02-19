@@ -11,7 +11,7 @@
 #include <core/NotificationManager.h>
 #include <core/Utilities.h>
 
-K_PLUGIN_FACTORY(NordVPNConfigFactory, registerPlugin<NordVPNConfig>("kcm_krunner_nordvpn");)
+K_PLUGIN_FACTORY(NordVPNConfigFactory, registerPlugin<NordVPNConfig>();)
 
 NordVPNConfigForm::NordVPNConfigForm(QWidget *parent) : QWidget(parent) {
     setupUi(this);
