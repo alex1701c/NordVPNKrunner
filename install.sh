@@ -17,7 +17,9 @@ make -j$(nproc)
 sudo make install
 sudo curl https://s1.nordcdn.com/nordvpn/media/1.170.0/images/global/favicon/apple-touch-icon-57x57.png -o /usr/share/pixmaps/nordvpn.png
 
-kquitapp5 krunner 2> /dev/null
-kstart5 --windowclass krunner krunner > /dev/null 2>&1 &
+if pgrep -x krunner > /dev/null
+then
+    kquitapp5 krunner
+fi
 
 echo "Installation finished !";
