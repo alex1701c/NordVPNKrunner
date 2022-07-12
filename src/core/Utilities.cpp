@@ -6,7 +6,13 @@
 
 QString Utilities::filterBeginning(QString &str) {
     static const QRegularExpression cleanupRegex(R"(^[\r\\\|/\- ]*)");
+     // https://github.com/alex1701c/NordVPNKrunner/issues/6
+    str.remove(QLatin1String("\r-\r"));
+    str.remove(QLatin1Char('\r'));
+
     str = str.remove("A new version of NordVPN is available! Please update the application.\n");
+    static const QRegularExpression newFeatureRegex(QStringLiteral("^New feature -.*\n"));
+    str = str.remove(newFeatureRegex).trimmed();
     return str.remove(cleanupRegex);
 }
 
