@@ -20,6 +20,7 @@ void NordVPN::init() {
     // Fetch only the status data if the query matches
     connect(&vpnStatus, &Status::finished, this, [this](){
         suspendMatching(false);
+        qWarning()<<Q_FUNC_INFO << vpnStatus.rawData;
     });
     connect(this, &NordVPN::prepare, [=]() {
         suspendMatching(true);
