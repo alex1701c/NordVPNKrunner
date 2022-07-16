@@ -26,7 +26,7 @@ target_link_libraries(kcm_krunner_nordvpn
 target_link_libraries(kcm_krunner_nordvpn core_api_static)
 
 install(TARGETS krunner_nordvpn DESTINATION ${KDE_INSTALL_QTPLUGINDIR}/kf5/krunner/)
-install(TARGETS kcm_krunner_nordvpn DESTINATION ${KDE_INSTALL_QTPLUGINDIR})
+install(TARGETS kcm_krunner_nordvpn DESTINATION ${KDE_INSTALL_QTPLUGINDIR}/kf5/krunner/kcms)
 configure_file(runner/plasma-runner-nordvpn.json.in plasma-runner-nordvpn.json)
 install(FILES config/plasma-runner-nordvpn_config.desktop DESTINATION ${KDE_INSTALL_KSERVICES5DIR})
 
