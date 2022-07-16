@@ -9,13 +9,11 @@
 void NordVPN::init() {
     setObjectName(QStringLiteral("NordVPN"));
     setPriority(HighestPriority);
-    QList<Plasma::RunnerSyntax> syntaxes;
-    syntaxes.append(Plasma::RunnerSyntax("vpn us", "Connect option to United States, server is chosen by NordVPN"));
-    syntaxes.append(Plasma::RunnerSyntax("vpn us 3335", "Connect options to United States with server number 3335"));
-    syntaxes.append(Plasma::RunnerSyntax("vpn d", "Shows Disconnect option on top (just relevance changed)"));
-    syntaxes.append(Plasma::RunnerSyntax("vpn reconnect", "Reconnect to the current country and server. "
+    addSyntax(Plasma::RunnerSyntax("vpn us", "Connect option to United States, server is chosen by NordVPN"));
+    addSyntax(Plasma::RunnerSyntax("vpn us 3335", "Connect options to United States with server number 3335"));
+    addSyntax(Plasma::RunnerSyntax("vpn d", "Shows Disconnect option on top (just relevance changed)"));
+    addSyntax(Plasma::RunnerSyntax("vpn reconnect", "Reconnect to the current country and server. "
                                                           "Sometimes you have to do this if you change from a wireless to a wired connection"));
-    setSyntaxes(syntaxes);
 
     // Fetch only the status data if the query matches
     connect(&vpnStatus, &Status::finished, this, [this](){
