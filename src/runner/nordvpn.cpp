@@ -69,9 +69,7 @@ void NordVPN::match(Plasma::RunnerContext &context) {
     context.addMatches(matches);
 }
 
-void NordVPN::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) {
-    Q_UNUSED(context)
-
+void NordVPN::run(const Plasma::RunnerContext &/*context*/, const Plasma::QueryMatch &match) {
     QStringList args = match.data().toStringList();
     const QString command = args.takeFirst();
 
