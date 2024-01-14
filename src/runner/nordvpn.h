@@ -1,5 +1,4 @@
-#ifndef NORDVPN_H
-#define NORDVPN_H
+#pragma once
 
 #include "core/Status.h"
 #include <KRunner/AbstractRunner>
@@ -41,5 +40,3 @@ public: // AbstractRunner API
     void run(const KRunner::RunnerContext &context, const KRunner::QueryMatch &match) override;
     void reloadPluginConfiguration();
 };
-
-#endif

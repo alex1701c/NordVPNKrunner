@@ -1,5 +1,4 @@
-#ifndef NORDVPNCONFIG_H
-#define NORDVPNCONFIG_H
+#pragma once
 
 #include "ui_nordvpn_config.h"
 #include <KCModule>
@@ -50,5 +49,3 @@ private:
         "Transfer: 26.9 KiB received, 8.6 KiB sent\n"
         "Uptime: 7 seconds");
 };
-
-#endif

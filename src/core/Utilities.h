@@ -1,5 +1,4 @@
-#ifndef NORDVPN_UTILITIES_H
-#define NORDVPN_UTILITIES_H
+#pragma once
 
 #include "Status.h"
 #include <QString>
@@ -25,5 +24,3 @@ public:
      */
     static QString initializeConfigFile();
 };
-
-#endif // NORDVPN_UTILITIES_H

@@ -1,10 +1,7 @@
-#include <utility>
-
-#ifndef NORDVPN_MATCH_H
-#define NORDVPN_MATCH_H
+#pragma once
 
 #include "core/Status.h"
-#include <krunner/runnercontext.h>
+#include <utility>
 
 class Match
 {
@@ -24,5 +21,3 @@ public:
 
     static QList<Match> generateOptions(const Status &vpnStatus, const QString &term);
 };
-
-#endif // NORDVPN_MATCH_H
