@@ -81,7 +81,7 @@ void NordVPN::run(const Plasma::RunnerContext &/*context*/, const Plasma::QueryM
     }
 }
 
-K_EXPORT_PLASMA_RUNNER_WITH_JSON(NordVPN, "plasma-runner-nordvpn.json")
+K_PLUGIN_CLASS_WITH_JSON(NordVPN, "plasma-runner-nordvpn.json")
 
 // needed for the QObject subclass declared as part of K_EXPORT_PLASMA_RUNNER
 #include "nordvpn.moc"

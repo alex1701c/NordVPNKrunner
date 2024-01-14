@@ -20,8 +20,7 @@ void ProcessManager::runNordVPNCommand(const QStringList &args,
                                        ProcessCallback *notificationFunction) {
     auto *process = new QProcess;
     process->start("nordvpn", args);
-    connect(process, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-            [=]() {
+    connect(process, &QProcess::finished, [=]() {
                 if (notify) {
                     QString _out = QString::fromLocal8Bit(process->readAll());
                     const QString out = Utilities::filterBeginning(_out);
@@ -36,8 +35,7 @@ void ProcessManager::runNordVPNCommand(const QStringList &args,
 void ProcessManager::reconnectVPN(bool notify, const QStringList &args) {
     auto *process = new QProcess;
     process->start("nordvpn", {"d"});
-    connect(process, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-            [=]() {
+    connect(process, &QProcess::finished, [=]() {
                 process->close();
                 process->deleteLater();
                 connectVPN(notify, args);

@@ -45,7 +45,7 @@ QString Status::evalConnectQuery(const QString &term, const QString &defaultTarg
 void Status::updateConnectionStatus() {
     QProcess *process = new QProcess();
     process->start("nordvpn", {"status"});
-    connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, [this, process](){
+    connect(process, &QProcess::finished, this, [this, process](){
         QString out = QString::fromLocal8Bit(process->readAll());
         out = Utilities::filterBeginning(out);
         if (QString(out).remove('\n') == QLatin1String("Please check your internet connection and try again.")) {
