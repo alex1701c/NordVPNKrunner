@@ -19,7 +19,8 @@ QList<Match> Match::generateOptions(const Status &vpnStatus, const QString &term
     const bool connectionExists = vpnStatus.connectionExists();
     if (connectionExists) {
         int relevanceDisconnect = 0;
-        const bool disconnectQuery = term.contains(QRegularExpression("vpn d(isconnect)? *$"));
+        const static QRegularExpression disconnectRegex("vpn d(isconnect)? *$");
+        const bool disconnectQuery = term.contains(disconnectRegex);
         if (disconnectQuery) {
             relevanceDisconnect = 1;
         }

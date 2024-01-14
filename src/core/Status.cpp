@@ -16,7 +16,8 @@ QString Status::evalConnectQuery(const QString &term, const QString &defaultTarg
     QString target;
     // Returns extracted target from normal or reconnect queries, rejects disconnect query
     if (!term.contains(QLatin1String("reconnect"))) {
-        if (term.contains(QRegularExpression("vpn d[ ]*$")) || term.contains(QLatin1String("vpn di"))) {
+        const static QRegularExpression disconnectRegex("vpn d[ ]*$");
+        if (term.contains(disconnectRegex) || term.contains(QLatin1String("vpn di"))) {
             // Rejects for example vpn d, vpn disconnect, vpn dis
             return target;
         }
@@ -82,5 +83,6 @@ void Status::parseStatusData(const QString &statusData) {
 }
 
 QString Status::formatString(const QString &raw) const {
-    return KMacroExpander::expandMacros(raw, rawData).remove(QRegularExpression("%[a-zA-Z]+"));
+    const static QRegularExpression cleanupPlaceholders("%[a-zA-Z]+");
+    return KMacroExpander::expandMacros(raw, rawData).remove(cleanupPlaceholders);
 }
