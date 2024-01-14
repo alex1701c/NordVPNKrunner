@@ -1,21 +1,25 @@
 #include "nordvpn_config.h"
 #include "core/Status.h"
-#include <KSharedConfig>
 #include <KPluginFactory>
-#include <krunner/abstractrunner.h>
-#include <QtWidgets/QGridLayout>
+#include <KSharedConfig>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QFileDialog>
+#include <QtWidgets/QGridLayout>
 #include <core/NotificationManager.h>
 #include <core/Utilities.h>
+#include <krunner/abstractrunner.h>
 
 K_PLUGIN_FACTORY(NordVPNConfigFactory, registerPlugin<NordVPNConfig>();)
 
-NordVPNConfigForm::NordVPNConfigForm(QWidget *parent) : QWidget(parent) {
+NordVPNConfigForm::NordVPNConfigForm(QWidget *parent)
+    : QWidget(parent)
+{
     setupUi(this);
 }
 
-NordVPNConfig::NordVPNConfig(QWidget *parent, const QVariantList &args) : KCModule(parent, args) {
+NordVPNConfig::NordVPNConfig(QWidget *parent, const QVariantList &args)
+    : KCModule(parent, args)
+{
     m_ui = new NordVPNConfigForm(this);
     auto *layout = new QGridLayout(this);
     layout->addWidget(m_ui, 0, 0);
@@ -48,19 +52,21 @@ NordVPNConfig::NordVPNConfig(QWidget *parent, const QVariantList &args) : KCModu
     connect(m_ui->iconDefaultButton, &QPushButton::clicked, this, &NordVPNConfig::setDefaultIcon);
 }
 
-void NordVPNConfig::load() {
+void NordVPNConfig::load()
+{
     setCurrentSettings();
     emit changed(false);
 }
 
-
-void NordVPNConfig::save() {
+void NordVPNConfig::save()
+{
     writeConfigText("default", m_ui->defaultConnectionTarget->text());
     writeConfigText("status", m_ui->krunnerStatus->text());
 
     config.writeEntry("notify", m_ui->notify->isChecked());
     config.writeEntry("ip", m_ui->ipCheckBox->isChecked());
-    if (!newIcon.isEmpty()) config.writeEntry("icon", newIcon);
+    if (!newIcon.isEmpty())
+        config.writeEntry("icon", newIcon);
     config.writeEntry("status_filter_keys", getStatusNotificationKeys());
 
     config.config()->sync();
@@ -68,7 +74,8 @@ void NordVPNConfig::save() {
     emit changed(true);
 }
 
-void NordVPNConfig::defaults() {
+void NordVPNConfig::defaults()
+{
     m_ui->defaultConnectionTarget->setText("US");
     m_ui->krunnerStatus->setText("%STATUS");
     m_ui->iconButton->setIcon(QIcon::fromTheme(defaultIcon));
@@ -87,7 +94,8 @@ void NordVPNConfig::defaults() {
     emit changed(true);
 }
 
-void NordVPNConfig::setCurrentSettings() {
+void NordVPNConfig::setCurrentSettings()
+{
     m_ui->defaultConnectionTarget->setText(config.readEntry("default", "US"));
     m_ui->krunnerStatus->setText(config.readEntry("status", "%STATUS"));
     m_ui->iconButton->setIcon(QIcon::fromTheme(config.readEntry("icon", defaultIcon)));
@@ -108,20 +116,30 @@ void NordVPNConfig::setCurrentSettings() {
     m_ui->statusKeysUptime->setChecked(values.contains("Uptime"));
 }
 
-QStringList NordVPNConfig::getStatusNotificationKeys() {
+QStringList NordVPNConfig::getStatusNotificationKeys()
+{
     QStringList keys;
-    if (m_ui->statusKeysStatus->isChecked()) keys.append("Status");
-    if (m_ui->statusKeysCurrentServer->isChecked()) keys.append("Current server");
-    if (m_ui->statusKeysCountry->isChecked()) keys.append("Country");
-    if (m_ui->statusKeysCity->isChecked()) keys.append("City");
-    if (m_ui->statusKeysNewIP->isChecked()) keys.append("Your new IP");
-    if (m_ui->statusKeysCurrentProtocol->isChecked()) keys.append("Current protocol");
-    if (m_ui->statusKeysTransfer->isChecked()) keys.append("Transfer");
-    if (m_ui->statusKeysUptime->isChecked()) keys.append("Uptime");
+    if (m_ui->statusKeysStatus->isChecked())
+        keys.append("Status");
+    if (m_ui->statusKeysCurrentServer->isChecked())
+        keys.append("Current server");
+    if (m_ui->statusKeysCountry->isChecked())
+        keys.append("Country");
+    if (m_ui->statusKeysCity->isChecked())
+        keys.append("City");
+    if (m_ui->statusKeysNewIP->isChecked())
+        keys.append("Your new IP");
+    if (m_ui->statusKeysCurrentProtocol->isChecked())
+        keys.append("Current protocol");
+    if (m_ui->statusKeysTransfer->isChecked())
+        keys.append("Transfer");
+    if (m_ui->statusKeysUptime->isChecked())
+        keys.append("Uptime");
     return keys;
 }
 
-void NordVPNConfig::exampleStatus() {
+void NordVPNConfig::exampleStatus()
+{
     m_ui->krunnerStatusExampleLabel->setHidden(false);
     m_ui->krunnerStatusExample->setHidden(false);
     Status status;
@@ -129,7 +147,8 @@ void NordVPNConfig::exampleStatus() {
     m_ui->krunnerStatusExample->setText(status.formatString(m_ui->krunnerStatus->text()));
 }
 
-void NordVPNConfig::writeConfigText(const QString &key, const QString &text) {
+void NordVPNConfig::writeConfigText(const QString &key, const QString &text)
+{
     if (text.isEmpty()) {
         config.deleteEntry(key);
     } else {
@@ -137,9 +156,9 @@ void NordVPNConfig::writeConfigText(const QString &key, const QString &text) {
     }
 }
 
-void NordVPNConfig::openIconFileChooser() {
-    const QString iconPath = QFileDialog::getOpenFileName(this, tr("Select Icon"), "",
-                                                          tr("Images (.*.jpg *.jpeg *.png *.ico *.svg *.svgz)"));
+void NordVPNConfig::openIconFileChooser()
+{
+    const QString iconPath = QFileDialog::getOpenFileName(this, tr("Select Icon"), "", tr("Images (.*.jpg *.jpeg *.png *.ico *.svg *.svgz)"));
     if (!iconPath.isEmpty()) {
         newIcon = iconPath;
         m_ui->iconButton->setIcon(QIcon(newIcon));
@@ -150,7 +169,8 @@ void NordVPNConfig::openIconFileChooser() {
     m_ui->iconButton->clearFocus();
 }
 
-void NordVPNConfig::setDefaultIcon() {
+void NordVPNConfig::setDefaultIcon()
+{
     m_ui->iconButton->setIcon(QIcon::fromTheme(defaultIcon));
     m_ui->iconDefaultButton->setHidden(true);
     newIcon = defaultIcon;

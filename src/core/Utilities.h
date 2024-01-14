@@ -1,14 +1,14 @@
 #ifndef NORDVPN_UTILITIES_H
 #define NORDVPN_UTILITIES_H
 
-#include <QString>
 #include "Status.h"
+#include <QString>
 
 /**
  * Shome useful utility functions
  */
-class Utilities {
-
+class Utilities
+{
 public:
     /**
      * Filters loading characters and useless linebreaks etc. from the beginning
@@ -26,5 +26,4 @@ public:
     static QString initializeConfigFile();
 };
 
-
-#endif //NORDVPN_UTILITIES_H
+#endif // NORDVPN_UTILITIES_H

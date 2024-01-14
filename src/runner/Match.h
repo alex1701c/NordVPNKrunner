@@ -3,11 +3,11 @@
 #ifndef NORDVPN_MATCH_H
 #define NORDVPN_MATCH_H
 
-
-#include <krunner/runnercontext.h>
 #include "core/Status.h"
+#include <krunner/runnercontext.h>
 
-class Match {
+class Match
+{
 public:
     QString text;
     QStringList data;
@@ -15,10 +15,14 @@ public:
 
     Match() = default;
 
-    Match(QString text, QStringList data, float relevance) : text(std::move(text)), data(std::move(data)), relevance(relevance) {}
+    Match(QString text, QStringList data, float relevance)
+        : text(std::move(text))
+        , data(std::move(data))
+        , relevance(relevance)
+    {
+    }
 
     static QList<Match> generateOptions(const Status &vpnStatus, const QString &term);
 };
 
-
-#endif //NORDVPN_MATCH_H
+#endif // NORDVPN_MATCH_H

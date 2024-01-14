@@ -1,25 +1,24 @@
 #include "NotificationManager.h"
 #include "Utilities.h"
 
-#include <KNotifications/KNotification>
 #include <KConfigGroup>
-#include <QDebug>
+#include <KNotifications/KNotification>
 #include <KSharedConfig>
+#include <QDebug>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QTimer>
 
-void NotificationManager::displaySimpleNotification(const QString &event,
-                                                    const QString &status,
-                                                    const QString &title) {
+void NotificationManager::displaySimpleNotification(const QString &event, const QString &status, const QString &title)
+{
     // NordVPN icon is used, param changes nothing
-    KNotification::event(event, title, status, QString(), nullptr,
-                         KNotification::CloseOnTimeout, "krunner_nordvpn");
+    KNotification::event(event, title, status, QString(), nullptr, KNotification::CloseOnTimeout, "krunner_nordvpn");
 }
 
-void NotificationManager::displayConnectNotification(const QString &processOutput) {
+void NotificationManager::displayConnectNotification(const QString &processOutput)
+{
     auto resList = processOutput.split('\n');
-    for (auto &filteredRes: resList) {
+    for (auto &filteredRes : resList) {
         if (filteredRes.startsWith(QLatin1String("Connecting to"))) {
             continue;
         }
@@ -32,7 +31,8 @@ void NotificationManager::displayConnectNotification(const QString &processOutpu
     }
 }
 
-void NotificationManager::displayDisconnectNotification(const QString &processOutput) {
+void NotificationManager::displayDisconnectNotification(const QString &processOutput)
+{
     auto resList = processOutput.split('\n');
     if (!resList.isEmpty()) {
         static const QString eventID = QStringLiteral("disconnect");
@@ -40,7 +40,8 @@ void NotificationManager::displayDisconnectNotification(const QString &processOu
     }
 }
 
-void NotificationManager::displayStatusNotification(const QString &processOutput) {
+void NotificationManager::displayStatusNotification(const QString &processOutput)
+{
     // Because the static context is used the keys are fetched for every notification
     const static QStringList defaultKeys = {"Status", "Current server", "Transfer", "Your new IP"};
     static auto _config = KSharedConfig::openConfig("krunnerplugins/nordvpnrunnerrc", KConfig::NoGlobals);
@@ -51,10 +52,11 @@ void NotificationManager::displayStatusNotification(const QString &processOutput
     displayStatusNotification(processOutput, keys, config.readEntry("ip", false));
 }
 
-void NotificationManager::displayStatusNotification(const QString &processOutput, const QStringList &keys, bool ip) {
+void NotificationManager::displayStatusNotification(const QString &processOutput, const QStringList &keys, bool ip)
+{
     QString notifyText;
     const auto resList = processOutput.split('\n');
-    for (const auto &line: resList) {
+    for (const auto &line : resList) {
         if (line.contains(':')) {
             const auto key = line.split(':').first();
             if (keys.contains(key)) {
@@ -90,4 +92,3 @@ void NotificationManager::displayStatusNotification(const QString &processOutput
         });
     }
 }
-

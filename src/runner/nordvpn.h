@@ -1,17 +1,18 @@
 #ifndef NORDVPN_H
 #define NORDVPN_H
 
-#include <KSharedConfig>
-#include <KRunner/AbstractRunner>
-#include <QFileSystemWatcher>
-#include <QtCore/QFile>
-#include <QtCore/QDir>
-#include <QMutex>
 #include "core/Status.h"
+#include <KRunner/AbstractRunner>
+#include <KSharedConfig>
+#include <QFileSystemWatcher>
+#include <QMutex>
+#include <QtCore/QDir>
+#include <QtCore/QFile>
 #include <krunner_version.h>
 
-class NordVPN : public Plasma::AbstractRunner {
-Q_OBJECT
+class NordVPN : public Plasma::AbstractRunner
+{
+    Q_OBJECT
 
 public:
     NordVPN(QObject *parent, const KPluginMetaData &pluginMetaData, const QVariantList &args)

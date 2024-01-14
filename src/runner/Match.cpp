@@ -1,19 +1,18 @@
 #include "Match.h"
 #include "core/Status.h"
-#include <KSharedConfig>
 #include <KConfigGroup>
+#include <KSharedConfig>
 #include <QRegularExpression>
 #include <core/Utilities.h>
 
-QList<Match> Match::generateOptions(const Status &vpnStatus, const QString &term) {
+QList<Match> Match::generateOptions(const Status &vpnStatus, const QString &term)
+{
     QString target;
     QList<Match> matches;
     const auto config = KSharedConfig::openConfig(Utilities::initializeConfigFile())->group("Config");
 
     // The status gets always displayed
-    matches.append(Match(vpnStatus.formatString(config.readEntry("status", "%STATUS")),
-                         {"status", "status"},
-                         0.5));
+    matches.append(Match(vpnStatus.formatString(config.readEntry("status", "%STATUS")), {"status", "status"}, 0.5));
 
     const bool connectionExists = vpnStatus.connectionExists();
     if (connectionExists) {
@@ -23,7 +22,7 @@ QList<Match> Match::generateOptions(const Status &vpnStatus, const QString &term
         if (disconnectQuery) {
             relevanceDisconnect = 1;
         }
-        matches.append(Match("Disconnect", {"disconnect", "d"}, (float) relevanceDisconnect));
+        matches.append(Match("Disconnect", {"disconnect", "d"}, (float)relevanceDisconnect));
         if (disconnectQuery) {
             // Early return, not required but one case less to worry about ;-)
             return matches;

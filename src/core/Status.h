@@ -1,10 +1,11 @@
 #pragma once
 
-#include <QString>
 #include <QHash>
 #include <QObject>
+#include <QString>
 
-class Status : public QObject {
+class Status : public QObject
+{
     Q_OBJECT
 public:
     using QObject::QObject;
@@ -26,6 +27,4 @@ public:
     QString formatString(const QString &raw) const;
 
     Q_SIGNAL void finished();
-
 };
-

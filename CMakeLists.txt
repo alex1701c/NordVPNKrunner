@@ -21,6 +21,7 @@ include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
 include(FeatureSummary)
+include(KDEClangFormat)
 include(ECMDeprecationSettings)
 
 ecm_set_disabled_deprecation_versions(

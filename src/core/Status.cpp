@@ -1,18 +1,20 @@
 #include <KConfigGroup>
-#include <QRegularExpression>
-#include <QProcess>
 #include <KMacroExpander>
 #include <QDebug>
+#include <QProcess>
+#include <QRegularExpression>
 
 #include "Status.h"
 #include "Utilities.h"
 
-bool Status::connectionExists() const {
+bool Status::connectionExists() const
+{
     // Valid statuses: Connected, Connecting, Reconnecting
     return status.startsWith(QLatin1String("Status: Connect")) || status == QLatin1String("Status: Reconnecting");
 }
 
-QString Status::evalConnectQuery(const QString &term, const QString &defaultTarget) {
+QString Status::evalConnectQuery(const QString &term, const QString &defaultTarget)
+{
     QString target;
     // Returns extracted target from normal or reconnect queries, rejects disconnect query
     if (!term.contains(QLatin1String("reconnect"))) {
@@ -21,12 +23,12 @@ QString Status::evalConnectQuery(const QString &term, const QString &defaultTarg
             // Rejects for example vpn d, vpn disconnect, vpn dis
             return target;
         }
-        static const QRegularExpression regex("vpn ([a-zA-Z _]+[\\da-zA-Z_]*)$");// vpn us42; vpn us 42; vpn united_states
+        static const QRegularExpression regex("vpn ([a-zA-Z _]+[\\da-zA-Z_]*)$"); // vpn us42; vpn us 42; vpn united_states
         const auto res = regex.match(term);
         if (res.lastCapturedIndex() == 1 && !res.captured(1).isEmpty()) {
             target = res.captured(1).toUpper();
         }
-    } else {// Reconnect in term
+    } else { // Reconnect in term
         static const QRegularExpression regexReconnect("vpn reconnect ([a-zA-Z _]+[\\da-zA-Z_]*)$");
         const auto res = regexReconnect.match(term);
         if (!res.captured(1).isEmpty()) {
@@ -42,10 +44,11 @@ QString Status::evalConnectQuery(const QString &term, const QString &defaultTarg
     return target;
 }
 
-void Status::updateConnectionStatus() {
+void Status::updateConnectionStatus()
+{
     QProcess *process = new QProcess();
     process->start("nordvpn", {"status"});
-    connect(process, &QProcess::finished, this, [this, process](){
+    connect(process, &QProcess::finished, this, [this, process]() {
         QString out = QString::fromLocal8Bit(process->readAll());
         out = Utilities::filterBeginning(out);
         if (QString(out).remove('\n') == QLatin1String("Please check your internet connection and try again.")) {
@@ -56,11 +59,12 @@ void Status::updateConnectionStatus() {
     });
 }
 
-void Status::parseStatusData(const QString &statusData) {
+void Status::parseStatusData(const QString &statusData)
+{
     rawData.clear();
     status.clear();
     current_server.clear();
-    for (const auto &line: statusData.split('\n')) {
+    for (const auto &line : statusData.split('\n')) {
         if (line.startsWith(QLatin1String("Status:"))) {
             status = line;
         } else if (line.startsWith(QLatin1String("Current server: "))) {
@@ -68,8 +72,7 @@ void Status::parseStatusData(const QString &statusData) {
         }
         if (!line.isEmpty() && line.contains(':')) {
             rawData.insert(line.split(':').first().remove(' ').toUpper(), line);
-            rawData.insert(line.split(':').first().remove(' ').toLower(),
-                                  line.split(':').last().remove(0, 1));
+            rawData.insert(line.split(':').first().remove(' ').toLower(), line.split(':').last().remove(0, 1));
         }
     }
     if (!current_server.isEmpty()) {
@@ -82,7 +85,8 @@ void Status::parseStatusData(const QString &statusData) {
     Q_EMIT finished();
 }
 
-QString Status::formatString(const QString &raw) const {
+QString Status::formatString(const QString &raw) const
+{
     const static QRegularExpression cleanupPlaceholders("%[a-zA-Z]+");
     return KMacroExpander::expandMacros(raw, rawData).remove(cleanupPlaceholders);
 }
