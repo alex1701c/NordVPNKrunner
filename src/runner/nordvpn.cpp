@@ -9,12 +9,12 @@ void NordVPN::init()
 {
     setObjectName(QStringLiteral("NordVPN"));
     setPriority(HighestPriority);
-    addSyntax(Plasma::RunnerSyntax("vpn us", "Connect option to United States, server is chosen by NordVPN"));
-    addSyntax(Plasma::RunnerSyntax("vpn us 3335", "Connect options to United States with server number 3335"));
-    addSyntax(Plasma::RunnerSyntax("vpn d", "Shows Disconnect option on top (just relevance changed)"));
-    addSyntax(Plasma::RunnerSyntax("vpn reconnect",
-                                   "Reconnect to the current country and server. "
-                                   "Sometimes you have to do this if you change from a wireless to a wired connection"));
+    addSyntax(KRunner::RunnerSyntax("vpn us", "Connect option to United States, server is chosen by NordVPN"));
+    addSyntax(KRunner::RunnerSyntax("vpn us 3335", "Connect options to United States with server number 3335"));
+    addSyntax(KRunner::RunnerSyntax("vpn d", "Shows Disconnect option on top (just relevance changed)"));
+    addSyntax(KRunner::RunnerSyntax("vpn reconnect",
+                                    "Reconnect to the current country and server. "
+                                    "Sometimes you have to do this if you change from a wireless to a wired connection"));
 
     // Fetch only the status data if the query matches
     connect(&vpnStatus, &Status::finished, this, [this]() {
@@ -44,7 +44,7 @@ void NordVPN::reloadPluginConfiguration()
     notify = config.readEntry("notify", true);
 }
 
-void NordVPN::match(Plasma::RunnerContext &context)
+void NordVPN::match(KRunner::RunnerContext &context)
 {
     QString term = context.query();
 
@@ -55,12 +55,12 @@ void NordVPN::match(Plasma::RunnerContext &context)
         return;
     }
 
-    QList<Plasma::QueryMatch> matches;
+    QList<KRunner::QueryMatch> matches;
     const QList<Match> matchList = Match::generateOptions(vpnStatus, term);
     for (const auto &m : matchList) {
-        Plasma::QueryMatch match(this);
+        KRunner::QueryMatch match(this);
         match.setText(m.text);
-        match.setType(Plasma::QueryMatch::ExactMatch);
+        match.setType(KRunner::QueryMatch::ExactMatch);
         match.setData(m.data);
         match.setRelevance(m.relevance);
         match.setIcon(icon);
@@ -69,7 +69,7 @@ void NordVPN::match(Plasma::RunnerContext &context)
     context.addMatches(matches);
 }
 
-void NordVPN::run(const Plasma::RunnerContext & /*context*/, const Plasma::QueryMatch &match)
+void NordVPN::run(const KRunner::RunnerContext & /*context*/, const KRunner::QueryMatch &match)
 {
     QStringList args = match.data().toStringList();
     const QString command = args.takeFirst();

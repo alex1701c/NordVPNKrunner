@@ -10,13 +10,13 @@
 #include <QtCore/QFile>
 #include <krunner_version.h>
 
-class NordVPN : public Plasma::AbstractRunner
+class NordVPN : public KRunner::AbstractRunner
 {
     Q_OBJECT
 
 public:
     NordVPN(QObject *parent, const KPluginMetaData &pluginMetaData, const QVariantList &args)
-        : Plasma::AbstractRunner(parent, pluginMetaData, args){};
+        : KRunner::AbstractRunner(parent, pluginMetaData, args){};
 
     QFileSystemWatcher watcher;
     Status vpnStatus;
@@ -37,9 +37,9 @@ public:
 protected:
     void init() override;
 
-public: // Plasma::AbstractRunner API
-    void match(Plasma::RunnerContext &context) override;
-    void run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) override;
+public: // AbstractRunner API
+    void match(KRunner::RunnerContext &context) override;
+    void run(const KRunner::RunnerContext &context, const KRunner::QueryMatch &match) override;
 
     void reloadPluginConfiguration();
 };
