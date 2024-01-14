@@ -2,7 +2,6 @@
 #include "core/Status.h"
 #include <KSharedConfig>
 #include <KConfigGroup>
-#include <QDebug>
 #include <QRegularExpression>
 #include <core/Utilities.h>
 

@@ -1,8 +1,6 @@
-#ifndef NORDVPN_STATUS_H
-#define NORDVPN_STATUS_H
+#pragma once
 
-
-#include <QtCore/QString>
+#include <QString>
 #include <QHash>
 #include <QObject>
 
@@ -31,5 +29,3 @@ public:
 
 };
 
-
-#endif //NORDVPN_STATUS_H

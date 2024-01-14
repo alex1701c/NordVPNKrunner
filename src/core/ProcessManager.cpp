@@ -1,5 +1,4 @@
 #include <QProcess>
-#include <QDebug>
 #include "ProcessManager.h"
 #include "Utilities.h"
 #include "NotificationManager.h"

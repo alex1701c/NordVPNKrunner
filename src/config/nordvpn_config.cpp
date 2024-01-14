@@ -3,9 +3,7 @@
 #include <KSharedConfig>
 #include <KPluginFactory>
 #include <krunner/abstractrunner.h>
-#include <QtDebug>
 #include <QtWidgets/QGridLayout>
-#include <iostream>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QFileDialog>
 #include <core/NotificationManager.h>

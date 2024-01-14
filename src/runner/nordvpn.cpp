@@ -1,8 +1,7 @@
 #include "nordvpn.h"
 #include "core/Status.h"
 #include "Match.h"
-// KF
-#include <QtGui/QtGui>
+
 #include <core/ProcessManager.h>
 #include <core/Utilities.h>
 

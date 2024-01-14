@@ -1,7 +1,6 @@
-#ifndef NORDVPN_PROCESSMANAGER_H
-#define NORDVPN_PROCESSMANAGER_H
+#pragma once
 
-#include "NotificationManager.h"
+#include <QObject>
 
 /**
  * This class handles the execution of nordvpn processes and interacts
@@ -24,5 +23,3 @@ protected:
     static void runNordVPNCommand(const QStringList &args, bool notify, ProcessCallback *notificationFunction);
 };
 
-
-#endif //NORDVPN_PROCESSMANAGER_H

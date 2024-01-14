@@ -33,8 +33,7 @@ public:
     QIcon icon;
     bool notify;
 
-protected Q_SLOTS:
-
+protected:
     void init() override;
 
 public: // Plasma::AbstractRunner API

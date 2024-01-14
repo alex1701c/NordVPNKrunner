@@ -1,8 +1,6 @@
-#ifndef NORDVPN_NOTIFICATIONMANAGER_H
-#define NORDVPN_NOTIFICATIONMANAGER_H
+#pragma once
 
-
-#include "Status.h"
+#include <QString>
 
 /**
  * This class handles the display of the notifications
@@ -18,4 +16,3 @@ public:
 };
 
 
-#endif //NORDVPN_NOTIFICATIONMANAGER_H

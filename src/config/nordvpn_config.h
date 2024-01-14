@@ -3,7 +3,7 @@
 
 #include "ui_nordvpn_config.h"
 #include <KCModule>
-#include <KConfigCore/KConfigGroup>
+#include <KConfigGroup>
 
 class NordVPNConfigForm : public QWidget, public Ui::NordVPNConfigUi {
 Q_OBJECT

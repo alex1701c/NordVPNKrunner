@@ -1,8 +1,8 @@
-#include <QtCore/QRegExp>
-#include <KConfigCore/KConfigGroup>
+#include <KConfigGroup>
 #include <QRegularExpression>
-#include <QtCore/QProcess>
-#include <KCoreAddons/KMacroExpander>
+#include <QProcess>
+#include <KMacroExpander>
+#include <QDebug>
 
 #include "Status.h"
 #include "Utilities.h"
