@@ -9,7 +9,7 @@
 #include <core/Utilities.h>
 #include <krunner/abstractrunner.h>
 
-K_PLUGIN_FACTORY(NordVPNConfigFactory, registerPlugin<NordVPNConfig>();)
+K_PLUGIN_CLASS(NordVPNConfig)
 
 NordVPNConfigForm::NordVPNConfigForm(QWidget *parent)
     : QWidget(parent)

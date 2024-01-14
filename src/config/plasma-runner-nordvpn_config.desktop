@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Service
-X-KDE-ServiceTypes=KCModule
-X-KDE-Library=kf5/krunner/kcms/kcm_krunner_nordvpn
-X-KDE-ParentComponents=nordvpn
-
-Name=nordvpn
