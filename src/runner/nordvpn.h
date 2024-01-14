@@ -18,11 +18,12 @@ public:
     NordVPN(QObject *parent, const KPluginMetaData &pluginMetaData, const QVariantList &args)
         : KRunner::AbstractRunner(parent, pluginMetaData, args){};
 
+private:
     QFileSystemWatcher watcher;
     Status vpnStatus;
 
-    const QLatin1String triggerWord = QLatin1String("nordvpn");
-    const QLatin1String shortTriggerWord = QLatin1String("vpn");
+    const QLatin1String triggerWord{"nordvpn"};
+    const QLatin1String shortTriggerWord{"vpn"};
 
     // For thread sync, only fetch status if the query matches
     // the trigger words and reuse the status for the match session
@@ -32,15 +33,12 @@ public:
     // Config stuff
     QString configFilePath;
     QIcon icon;
-    bool notify;
-
-protected:
-    void init() override;
+    bool notify = true;
 
 public: // AbstractRunner API
+    void init() override;
     void match(KRunner::RunnerContext &context) override;
     void run(const KRunner::RunnerContext &context, const KRunner::QueryMatch &match) override;
-
     void reloadPluginConfiguration();
 };
 

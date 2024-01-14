@@ -20,22 +20,6 @@ class NordVPNConfig : public KCModule
 public:
     explicit NordVPNConfig(QWidget *parent = nullptr, const QVariantList &args = QVariantList());
 
-    KConfigGroup config;
-
-    QString newIcon;
-
-    const QString defaultIcon = "nordvpn";
-
-    const QString exampleData = QStringLiteral(
-        "Status: Connected\n"
-        "Current server: us4276.nordvpn.com\n"
-        "Country: United States\n"
-        "City: Manassas\n"
-        "Your new IP: 23.82.14.23\n"
-        "Current protocol: UDP\n"
-        "Transfer: 26.9 KiB received, 8.6 KiB sent\n"
-        "Uptime: 7 seconds");
-
 public Q_SLOTS:
 
     void save() override;
@@ -48,13 +32,23 @@ public Q_SLOTS:
     void setDefaultIcon();
 
 private:
-    NordVPNConfigForm *m_ui;
-
     void setCurrentSettings();
-
     QStringList getStatusNotificationKeys();
-
     void writeConfigText(const QString &key, const QString &text);
+
+    NordVPNConfigForm *m_ui;
+    KConfigGroup config;
+    QString newIcon;
+    const QString defaultIcon = "nordvpn";
+    const QString exampleData = QStringLiteral(
+        "Status: Connected\n"
+        "Current server: us4276.nordvpn.com\n"
+        "Country: United States\n"
+        "City: Manassas\n"
+        "Your new IP: 23.82.14.23\n"
+        "Current protocol: UDP\n"
+        "Transfer: 26.9 KiB received, 8.6 KiB sent\n"
+        "Uptime: 7 seconds");
 };
 
 #endif
