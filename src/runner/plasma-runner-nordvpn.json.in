@@ -9,7 +9,6 @@
         "Description": "Krunner addon for NordVPN cli. Visit https://github.com/alex1701c/NordVPNKrunner for more information.",
         "EnabledByDefault": true,
         "Icon": "nordvpn",
-        "Id": "@CMAKE_PROJECT_NAME@",
         "License": "LGPL 2.1+",
         "Name": "NordVPN",
         "Version": "@CMAKE_PROJECT_VERSION@",

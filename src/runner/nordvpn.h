@@ -2,11 +2,11 @@
 
 #include "core/Status.h"
 #include <KRunner/AbstractRunner>
-#include <KSharedConfig>
+#include <QDir>
+#include <QFile>
 #include <QFileSystemWatcher>
+#include <QIcon>
 #include <QMutex>
-#include <QtCore/QDir>
-#include <QtCore/QFile>
 #include <krunner_version.h>
 
 class NordVPN : public KRunner::AbstractRunner
@@ -14,8 +14,13 @@ class NordVPN : public KRunner::AbstractRunner
     Q_OBJECT
 
 public:
+#if QT_VERSION_MAJOR == 6
+    NordVPN(QObject *parent, const KPluginMetaData &pluginMetaData)
+        : KRunner::AbstractRunner(parent, pluginMetaData){};
+#else
     NordVPN(QObject *parent, const KPluginMetaData &pluginMetaData, const QVariantList &args)
         : KRunner::AbstractRunner(parent, pluginMetaData, args){};
+#endif
 
 private:
     QFileSystemWatcher watcher;
@@ -39,4 +44,5 @@ public: // AbstractRunner API
     void match(KRunner::RunnerContext &context) override;
     void run(const KRunner::RunnerContext &context, const KRunner::QueryMatch &match) override;
     void reloadPluginConfiguration();
+    Q_DISABLE_COPY_MOVE(NordVPN)
 };

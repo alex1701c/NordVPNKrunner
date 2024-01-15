@@ -17,11 +17,11 @@ NordVPNConfigForm::NordVPNConfigForm(QWidget *parent)
     setupUi(this);
 }
 
-NordVPNConfig::NordVPNConfig(QWidget *parent, const QVariantList &args)
-    : KCModule(parent, args)
+NordVPNConfig::NordVPNConfig(QObject *parent, const QVariantList &)
+    : KCModule(qobject_cast<QWidget *>(parent))
 {
-    m_ui = new NordVPNConfigForm(this);
-    auto *layout = new QGridLayout(this);
+    m_ui = new NordVPNConfigForm(widget());
+    auto *layout = new QGridLayout(widget());
     layout->addWidget(m_ui, 0, 0);
     config = KSharedConfig::openConfig(Utilities::initializeConfigFile())->group("Config");
 
@@ -55,7 +55,6 @@ NordVPNConfig::NordVPNConfig(QWidget *parent, const QVariantList &args)
 void NordVPNConfig::load()
 {
     setCurrentSettings();
-    emit changed(false);
 }
 
 void NordVPNConfig::save()
@@ -70,8 +69,6 @@ void NordVPNConfig::save()
     config.writeEntry("status_filter_keys", getStatusNotificationKeys());
 
     config.config()->sync();
-
-    emit changed(true);
 }
 
 void NordVPNConfig::defaults()
@@ -91,7 +88,7 @@ void NordVPNConfig::defaults()
     m_ui->statusKeysCurrentProtocol->setChecked(false);
     m_ui->statusKeysTransfer->setChecked(true);
     m_ui->statusKeysUptime->setChecked(false);
-    emit changed(true);
+    markAsChanged();
 }
 
 void NordVPNConfig::setCurrentSettings()
@@ -158,13 +155,13 @@ void NordVPNConfig::writeConfigText(const QString &key, const QString &text)
 
 void NordVPNConfig::openIconFileChooser()
 {
-    const QString iconPath = QFileDialog::getOpenFileName(this, tr("Select Icon"), "", tr("Images (.*.jpg *.jpeg *.png *.ico *.svg *.svgz)"));
+    const QString iconPath = QFileDialog::getOpenFileName(widget(), tr("Select Icon"), "", tr("Images (.*.jpg *.jpeg *.png *.ico *.svg *.svgz)"));
     if (!iconPath.isEmpty()) {
         newIcon = iconPath;
         m_ui->iconButton->setIcon(QIcon(newIcon));
         m_ui->iconDefaultButton->setHidden(newIcon == defaultIcon);
         m_ui->iconDefaultButton->clearFocus();
-        changed(true);
+        markAsChanged();
     }
     m_ui->iconButton->clearFocus();
 }
@@ -175,7 +172,7 @@ void NordVPNConfig::setDefaultIcon()
     m_ui->iconDefaultButton->setHidden(true);
     newIcon = defaultIcon;
     m_ui->iconButton->clearFocus();
-    changed(true);
+    markAsChanged();
 }
 
 #include "nordvpn_config.moc"

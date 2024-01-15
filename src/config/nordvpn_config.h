@@ -3,6 +3,7 @@
 #include "ui_nordvpn_config.h"
 #include <KCModule>
 #include <KConfigGroup>
+#include <kconfigwidgets_version.h>
 
 class NordVPNConfigForm : public QWidget, public Ui::NordVPNConfigUi
 {
@@ -17,7 +18,7 @@ class NordVPNConfig : public KCModule
     Q_OBJECT
 
 public:
-    explicit NordVPNConfig(QWidget *parent = nullptr, const QVariantList &args = QVariantList());
+    explicit NordVPNConfig(QObject *parent, const QVariantList &);
 
 public Q_SLOTS:
 
@@ -31,6 +32,12 @@ public Q_SLOTS:
     void setDefaultIcon();
 
 private:
+#if KCONFIGWIDGETS_VERSION < QT_VERSION_CHECK(5, 105, 0)
+    QWidget widget()
+    {
+        return this;
+    }
+#endif
     void setCurrentSettings();
     QStringList getStatusNotificationKeys();
     void writeConfigText(const QString &key, const QString &text);

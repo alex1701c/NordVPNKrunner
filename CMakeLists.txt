@@ -10,20 +10,22 @@ set(CMAKE_PROJECT_AUTHOR_EMAIL "alex1701c.dev@gmx.net")
 
 set(QT_MIN_VERSION "5.15.0")
 set(KF_MIN_VERSION "5.91.0")
+set(KDE_COMPILERSETTINGS_LEVEL "5.82.0")
 
 find_package(ECM ${KF_MIN_VERSION} REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${CMAKE_MODULE_PATH})
 
 # Find the required Libaries
-find_package(Qt5 ${QT_MIN_VERSION} REQUIRED CONFIG COMPONENTS Widgets Core Network)
-find_package(KF5 ${KF_MIN_VERSION} REQUIRED COMPONENTS I18n Runner ConfigWidgets Notifications CoreAddons)
 include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
 include(FeatureSummary)
 include(KDEClangFormat)
 include(ECMDeprecationSettings)
+include(QtVersionOption)
 
+find_package(Qt${QT_MAJOR_VERSION} ${QT_MIN_VERSION} REQUIRED CONFIG COMPONENTS Widgets Core Network)
+find_package(KF${QT_MAJOR_VERSION} ${KF_MIN_VERSION} REQUIRED COMPONENTS I18n Runner KCMUtils Notifications CoreAddons)
 ecm_set_disabled_deprecation_versions(
 	KF ${KF_MIN_VERSION}
 	QT ${QT_MIN_VERSION}

@@ -1,14 +1,15 @@
 #include "nordvpn.h"
 #include "Match.h"
+#include "core/ProcessManager.h"
 #include "core/Status.h"
+#include "core/Utilities.h"
 
-#include <core/ProcessManager.h>
-#include <core/Utilities.h>
+#include <KConfigGroup>
+#include <KSharedConfig>
 
 void NordVPN::init()
 {
     setObjectName(QStringLiteral("NordVPN"));
-    setPriority(HighestPriority);
     addSyntax(KRunner::RunnerSyntax("vpn us", "Connect option to United States, server is chosen by NordVPN"));
     addSyntax(KRunner::RunnerSyntax("vpn us 3335", "Connect options to United States with server number 3335"));
     addSyntax(KRunner::RunnerSyntax("vpn d", "Shows Disconnect option on top (just relevance changed)"));
@@ -60,7 +61,6 @@ void NordVPN::match(KRunner::RunnerContext &context)
     for (const auto &m : matchList) {
         KRunner::QueryMatch match(this);
         match.setText(m.text);
-        match.setType(KRunner::QueryMatch::ExactMatch);
         match.setData(m.data);
         match.setRelevance(m.relevance);
         match.setIcon(icon);

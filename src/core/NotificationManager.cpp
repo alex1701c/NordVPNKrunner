@@ -2,7 +2,7 @@
 #include "Utilities.h"
 
 #include <KConfigGroup>
-#include <KNotifications/KNotification>
+#include <KNotification>
 #include <KSharedConfig>
 #include <QDebug>
 #include <QNetworkAccessManager>
@@ -12,7 +12,7 @@
 void NotificationManager::displaySimpleNotification(const QString &event, const QString &status, const QString &title)
 {
     // NordVPN icon is used, param changes nothing
-    KNotification::event(event, title, status, QString(), nullptr, KNotification::CloseOnTimeout, "krunner_nordvpn");
+    KNotification::event(event, title, status, QPixmap(), KNotification::CloseOnTimeout, "krunner_nordvpn");
 }
 
 void NotificationManager::displayConnectNotification(const QString &processOutput)
