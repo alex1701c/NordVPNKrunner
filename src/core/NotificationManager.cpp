@@ -12,7 +12,11 @@
 void NotificationManager::displaySimpleNotification(const QString &event, const QString &status, const QString &title)
 {
     // NordVPN icon is used, param changes nothing
+#if QT_VERSION_MAJOR == 6
     KNotification::event(event, title, status, QPixmap(), KNotification::CloseOnTimeout, "krunner_nordvpn");
+#else
+    KNotification::event(event, title, status, nullptr, KNotification::CloseOnTimeout, "krunner_nordvpn");
+#endif
 }
 
 void NotificationManager::displayConnectNotification(const QString &processOutput)
