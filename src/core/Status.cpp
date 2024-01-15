@@ -90,3 +90,5 @@ QString Status::formatString(const QString &raw) const
     const static QRegularExpression cleanupPlaceholders("%[a-zA-Z]+");
     return KMacroExpander::expandMacros(raw, rawData).remove(cleanupPlaceholders);
 }
+
+#include "moc_Status.cpp"

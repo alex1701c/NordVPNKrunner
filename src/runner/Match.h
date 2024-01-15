@@ -1,7 +1,6 @@
 #pragma once
 
 #include "core/Status.h"
-#include <utility>
 
 class Match
 {
@@ -10,11 +9,9 @@ public:
     QStringList data;
     float relevance = 0;
 
-    Match() = default;
-
-    Match(QString text, QStringList data, float relevance)
-        : text(std::move(text))
-        , data(std::move(data))
+    Match(const QString &text, const QStringList &data, float relevance)
+        : text(text)
+        , data(data)
         , relevance(relevance)
     {
     }

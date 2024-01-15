@@ -175,4 +175,5 @@ void NordVPNConfig::setDefaultIcon()
     markAsChanged();
 }
 
+#include "moc_nordvpn_config.cpp"
 #include "nordvpn_config.moc"
