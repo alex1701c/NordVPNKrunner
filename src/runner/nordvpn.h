@@ -31,7 +31,6 @@ private:
 
     // For thread sync, only fetch status if the query matches
     // the trigger words and reuse the status for the match session
-    bool newMatchSession = false;
     QMutex mutex;
 
     // Config stuff
