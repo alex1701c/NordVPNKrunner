@@ -5,6 +5,7 @@
 
 #include <KConfigGroup>
 #include <KSharedConfig>
+#include <QFileInfo>
 
 void NordVPN::init()
 {
@@ -24,12 +25,14 @@ void NordVPN::init()
         suspendMatching(true);
         vpnStatus.updateConnectionStatus();
     });
+    reloadConfiguration();
 }
 
 void NordVPN::reloadConfiguration()
 {
     const KConfigGroup cg = config();
-    icon = QIcon::fromTheme(cg.readEntry("icon", "nordvpn"), QIcon("/var/lib/nordvpn/icon.svg"));
+    QIcon fallback{QFileInfo::exists("/var/lib/nordvpn/icon.svg") ? QIcon("/var/lib/nordvpn/icon.svg") : QIcon()};
+    icon = QIcon::fromTheme(cg.readEntry("icon", "/usr/share/pixmaps/nordvpn.png"), fallback);
     notify = cg.readEntry("notify", true);
 }
 
