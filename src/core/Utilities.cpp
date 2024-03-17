@@ -35,20 +35,3 @@ bool Utilities::sameTarget(QString &target, const Status &status)
     // Country and server specified and they match exactly the target
     return target.compare(status.country + status.server, Qt::CaseInsensitive) == 0;
 }
-
-QString Utilities::initializeConfigFile()
-{
-    const QString configFolder = QDir::homePath() + QStringLiteral("/.config/krunnerplugins/");
-    const QString configFilePath = configFolder + QStringLiteral("nordvpnrunnerrc");
-    const QDir configDir(configFolder);
-    if (!configDir.exists()) {
-        configDir.mkpath(configFolder);
-    }
-    // Create file
-    QFile configFile(configFilePath);
-    if (!configFile.exists()) {
-        configFile.open(QIODevice::WriteOnly);
-        configFile.close();
-    }
-    return configFilePath;
-}

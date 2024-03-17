@@ -2,9 +2,6 @@
 
 #include "core/Status.h"
 #include <KRunner/AbstractRunner>
-#include <QDir>
-#include <QFile>
-#include <QFileSystemWatcher>
 #include <QIcon>
 #include <QMutex>
 #include <krunner_version.h>
@@ -23,15 +20,13 @@ public:
 #endif
 
 private:
-    QFileSystemWatcher watcher;
-    Status vpnStatus;
-
     const QLatin1String triggerWord{"nordvpn"};
     const QLatin1String shortTriggerWord{"vpn"};
 
     // For thread sync, only fetch status if the query matches
     // the trigger words and reuse the status for the match session
     QMutex mutex;
+    Status vpnStatus;
 
     // Config stuff
     QString configFilePath;
@@ -42,6 +37,6 @@ public: // AbstractRunner API
     void init() override;
     void match(KRunner::RunnerContext &context) override;
     void run(const KRunner::RunnerContext &context, const KRunner::QueryMatch &match) override;
-    void reloadPluginConfiguration();
+    void reloadConfiguration() override;
     Q_DISABLE_COPY_MOVE(NordVPN)
 };

@@ -9,7 +9,7 @@ QList<Match> Match::generateOptions(const Status &vpnStatus, const QString &term
 {
     QString target;
     QList<Match> matches;
-    const auto config = KSharedConfig::openConfig(Utilities::initializeConfigFile())->group("Config");
+    const auto config = KSharedConfig::openConfig("krunnerrc")->group("Plugins").group("krunner_nordvpn");
 
     // The status gets always displayed
     matches.append(Match(vpnStatus.formatString(config.readEntry("status", "%STATUS")), {"status", "status"}, 0.5));

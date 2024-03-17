@@ -2,7 +2,6 @@
 #include "Match.h"
 #include "core/ProcessManager.h"
 #include "core/Status.h"
-#include "core/Utilities.h"
 
 #include <KConfigGroup>
 #include <KSharedConfig>
@@ -25,24 +24,13 @@ void NordVPN::init()
         suspendMatching(true);
         vpnStatus.updateConnectionStatus();
     });
-
-    // Add file watcher for config
-    configFilePath = Utilities::initializeConfigFile();
-    watcher.addPath(configFilePath);
-    connect(&watcher, &QFileSystemWatcher::fileChanged, this, &NordVPN::reloadPluginConfiguration);
-    reloadPluginConfiguration();
 }
 
-void NordVPN::reloadPluginConfiguration()
+void NordVPN::reloadConfiguration()
 {
-    KConfigGroup config = KSharedConfig::openConfig(configFilePath, KConfig::NoGlobals)->group("Config");
-    config.config()->reparseConfiguration();
-
-    // If the file gets edited with a text editor, it often gets replaced by the edited version
-    // https://stackoverflow.com/a/30076119/9342842
-    watcher.addPath(configFilePath);
-    icon = QIcon::fromTheme(config.readEntry("icon", "nordvpn"), QIcon("/var/lib/nordvpn/icon.svg"));
-    notify = config.readEntry("notify", true);
+    const KConfigGroup cg = config();
+    icon = QIcon::fromTheme(cg.readEntry("icon", "nordvpn"), QIcon("/var/lib/nordvpn/icon.svg"));
+    notify = cg.readEntry("notify", true);
 }
 
 void NordVPN::match(KRunner::RunnerContext &context)
@@ -63,6 +51,7 @@ void NordVPN::match(KRunner::RunnerContext &context)
         match.setText(m.text);
         match.setData(m.data);
         match.setRelevance(m.relevance);
+        match.setCategoryRelevance(KRunner::QueryMatch::CategoryRelevance::Highest);
         match.setIcon(icon);
         matches.append(match);
     }
