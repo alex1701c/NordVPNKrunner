@@ -2,7 +2,8 @@
 
 This plugin allows you to run NordVPN commands from KRunner.
 Additionally it supports configurable status notifications and it use the 
-KDE KNotifications API.
+KDE KNotifications API.  
+It supports both Plasma5 and Plasma6!
 
 If you like this plugin please consider rating it at the KDE Store https://store.kde.org/p/1311130/.  
 
