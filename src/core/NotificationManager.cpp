@@ -44,16 +44,12 @@ void NotificationManager::displayDisconnectNotification(const QString &processOu
     }
 }
 
-void NotificationManager::displayStatusNotification(const QString &processOutput)
+void NotificationManager::displayStatusNotification(const KConfigGroup &grp, const QString &processOutput)
 {
     // Because the static context is used the keys are fetched for every notification
     const static QStringList defaultKeys = {"Status", "Current server", "Transfer", "Your new IP"};
-    static auto _config = KSharedConfig::openConfig("krunnerplugins/nordvpnrunnerrc", KConfig::NoGlobals);
-    _config->reparseConfiguration();
-    const KConfigGroup config = _config->group("Config");
-
-    QStringList keys = config.readEntry("status_filter_keys", defaultKeys);
-    displayStatusNotification(processOutput, keys, config.readEntry("ip", false));
+    QStringList keys = grp.readEntry("status_filter_keys", defaultKeys);
+    displayStatusNotification(processOutput, keys, grp.readEntry("ip", false));
 }
 
 void NotificationManager::displayStatusNotification(const QString &processOutput, const QStringList &keys, bool ip)

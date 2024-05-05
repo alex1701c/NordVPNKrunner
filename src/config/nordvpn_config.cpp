@@ -23,7 +23,7 @@ NordVPNConfig::NordVPNConfig(QObject *parent, const QVariantList &)
     m_ui = new NordVPNConfigForm(widget());
     auto *layout = new QGridLayout(widget());
     layout->addWidget(m_ui, 0, 0);
-    config = KSharedConfig::openConfig("krunnerrc")->group("Plugins").group("krunner_nordvpn");
+    config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("krunner_nordvpn");
 
     const auto changedSlotPointer = &NordVPNConfig::markAsChanged;
 

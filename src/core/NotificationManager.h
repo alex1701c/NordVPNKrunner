@@ -1,5 +1,6 @@
 #pragma once
 
+#include <KConfigGroup>
 #include <QString>
 
 /**
@@ -12,6 +13,6 @@ public:
 
     static void displayConnectNotification(const QString &processOutput);
     static void displayDisconnectNotification(const QString &processOutput);
-    static void displayStatusNotification(const QString &processOutput);
+    static void displayStatusNotification(const KConfigGroup &grp, const QString &processOutput);
     static void displayStatusNotification(const QString &processOutput, const QStringList &keys, bool ip);
 };

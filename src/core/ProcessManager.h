@@ -1,5 +1,6 @@
 #pragma once
 
+#include <KConfigGroup>
 #include <QObject>
 
 /**
@@ -13,11 +14,5 @@ public:
     static void connectVPN(bool notify, const QStringList &args);
     static void disconnectVPN(bool notify, const QStringList &args);
     static void reconnectVPN(bool notify, const QStringList &args);
-    static void vpnStatus(const QStringList &args);
-
-protected:
-    /**
-     * Gets called by public functions, makes logic reusable
-     */
-    static void runNordVPNCommand(const QStringList &args, bool notify, ProcessCallback *notificationFunction);
+    static void vpnStatus(const KConfigGroup &grp, const QStringList &args);
 };

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/Status.h"
+#include <KConfigGroup>
 
 class Match
 {
@@ -16,5 +17,5 @@ public:
     {
     }
 
-    static QList<Match> generateOptions(const Status &vpnStatus, const QString &term);
+    static QList<Match> generateOptions(const KConfigGroup &config, const Status &vpnStatus, const QString &term);
 };

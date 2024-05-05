@@ -48,7 +48,7 @@ void NordVPN::match(KRunner::RunnerContext &context)
     }
 
     QList<KRunner::QueryMatch> matches;
-    const QList<Match> matchList = Match::generateOptions(vpnStatus, term);
+    const QList<Match> matchList = Match::generateOptions(config(), vpnStatus, term);
     for (const auto &m : matchList) {
         KRunner::QueryMatch match(this);
         match.setText(m.text);
@@ -69,7 +69,7 @@ void NordVPN::run(const KRunner::RunnerContext & /*context*/, const KRunner::Que
     if (command == QLatin1String("disconnect")) {
         ProcessManager::disconnectVPN(notify, args);
     } else if (command == QLatin1String("status")) {
-        ProcessManager::vpnStatus(args);
+        ProcessManager::vpnStatus(config(), args);
     } else if (command == QLatin1String("reconnect")) {
         ProcessManager::reconnectVPN(notify, args);
     } else {
