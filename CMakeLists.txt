@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(nordvpn)
 
-set(CMAKE_PROJECT_VERSION  "2.1.3")
+set(CMAKE_PROJECT_VERSION  "3.1.1")
 add_definitions(-DCMAKE_PROJECT_VERSION="${CMAKE_PROJECT_VERSION}")
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://github.com/alex1701c/NordVPNKrunner/")
 set(CMAKE_PROJECT_AUTHOR "alex1701c")
