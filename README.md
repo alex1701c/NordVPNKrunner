@@ -65,7 +65,7 @@ sudo zypper install git cmake gettext-tools libQt5Network-devel extra-cmake-modu
 ```
 Plasma6:  
 ```bash install-opensuse-plasma6
-sudo zypper install git cmake gettext-tools qt6-network-devel kf6-extra-cmake-modules kf6-ki18n-devel kf6-krunner-devel kf6-knotifications-devel kf6-kdbusaddons-tools
+sudo zypper install git cmake gettext-tools qt6-network-devel kf6-extra-cmake-modules kf6-ki18n-devel kf6-krunner-devel kf6-kcmutils-devel kf6-knotifications-devel kf6-kdbusaddons-tools
 ```
 
 </details>
