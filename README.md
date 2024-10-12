@@ -61,11 +61,11 @@ sudo apt install git cmake extra-cmake-modules build-essential gettext libkf6run
 
 Plasma5:  
 ```bash install-opensuse-plasma5
-sudo zypper install git cmake gettext-tools extra-cmake-modules ki18n-devel krunner-devel kcmutils-devel knotifications-devel kdbusaddons-tools
+sudo zypper install git cmake gettext-tools libQt5Network-devel extra-cmake-modules ki18n-devel krunner-devel kcmutils-devel knotifications-devel kdbusaddons-tools
 ```
 Plasma6:  
 ```bash install-opensuse-plasma6
-sudo zypper install git cmake gettext-tools kf6-extra-cmake-modules kf6-ki18n-devel kf6-krunner-devel kf6-knotifications-devel kf6-kdbusaddons-tools
+sudo zypper install git cmake gettext-tools qt6-network-devel kf6-extra-cmake-modules kf6-ki18n-devel kf6-krunner-devel kf6-knotifications-devel kf6-kdbusaddons-tools
 ```
 
 </details>
