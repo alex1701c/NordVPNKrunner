@@ -47,11 +47,11 @@ The checkbox `Display IP Address by making ...` fetches the IP address online so
 
 Plasma5:  
 ```bash install-ubuntu-plasma5
-sudo apt install git cmake extra-cmake-modules build-essential libkf5runner-dev libkf5i18n-dev libkf5kcmutils-dev libkf5notifications-dev qtdeclarative5-dev libkf5dbusaddons-bin
+sudo apt install git cmake extra-cmake-modules build-essential gettext libkf5runner-dev libkf5i18n-dev libkf5kcmutils-dev libkf5notifications-dev qtdeclarative5-dev libkf5dbusaddons-bin
 ```
 Plasma6:  
 ```bash install-ubuntu-plasma6
-sudo apt install git cmake extra-cmake-modules build-essential libkf6runner-dev libkf6i18n-dev libkf6kcmutils-dev libkf6notifications-dev kf6-kdbusaddons
+sudo apt install git cmake extra-cmake-modules build-essential gettext libkf6runner-dev libkf6i18n-dev libkf6kcmutils-dev libkf6notifications-dev kf6-kdbusaddons
 ```
 
 </details>
@@ -61,11 +61,11 @@ sudo apt install git cmake extra-cmake-modules build-essential libkf6runner-dev 
 
 Plasma5:  
 ```bash install-opensuse-plasma5
-sudo zypper install git cmake extra-cmake-modules ki18n-devel krunner-devel kcmutils-devel knotifications-devel kdbusaddons-tools
+sudo zypper install git cmake gettext-tools extra-cmake-modules ki18n-devel krunner-devel kcmutils-devel knotifications-devel kdbusaddons-tools
 ```
 Plasma6:  
 ```bash install-opensuse-plasma6
-sudo zypper install git cmake kf6-extra-cmake-modules kf6-ki18n-devel kf6-krunner-devel kf6-knotifications-devel kf6-kdbusaddons-tools
+sudo zypper install git cmake gettext-tools kf6-extra-cmake-modules kf6-ki18n-devel kf6-krunner-devel kf6-knotifications-devel kf6-kdbusaddons-tools
 ```
 
 </details>
@@ -75,11 +75,11 @@ sudo zypper install git cmake kf6-extra-cmake-modules kf6-ki18n-devel kf6-krunne
 
 Plasma5:  
 ```bash install-fedora-plasma5
-sudo dnf install git cmake extra-cmake-modules kf5-ki18n-devel kf5-krunner-devel kf5-kcmutils-devel kf5-knotifications-devel
+sudo dnf install git cmake gettext extra-cmake-modules kf5-ki18n-devel kf5-krunner-devel kf5-kcmutils-devel kf5-knotifications-devel
 ```
 Plasma6:  
 ```bash install-fedora-plasma6
-sudo dnf install git cmake extra-cmake-modules kf6-ki18n-devel kf6-krunner-devel kf6-kcmutils-devel kf6-knotifications-devel
+sudo dnf install git cmake gettext extra-cmake-modules kf6-ki18n-devel kf6-krunner-devel kf6-kcmutils-devel kf6-knotifications-devel
 ```
 
 </details>
