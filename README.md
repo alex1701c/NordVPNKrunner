@@ -46,11 +46,11 @@ The checkbox `Display IP Address by making ...` fetches the IP address online so
 <summary><b>Debian/Ubuntu</b></summary>
 
 Plasma5:  
-```bash
+```bash install-ubuntu-plasma5
 sudo apt install git cmake extra-cmake-modules build-essential libkf5runner-dev libkf5i18n-dev libkf5kcmutils-dev qtdeclarative5-dev libkf5dbusaddons-bin
 ```
 Plasma6:  
-```bash
+```bash install-ubuntu-plasma6
 sudo apt install git cmake extra-cmake-modules build-essential libkf6runner-dev libkf6i18n-dev libkf6kcmutils-dev kf6-kdbusaddons
 ```
 
@@ -60,11 +60,11 @@ sudo apt install git cmake extra-cmake-modules build-essential libkf6runner-dev 
 <summary><b>OpenSUSE</b></summary>
 
 Plasma5:  
-```bash
+```bash install-suse-plasma5
 sudo zypper install git cmake extra-cmake-modules ki18n-devel krunner-devel kcmutils-devel kdbusaddons-tools
 ```
 Plasma6:  
-```bash
+```bash install-opensuse-plasma6
 sudo zypper install git cmake kf6-extra-cmake-modules kf6-ki18n-devel kf6-krunner-devel kf6-kdbusaddons-tools
 ```
 
@@ -74,11 +74,11 @@ sudo zypper install git cmake kf6-extra-cmake-modules kf6-ki18n-devel kf6-krunne
 <summary><b>Fedora</b></summary>
 
 Plasma5:  
-```bash
+```bash install-fedora-plasma5
 sudo dnf install git cmake extra-cmake-modules kf5-ki18n-devel kf5-krunner-devel kf5-kcmutils-devel 
 ```
 Plasma6:  
-```bash
+```bash install-fedora-plasma6
 sudo dnf install git cmake extra-cmake-modules kf6-ki18n-devel kf6-krunner-devel kf6-kcmutils-devel
 ```
 
