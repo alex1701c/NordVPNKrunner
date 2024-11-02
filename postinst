@@ -1,3 +1,9 @@
 #!/bin/bash
 
 sudo curl https://s1.nordcdn.com/nordvpn/media/1.170.0/images/global/favicon/apple-touch-icon-57x57.png -o /usr/share/pixmaps/nordvpn.png
+
+if pgrep -x krunner > /dev/null
+then
+    killall krunner
+fi
+
