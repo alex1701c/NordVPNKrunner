@@ -32,12 +32,6 @@ public Q_SLOTS:
     void setDefaultIcon();
 
 private:
-#if KCONFIGWIDGETS_VERSION < QT_VERSION_CHECK(5, 105, 0)
-    QWidget widget()
-    {
-        return this;
-    }
-#endif
     void setCurrentSettings();
     QStringList getStatusNotificationKeys();
     void writeConfigText(const QString &key, const QString &text);

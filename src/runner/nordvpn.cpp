@@ -10,12 +10,12 @@
 void NordVPN::init()
 {
     setObjectName(QStringLiteral("NordVPN"));
-    addSyntax(KRunner::RunnerSyntax("vpn us", "Connect option to United States, server is chosen by NordVPN"));
-    addSyntax(KRunner::RunnerSyntax("vpn us 3335", "Connect options to United States with server number 3335"));
-    addSyntax(KRunner::RunnerSyntax("vpn d", "Shows Disconnect option on top (just relevance changed)"));
-    addSyntax(KRunner::RunnerSyntax("vpn reconnect",
-                                    "Reconnect to the current country and server. "
-                                    "Sometimes you have to do this if you change from a wireless to a wired connection"));
+    addSyntax("vpn us", "Connect option to United States, server is chosen by NordVPN");
+    addSyntax("vpn us 3335", "Connect options to United States with server number 3335");
+    addSyntax("vpn d", "Shows Disconnect option on top (just relevance changed)");
+    addSyntax("vpn reconnect",
+              "Reconnect to the current country and server. "
+              "Sometimes you have to do this if you change from a wireless to a wired connection");
 
     // Fetch only the status data if the query matches
     connect(&vpnStatus, &Status::finished, this, [this]() {
