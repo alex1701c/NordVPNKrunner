@@ -7,7 +7,7 @@ template<typename T>
 void runNordVPNCommand(const QStringList &args, bool notify, T notificationFunction)
 {
     auto *process = new QProcess;
-    process->start("nordvpn", args);
+    process->start(QStringLiteral("nordvpn"), args);
     QObject::connect(process, &QProcess::finished, [=]() {
         if (notify) {
             QString _out = QString::fromLocal8Bit(process->readAll());
@@ -39,7 +39,7 @@ void ProcessManager::vpnStatus(const KConfigGroup &grp, const QStringList &args)
 void ProcessManager::reconnectVPN(bool notify, const QStringList &args)
 {
     auto *process = new QProcess;
-    process->start("nordvpn", {"d"});
+    process->start(QStringLiteral("nordvpn"), {QStringLiteral("d")});
     connect(process, &QProcess::finished, [=]() {
         process->close();
         process->deleteLater();

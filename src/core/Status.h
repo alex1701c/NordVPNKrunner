@@ -9,7 +9,7 @@ class Status : public QObject
     Q_OBJECT
 public:
     using QObject::QObject;
-    QString status = "Error";
+    QString status = QStringLiteral("Error");
     QString current_server;
     QString country;
     QString server;
@@ -18,7 +18,7 @@ public:
 
     bool connectionExists() const;
 
-    static QString evalConnectQuery(const QString &term, const QString &defaultTarget = "");
+    static QString evalConnectQuery(const QString &term, const QString &defaultTarget = QString());
 
     void updateConnectionStatus();
 

@@ -13,9 +13,9 @@ void NotificationManager::displaySimpleNotification(const QString &event, const 
 {
     // NordVPN icon is used, param changes nothing
 #if QT_VERSION_MAJOR == 6
-    KNotification::event(event, title, status, QPixmap(), KNotification::CloseOnTimeout, "krunner_nordvpn");
+    KNotification::event(event, title, status, QPixmap(), KNotification::CloseOnTimeout, QStringLiteral("krunner_nordvpn"));
 #else
-    KNotification::event(event, title, status, nullptr, KNotification::CloseOnTimeout, "krunner_nordvpn");
+    KNotification::event(event, title, status, nullptr, KNotification::CloseOnTimeout, QStringLiteral("krunner_nordvpn"));
 #endif
 }
 
@@ -39,8 +39,7 @@ void NotificationManager::displayDisconnectNotification(const QString &processOu
 {
     auto resList = processOutput.split('\n');
     if (!resList.isEmpty()) {
-        static const QString eventID = QStringLiteral("disconnect");
-        NotificationManager::displaySimpleNotification(eventID, resList.first());
+        NotificationManager::displaySimpleNotification(QStringLiteral("disconnect"), resList.first());
     }
 }
 
@@ -82,12 +81,8 @@ void NotificationManager::displayStatusNotification(const QString &processOutput
         });
         // Display notification when network request is finished
         QObject::connect(manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
-            QString ipLine = QStringLiteral("Fetched Ip Address: %1");
-            if (reply->error() == QNetworkReply::NoError) {
-                ipLine = ipLine.arg(QString::fromLocal8Bit(reply->readAll()));
-            } else {
-                ipLine = ipLine.arg(reply->errorString());
-            }
+            const QString ipLine = QLatin1String("Fetched Ip Address: %1")
+                                       .arg(reply->error() == QNetworkReply::NoError ? QString::fromLocal8Bit(reply->readAll()) : reply->errorString());
             displaySimpleNotification(eventID, notifyText + ipLine);
         });
     }

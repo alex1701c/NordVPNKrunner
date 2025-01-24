@@ -6,12 +6,12 @@
 
 QString Utilities::filterBeginning(QString &str)
 {
-    static const QRegularExpression cleanupRegex(R"(^[\r\\\|/\- ]*)");
+    static const QRegularExpression cleanupRegex(QStringLiteral(R"(^[\r\\\|/\- ]*)"));
     // https://github.com/alex1701c/NordVPNKrunner/issues/6
     str.remove(QLatin1String("\r-\r"));
     str.remove(QLatin1Char('\r'));
 
-    str = str.remove("A new version of NordVPN is available! Please update the application.\n");
+    str = str.remove(QLatin1String("A new version of NordVPN is available! Please update the application.\n"));
     static const QRegularExpression newFeatureRegex(QStringLiteral("^New feature -.*\n"));
     str = str.remove(newFeatureRegex).trimmed();
     return str.remove(cleanupRegex);
@@ -19,7 +19,7 @@ QString Utilities::filterBeginning(QString &str)
 
 bool Utilities::sameTarget(QString &target, const Status &status)
 {
-    static const QRegularExpression countryRegex("[a-zA-z ]{2,50}$");
+    static const QRegularExpression countryRegex(QStringLiteral("[a-zA-z ]{2,50}$"));
     const bool countryOnly = target.contains(countryRegex);
     const bool emptyTarget = target.remove(' ').isEmpty();
 
